@@ -23,6 +23,6 @@
 		p:dataSource-ref="dataSource" 
 		p:typeAliasesPackage="site.letterforyou.spring"/>
 
-	<mybatis-spring:scan 
-		base-package="site.letterforyou.spring.mapper" />	
+	<mybatis-spring:scan base-package="site.letterforyou.spring.*.mapper"/>
+
 </beans>
