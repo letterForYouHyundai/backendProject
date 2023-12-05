@@ -8,13 +8,16 @@
 	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
-	
+	 <!-- application.properties setting -->
+	 
+	 <context:property-placeholder location="classpath:application.properties"/>
 	<!-- Root Context: defines shared resources visible to all other web components -->
+	 
 	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig"
 		p:driverClassName="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
-		p:jdbcUrl="jdbc:log4jdbc:oracle:thin:@localhost:1521/xepdb1"
-		p:username="ace"
-		p:password="ace" />	
+		p:jdbcUrl="${db.url}"
+		p:username="${db.username}"
+		p:password="${db.password}" />	
 	
 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close"
 		c:configuration-ref="hikariConfig" />
@@ -24,5 +27,6 @@
 		p:typeAliasesPackage="site.letterforyou.spring"/>
 
 	<mybatis-spring:scan base-package="site.letterforyou.spring.*.mapper"/>
-
+	
+	
 </beans>
