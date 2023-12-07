@@ -20,7 +20,7 @@ import site.letterforyou.spring.sample.service.AmazonS3Service;
 import site.letterforyou.spring.sample.service.SampleService;
 
 @RestController
-@RequestMapping("/sample")
+@RequestMapping("/api/sample")
 @Log
 public class SampleController {
 
