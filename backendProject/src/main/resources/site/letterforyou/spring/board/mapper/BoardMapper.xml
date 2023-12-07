@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="site.letterforyou.spring.board.mapper.BoardMapper">
+
+	<select id="getBoardList"
+		parameterType="site.letterforyou.spring.board.domain.BoardVO"
+		resultType="site.letterforyou.spring.board.domain.BoardVO">
+		select board_no as boardNo ,
+		user_id  as userId,
+		board_title as boardTitle,
+		board_content as boardContent ,
+		regist_dt as registDate,
+		board_view as boardView,
+		board_thumbnail as boardThumbNail
+
+		from tbl_board
+	</select>
+	
+	
+	
+	<!-- <select id="getAttachByBoardNo" parameterType="site.letterforyou.spring.board.domain.BoardVO"
+	resultType="site.letterforyou.spring.board.domain.AttachVO"
+	>
+	select attach_no as attachNo, 
+	board_no as  boardNo,
+	regist_dt as registDate,
+	use_yn as useYn,
+	change_dt as changeDate,
+	file_path as filePath,
+	original_file_nm as originalFileNm,
+	save_file_nm as saveFileNm
+	
+	from tbl_attach
+	</select> -->
+	
+	
+	
+	
+	<select id="getBoardLikeCountByBoardNo" resultType="_int">
+	
+	select count(*)
+	from tbl_board_like
+	where board_no=#{boardNo}
+	</select>
+	
+<insert id="addBoard" useGeneratedKeys="true" parameterType="site.letterforyou.spring.board.domain.BoardVO" >
+    INSERT INTO TBL_BOARD (board_no, user_id, board_title, board_content, board_thumbnail) 
+    VALUES (TBL_BOARD_SEQ.NEXTVAL, #{userId}, #{boardTitle}, #{boardContent}, #{boardThumbNail})
+</insert>
+
+	
+	
+	<insert id="addAttach">
+    INSERT INTO TBL_ATTACH (attach_no, board_no, file_path, original_file_nm, save_file_nm) 
+    VALUES (TBL_ATTACH_SEQ.nextval, #{boardNo}, #{attachVo.filePath}, #{attachVo.originalFileNm}, #{attachVo.saveFileNm})
+</insert>
+
+
+<update id="modifyBoard">
+    UPDATE TBL_BOARD 
+    SET board_title = #{boardVo.boardTitle},
+        board_content = #{boardVo.boardContent}
+    WHERE board_no = #{boardNo}
+</update>
+
+
+	
+</mapper>
