@@ -12,18 +12,28 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.extern.slf4j.Slf4j;
 import site.letterforyou.spring.board.domain.AttachVO;
 import site.letterforyou.spring.board.domain.BoardVO;
+import site.letterforyou.spring.board.domain.CommentVO;
+import site.letterforyou.spring.board.dto.BoardDeleteResponseDTO;
+import site.letterforyou.spring.board.dto.BoardLikeUpdateResponseDTO;
 import site.letterforyou.spring.board.dto.BoardModifyRequestDTO;
 import site.letterforyou.spring.board.dto.BoardModifyResponseDTO;
 import site.letterforyou.spring.board.dto.BoardPostRequestDTO;
 import site.letterforyou.spring.board.dto.BoardPostResponseDTO;
-import site.letterforyou.spring.board.dto.CommentDTO;
+import site.letterforyou.spring.board.dto.CommentDeleteResponseDTO;
+import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
+import site.letterforyou.spring.board.dto.CommentModifyResponseDTO;
+import site.letterforyou.spring.board.dto.CommentPostRequestDTO;
+import site.letterforyou.spring.board.dto.CommentPostResponseDTO;
 import site.letterforyou.spring.board.dto.GetBoardListResponseDTO;
+import site.letterforyou.spring.board.dto.GetBoardResponseDTO;
+import site.letterforyou.spring.board.dto.GetCommentResponseDTO;
 import site.letterforyou.spring.board.mapper.BoardMapper;
 import site.letterforyou.spring.comment.mapper.CommentMapper;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.common.util.ResponseUtil;
 import site.letterforyou.spring.common.util.TimeService;
-import site.letterforyou.spring.user.mapper.UserMapper;
+import site.letterforyou.spring.member.domain.UserVO;
+import site.letterforyou.spring.member.mapper.MemberMapper;
 
 @Service
 @Slf4j
@@ -33,9 +43,9 @@ public class BoardServiceImpl implements BoardService {
 	private ResponseUtil responseUtil;
 	@Autowired
 	private BoardMapper boardMapper;
-
+	
 	@Autowired
-	private UserMapper userMapper;
+	private MemberMapper userMapper;
 
 	@Autowired
 	private CommentMapper commentMapper;
@@ -50,33 +60,72 @@ public class BoardServiceImpl implements BoardService {
 	
 	public ResponseSuccessDTO<List<GetBoardListResponseDTO>> getBoardList() {
 		List<BoardVO> boardVoList = boardMapper.getBoardList();
+//		log.info(boardVoList.toString());
 		List<GetBoardListResponseDTO> returnList = new ArrayList<>();
 		for (BoardVO b : boardVoList) {
 			GetBoardListResponseDTO boardDTO = new GetBoardListResponseDTO();
-			boardDTO.builder().boardNo(b.getBoardNo()).boardTitle(b.getBoardTitle()).boardView(b.getBoardView())
-					.userNickname(userMapper.getUserNickName(b.getUserId()))
-					.commentCount(commentMapper.getCommentCount(b.getBoardNo()))
-					.image(b.getBoardThumbNail())
-					.likeCount(boardMapper.getBoardLikeCountByBoardNo(b.getBoardNo()))
-					.registDate(timeService.parseLocalDateTime(b.getRegistDate())).build();
-			
+			boardDTO.setBoardNo(b.getBoardNo());
+			boardDTO.setBoardTitle(b.getBoardTitle());
+			boardDTO.setBoardView(b.getBoardView());
+			boardDTO.setCommentCount(commentMapper.getCommentCount(b.getBoardNo()));
+			boardDTO.setImage(b.getBoardThumbNail());
+			boardDTO.setUserNickname(userMapper.getUserByUserId(b.getUserId()).getUserNickname());
+			boardDTO.setRegistDate(timeService.parseLocalDateTime(b.getRegistDate()));
+			boardDTO.setLikeCount(boardMapper.getBoardLikeCountByBoardNo(b.getBoardNo()));
+
+			log.debug(boardDTO.toString());
 			returnList.add(boardDTO);
 		}
-//		GetBoardListResponseDTO bdto = new GetBoardListResponseDTO();
-//		returnList.add(bdto.builder()
-//				.boardNo(1L)
-//				.boardTitle("Hello")
-//				.boardView(10L)
-//				.userNickname("sponge")
-//				.commentCount(13L)
-//				.image("image")
-//				.likeCount(14L)
-//				.registDate(LocalDateTime.now().toString())
-//				.build());
+
 		ResponseSuccessDTO<List<GetBoardListResponseDTO>> res =  responseUtil.successResponse(returnList, HttpStatus.OK);
 		
 		return res;
 	}
+	
+	@Override
+	public ResponseSuccessDTO<GetBoardResponseDTO> getBoard(Long boardNo) {
+		// 조회수도 검증
+		GetBoardResponseDTO responseDTO = new GetBoardResponseDTO();
+		
+		BoardVO boardVo = boardMapper.getBoard(boardNo);
+		
+		List<CommentVO> commentVoList = commentMapper.getCommentList(boardNo);
+		UserVO user = userMapper.getUserByUserId(boardVo.getUserId());
+		List<AttachVO> attachVoList = boardMapper.getAttachByBoardNo(boardNo);
+		
+		List<GetCommentResponseDTO> commentList = new ArrayList<>();
+		List<String> attachList = new ArrayList<>();
+		
+		for(CommentVO c: commentVoList) {
+			GetCommentResponseDTO commentDTO = new GetCommentResponseDTO();
+			commentDTO.setCommentId(c.getCommentId());
+			commentDTO.setUserNickname(c.getUserId());
+			commentDTO.setCommentDate(timeService.parseTime(c.getRegistDate()));
+			commentDTO.setCommentContent(c.getCommentContent());
+			commentDTO.setUserImage(userMapper.getUserByUserId(c.getUserId()).getUserImage());
+			commentList.add(commentDTO);
+		}
+		
+		for(AttachVO a : attachVoList) {
+			attachList.add(a.getFilePath());
+		}
+		
+		responseDTO.setBoardTitle(boardVo.getBoardTitle());
+		responseDTO.setBoardContent(boardVo.getBoardContent());
+		responseDTO.setBoardDate(timeService.parseTime(boardVo.getRegistDate()));
+		responseDTO.setBoardLike(boardMapper.getBoardLikeCountByBoardNo(boardNo));
+		responseDTO.setUserNickname(user.getUserNickname());
+		responseDTO.setUserImage(user.getUserImage());
+		responseDTO.setCommentList(commentList);
+		responseDTO.setAttachList(attachList);
+		
+		
+		ResponseSuccessDTO<GetBoardResponseDTO> res =  responseUtil.successResponse(responseDTO, HttpStatus.OK);
+		
+		return res;
+	}
+
+	
 	
 	@Override
 	public ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles, BoardPostRequestDTO boardDTO) throws IOException {
@@ -130,34 +179,57 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public GetBoardListResponseDTO deleteBoard(Long boardNo) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseSuccessDTO<BoardDeleteResponseDTO> deleteBoard(Long boardNo) {
+		boardMapper.deleteBoard(boardNo);
+		commentMapper.deleteCommentByBoardNo(boardNo);
+		
+		ResponseSuccessDTO<BoardDeleteResponseDTO> res =  responseUtil.successResponse( boardNo+ " 번 board 가 삭제되었습니다.", HttpStatus.OK);
+		return res;
 	}
 
 	@Override
-	public GetBoardListResponseDTO modifyBoardLike(Long boardNo) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseSuccessDTO<CommentPostResponseDTO> postComment(CommentPostRequestDTO commentDTO) {
+		
+	CommentVO commentVo = new CommentVO();
+	Long boardNo = commentDTO.getBoardNo();
+	commentVo.setBoardNo(commentDTO.getBoardNo());
+	commentVo.setCommentContent(commentDTO.getCommentContent());
+	commentVo.setUserId(commentDTO.getUserId());
+	log.info(commentVo.toString());
+		commentMapper.postComment(commentVo);
+		ResponseSuccessDTO<CommentPostResponseDTO> res =  responseUtil.successResponse( " comment 가 등록되었습니다.", HttpStatus.OK);
+		return res;
 	}
 
 	@Override
-	public CommentDTO postComment(CommentDTO commentDTO) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseSuccessDTO<CommentModifyResponseDTO> modifyComment(Long commentId,
+			CommentModifyRequestDTO commentDTO) {
+		
+		CommentVO commentVo = new CommentVO();
+		commentVo.setCommentId(commentId);
+		commentVo.setCommentContent(commentDTO.getCommentContent());
+		commentMapper.modifyComment(commentVo);
+		ResponseSuccessDTO<CommentModifyResponseDTO> res =  responseUtil.successResponse( commentId+ "번 comment 가 수정되었습니다.", HttpStatus.OK);
+		return res;
 	}
 
 	@Override
-	public Long deleteComment(Long commentNo) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseSuccessDTO<CommentDeleteResponseDTO> deleteComment(Long commentNo) {
+		Long commentId = commentNo;
+		commentMapper.deleteCommentByCommentId(commentId);
+		ResponseSuccessDTO<CommentDeleteResponseDTO> res =  responseUtil.successResponse( commentId+ "번 comment 가 삭제되었습니다.", HttpStatus.OK);
+		return res;
 	}
 
 	@Override
-	public Long modifyComment(Long commentNo) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseSuccessDTO<BoardLikeUpdateResponseDTO> updateBoardLike(Long boardNo) {
+		
+		ResponseSuccessDTO<BoardLikeUpdateResponseDTO> res =  responseUtil.successResponse( boardNo+ "번 게시물의 좋아요가 변경되었습니다.", HttpStatus.OK);
+		return res;
 	}
+
+	
+	
 
 	
 

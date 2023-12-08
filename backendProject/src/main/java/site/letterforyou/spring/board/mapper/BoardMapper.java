@@ -6,14 +6,15 @@ import org.apache.ibatis.annotations.Param;
 
 import site.letterforyou.spring.board.domain.AttachVO;
 import site.letterforyou.spring.board.domain.BoardVO;
-import site.letterforyou.spring.board.domain.CommentVO;
 
 public interface BoardMapper {
 
 	
 	public List<BoardVO> getBoardList();
 	
-	public Long addBoard(BoardVO boardVO);
+	public BoardVO getBoard(Long boardNo);
+	
+	public Long addBoard(@Param("boardVo")BoardVO boardVo);
 	
 	public void addAttach(@Param("boardNo") Long boardNo, @Param("attachVo") AttachVO attachVo);
 	
@@ -23,15 +24,11 @@ public interface BoardMapper {
 	
 	public void modifyBoardLike(Long userId, Long boardNo);
 	
-	public void postComment(CommentVO commentVo);
-	
-	public void deleteCommnet(Long commentNo);
-	
-	public void modifyComment(Long commentNo);
-	
-	public AttachVO getAttachByBoardNo(Long boardNo);
 	
 	
-	public Long getBoardLikeCountByBoardNo(Long boardNo);
+	public List<AttachVO> getAttachByBoardNo(Long boardNo);
+	
+	
+	public Long getBoardLikeCountByBoardNo(@Param("boardNo") Long boardNo);
 }
 	
