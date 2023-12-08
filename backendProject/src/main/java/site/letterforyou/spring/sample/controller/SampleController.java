@@ -8,11 +8,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import lombok.extern.java.Log;
 import site.letterforyou.spring.sample.domain.SampleVO;
@@ -52,5 +54,14 @@ public class SampleController {
     	s3service.uploadFile(multipartfile);
     
     	return new ResponseEntity<Map<String,Object>>(map,HttpStatus.OK);
+    }
+    
+    @GetMapping("/home")
+    public ModelAndView testHome() {
+    	ModelAndView mv = new ModelAndView();
+    	
+    	mv.setViewName("home");
+    	
+    	return mv;
     }
 }
