@@ -1,7 +1,9 @@
-package site.letterforyou.spring.user.mapper;
+package site.letterforyou.spring.member.mapper;
 
-public interface UserMapper {
+import site.letterforyou.spring.member.domain.UserVO;
+
+public interface MemberMapper {
 	
-	public String getUserNickName(String userId);
+	public UserVO getUserByUserId(String userId);
 	
 }

@@ -15,33 +15,37 @@
 		regist_dt as registDate,
 		board_view as boardView,
 		board_thumbnail as boardThumbNail
-
+		
 		from tbl_board
+		where use_yn = 'Y'
 	</select>
 	
 	
+	<select id="getBoard" parameterType="_long" resultType="site.letterforyou.spring.board.domain.BoardVO">
+	select board_no as boardNo ,
+		user_id  as userId,
+		board_title as boardTitle,
+		board_content as boardContent ,
+		regist_dt as registDate,
+		board_view as boardView
+		
+		from tbl_board
+		where board_no = #{boardNo}
 	
-	<!-- <select id="getAttachByBoardNo" parameterType="site.letterforyou.spring.board.domain.BoardVO"
-	resultType="site.letterforyou.spring.board.domain.AttachVO"
-	>
-	select attach_no as attachNo, 
-	board_no as  boardNo,
-	regist_dt as registDate,
-	use_yn as useYn,
-	change_dt as changeDate,
-	file_path as filePath,
-	original_file_nm as originalFileNm,
-	save_file_nm as saveFileNm
+	</select>
 	
-	from tbl_attach
-	</select> -->
+	 <select id ="getAttachByBoardNo" parameterType="_long" resultType="site.letterforyou.spring.board.domain.AttachVO">
+	 select attach_no as attachNo, 
+	 regist_dt as registDate,
+	 file_path as filePath
+	 from tbl_attach
+	where board_no = #{boardNo}
+	 </select>
 	
 	
+	<select id="getBoardLikeCountByBoardNo" resultType="_long">
 	
-	
-	<select id="getBoardLikeCountByBoardNo" resultType="_int">
-	
-	select count(*)
+	select count(*) as boardLike
 	from tbl_board_like
 	where board_no=#{boardNo}
 	</select>
@@ -62,9 +66,22 @@
 <update id="modifyBoard">
     UPDATE TBL_BOARD 
     SET board_title = #{boardVo.boardTitle},
-        board_content = #{boardVo.boardContent}
+        board_content = #{boardVo.boardContent},
+        regist_dt = CURRENT_TIMESTAMP,
+        change_dt = CURRENT_TIMESTAMP
     WHERE board_no = #{boardNo}
 </update>
+
+
+<update id="deleteBoard">
+UPDATE TBL_BOARD
+SET use_yn = 'N'
+where board_no=#{boardNo}
+</update>
+
+
+
+
 
 
 	

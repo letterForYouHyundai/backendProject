@@ -5,12 +5,60 @@
 <mapper namespace="site.letterforyou.spring.comment.mapper.CommentMapper">
 	
 <select id="getCommentCount"
-		resultType="_int">
-		select count(*)
+		resultType="_long">
+		select count(*) as commentCount
 		from tbl_comment
 		where board_no = #{boardNo}
 	</select>
 
+
+	<!-- <select id="getCommentList"
+		parameterType="_long"
+		resultType="site.letterforyou.spring.board.domain.CommentVO">
+		select comment_id as commentId ,
+		user_id  as userId,
+		comment_content as commentContent,
+		regist_dt as registDate
+		
+		from tbl_comment
+		where use_yn = 'Y' and board_no= #{boardNo} 
+	</select> -->
 	
+	   <select id="getCommentList" parameterType="long" resultType="site.letterforyou.spring.board.domain.CommentVO">
+        SELECT comment_id AS commentId,
+               user_id AS userId,
+               comment_content AS commentContent,
+               regist_dt AS registDate
+        FROM tbl_comment
+        
+        where board_no=#{boardNo}
+    </select>
+	
+	
+	<update id="deleteCommentByBoardNo">
+	
+	UPDATE TBL_COMMENT
+	SET use_yn = 'N'
+	where board_no=#{boardNo}
+	</update>
+	
+	<update id="deleteCommentByCommentId">
+	
+	UPDATE TBL_COMMENT
+	SET use_yn = 'N'
+	where comment_id=#{commentId}
+	</update>
+	
+	<insert id= "postComment">
+    INSERT INTO TBL_COMMENT (COMMENT_ID , BOARD_NO, USER_ID, COMMENT_CONTENT)
+    VALUES (TBL_COMMENT_SEQ.nextval, #{boardNo}, #{userId}, #{commentContent})
+</insert>
+
+<update id="modifyComment">
+	
+	UPDATE TBL_COMMENT
+	SET comment_content = #{commentContent}
+	where comment_id=#{commentId}
+	</update>
 	
 </mapper>
