@@ -52,6 +52,6 @@ public class MemberController {
 		
 		memberService.getKaKaoAccessAndRefreshToken(code);
 		 
-		 return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
 }

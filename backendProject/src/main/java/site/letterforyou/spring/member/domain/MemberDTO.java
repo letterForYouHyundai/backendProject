@@ -34,4 +34,9 @@ public class MemberDTO {
 	  코드
 	 */
 	private String code;
+	
+	/**
+	  멤버 이메일 체크
+	 */
+	private String chkMemberEmail;
 }

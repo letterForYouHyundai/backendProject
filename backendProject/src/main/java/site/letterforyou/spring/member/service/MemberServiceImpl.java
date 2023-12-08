@@ -115,12 +115,15 @@ public class MemberServiceImpl implements MemberService{
                result.append(line);
             }
            
-            log.info("user result: "+ result);
            
             /**result에서 사용자 정보 가져오기*/
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> returnMap = mapper.readValue(result.toString(), Map.class);
-           
+            
+            
+            /**사용자 정보를 member테이블에 저장한다.*/
+            insertMemberInfo(returnMap);
+       
            
 		} catch (Exception e) {
 			log.error("유저 정보 조회 요청 중 에러"+e.getMessage());
@@ -128,6 +131,42 @@ public class MemberServiceImpl implements MemberService{
 	      
 
 		return null;
+	}
+
+	@Override
+	public void insertMemberInfo(Map<String, Object> map) {
+		
+		 MemberDTO mdto = new MemberDTO();
+	     Map<String, Object> kakao_account = (Map<String, Object>) map.get("kakao_account");
+     
+         Map<String, Object> profile = (Map<String, Object>) kakao_account.get("profile");
+       
+         String email= String.valueOf(kakao_account.get("email"));
+         String name= String.valueOf(profile.get("nickname"));
+         String userImage= String.valueOf(profile.get("profile_image_url"));
+                  
+         /**
+          	초기에는 User의 name과 nickname을 모두 카카오 계정에서 가져오는 프로필의 nickname 정보로 설정한다.
+          	마이페이지에서 수정은 userName은 불가, userNickName만 수정할 수 있어야한다.
+          **/
+         mdto.setUserEmail(email);
+         mdto.setUserName(name);
+         mdto.setUserNickname(name);
+         mdto.setUserImage(userImage);
+         mdto.setChkMemberEmail("Y");
+         
+         int chkCnt = memberMapper.selectMemberCnt(mdto);
+         
+         log.info("chkCnt: "+ chkCnt);
+         
+         /**
+          해당 카카오 계정으로 회원가입을 한 적이 없는 경우 TBL_USER 테이블에 정보를 삽입한다.
+          */
+         if( chkCnt == 0) {
+        	 memberMapper.insertMemberInfo(mdto);
+         }
+         
+         
 	}
 
 }

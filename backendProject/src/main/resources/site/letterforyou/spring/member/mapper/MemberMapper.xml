@@ -8,6 +8,16 @@
 		SELECT
 		   	COUNT(*)
 		FROM 
-		    MEMBERS
+		   TBL_USER
+		<if test="userEmail!=null and !userEmail.equals('')">
+				WHERE USER_EMAIL = #{userEmail}
+		</if>
 	</select>
+	
+	<insert id="insertMemberInfo" parameterType="site.letterforyou.spring.member.domain.MemberDTO">
+		INSERT INTO TBL_USER 
+				(user_name, user_email, user_nickname, user_image)
+        VALUES 
+        	(#{userName}, #{userEmail}, #{userNickname}, #{userImage})
+	</insert>
 </mapper>
