@@ -16,6 +16,7 @@ import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
 import site.letterforyou.spring.board.dto.CommentModifyResponseDTO;
 import site.letterforyou.spring.board.dto.CommentPostRequestDTO;
 import site.letterforyou.spring.board.dto.CommentPostResponseDTO;
+import site.letterforyou.spring.board.dto.GetBoardListRequestDTO;
 import site.letterforyou.spring.board.dto.GetBoardListResponseDTO;
 import site.letterforyou.spring.board.dto.GetBoardResponseDTO;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
@@ -23,7 +24,7 @@ import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 public interface BoardService {
 
 	
-	public ResponseSuccessDTO<List<GetBoardListResponseDTO>> getBoardList();
+	public ResponseSuccessDTO<GetBoardListResponseDTO> getBoardList(GetBoardListRequestDTO getBoardListRequestDTO, Long page);
 	
 	public ResponseSuccessDTO<GetBoardResponseDTO> getBoard(Long boardNo);
 

@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import site.letterforyou.spring.board.domain.AttachVO;
 import site.letterforyou.spring.board.domain.BoardVO;
 import site.letterforyou.spring.board.domain.CommentVO;
+import site.letterforyou.spring.board.domain.PageVO;
+import site.letterforyou.spring.board.domain.Pagination;
+import site.letterforyou.spring.board.dto.BoardDTO;
 import site.letterforyou.spring.board.dto.BoardDeleteResponseDTO;
 import site.letterforyou.spring.board.dto.BoardLikeUpdateResponseDTO;
 import site.letterforyou.spring.board.dto.BoardModifyRequestDTO;
@@ -24,6 +27,7 @@ import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
 import site.letterforyou.spring.board.dto.CommentModifyResponseDTO;
 import site.letterforyou.spring.board.dto.CommentPostRequestDTO;
 import site.letterforyou.spring.board.dto.CommentPostResponseDTO;
+import site.letterforyou.spring.board.dto.GetBoardListRequestDTO;
 import site.letterforyou.spring.board.dto.GetBoardListResponseDTO;
 import site.letterforyou.spring.board.dto.GetBoardResponseDTO;
 import site.letterforyou.spring.board.dto.GetCommentResponseDTO;
@@ -58,26 +62,42 @@ public class BoardServiceImpl implements BoardService {
 	@Autowired
 	private ThumbnailService thumbnailService;
 	
-	public ResponseSuccessDTO<List<GetBoardListResponseDTO>> getBoardList() {
-		List<BoardVO> boardVoList = boardMapper.getBoardList();
-//		log.info(boardVoList.toString());
-		List<GetBoardListResponseDTO> returnList = new ArrayList<>();
+	public ResponseSuccessDTO<GetBoardListResponseDTO> getBoardList(GetBoardListRequestDTO getBoardListRequestDTO, Long page) {
+		PageVO pageVo = new PageVO(page);
+		
+		pageVo.setSortBy(getBoardListRequestDTO.getSortBy());
+		
+		if(getBoardListRequestDTO.getInOrder()==0)
+			pageVo.setOrderBy("ASC");
+		else
+			pageVo.setOrderBy("DESC");
+		
+		Long offset = pageVo.getOffset();
+		Long size = pageVo.getRecordSize();
+		log.info(pageVo.getSortBy()+" "+ pageVo.getSortBy()+" "+ pageVo.getOffset() +" "+pageVo.getRecordSize());
+		List<BoardVO> boardVoList = boardMapper.getBoardList(pageVo.getSortBy(),pageVo.getOrderBy(),offset,size);
+
+		GetBoardListResponseDTO result = new GetBoardListResponseDTO();
+		List<BoardDTO> boardList= new ArrayList<>();
 		for (BoardVO b : boardVoList) {
-			GetBoardListResponseDTO boardDTO = new GetBoardListResponseDTO();
+			BoardDTO boardDTO = new BoardDTO();
 			boardDTO.setBoardNo(b.getBoardNo());
 			boardDTO.setBoardTitle(b.getBoardTitle());
 			boardDTO.setBoardView(b.getBoardView());
-			boardDTO.setCommentCount(commentMapper.getCommentCount(b.getBoardNo()));
+			boardDTO.setCommentCount(b.getCommentCount());
 			boardDTO.setImage(b.getBoardThumbNail());
 			boardDTO.setUserNickname(userMapper.getUserByUserId(b.getUserId()).getUserNickname());
 			boardDTO.setRegistDate(timeService.parseLocalDateTime(b.getRegistDate()));
-			boardDTO.setLikeCount(boardMapper.getBoardLikeCountByBoardNo(b.getBoardNo()));
+			boardDTO.setLikeCount(b.getLikeCount());
 
-			log.debug(boardDTO.toString());
-			returnList.add(boardDTO);
+			boardList.add(boardDTO);
 		}
-
-		ResponseSuccessDTO<List<GetBoardListResponseDTO>> res =  responseUtil.successResponse(returnList, HttpStatus.OK);
+		result.setBoardList(boardList);
+		int count = boardMapper.getTotalCountBoard();
+		log.info(" "+count);
+		Pagination pagination = new Pagination(count, pageVo);
+		result.setPagination(pagination);
+		ResponseSuccessDTO<GetBoardListResponseDTO> res =  responseUtil.successResponse(result, HttpStatus.OK);
 		
 		return res;
 	}
