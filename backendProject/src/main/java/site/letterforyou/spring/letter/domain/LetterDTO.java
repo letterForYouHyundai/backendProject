@@ -35,6 +35,10 @@ public class LetterDTO {
 	   편지 작성일자
 	  */
 	  private String registDt;
+	  /**
+	   카카오톡 송신여부
+	  */
+	  private String kakaoSendYn;
 	  
 	  /**
 	   편지 배경번호
@@ -45,4 +49,9 @@ public class LetterDTO {
 	   받은 편지 열람여부
 	  */
 	  private String letterReceiveYn;
+	  
+	  /**
+	   엑세스토큰
+	  */
+	  private String accessToken;
 }
