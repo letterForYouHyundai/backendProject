@@ -59,7 +59,7 @@ public class BoardServiceImpl implements BoardService {
 	
 	public ResponseSuccessDTO<BoardGetListResponseDTO> getBoardList(String sortBy, int inOrder, Long page) {
 		 
-		PageVO pageVo = new PageVO(page);
+		PageVO pageVo = new PageVO(page, 15L, 10L);
 		if(sortBy ==null) {
 			inOrder =1;
 			sortBy="DESC";
