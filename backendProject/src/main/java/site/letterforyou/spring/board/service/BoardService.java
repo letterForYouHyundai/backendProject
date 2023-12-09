@@ -16,16 +16,16 @@ import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
 import site.letterforyou.spring.board.dto.CommentModifyResponseDTO;
 import site.letterforyou.spring.board.dto.CommentPostRequestDTO;
 import site.letterforyou.spring.board.dto.CommentPostResponseDTO;
-import site.letterforyou.spring.board.dto.GetBoardListResponseDTO;
-import site.letterforyou.spring.board.dto.GetBoardResponseDTO;
+import site.letterforyou.spring.board.dto.BoardGetListResponseDTO;
+import site.letterforyou.spring.board.dto.BoardGetResponseDTO;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 
 public interface BoardService {
 
 	
-	public ResponseSuccessDTO<GetBoardListResponseDTO> getBoardList(String sortBy, int inOrder , Long page);
+	public ResponseSuccessDTO<BoardGetListResponseDTO> getBoardList(String sortBy, int inOrder , Long page);
 	
-	public ResponseSuccessDTO<GetBoardResponseDTO> getBoard(Long boardNo);
+	public ResponseSuccessDTO<BoardGetResponseDTO> getBoard(Long boardNo);
 
 	ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles, BoardPostRequestDTO boardDTO) throws IOException;
 	

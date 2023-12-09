@@ -14,7 +14,7 @@ import site.letterforyou.spring.board.domain.Pagination;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class GetBoardListResponseDTO {
+public class BoardGetListResponseDTO {
 
 private List<BoardDTO> boardList;
 

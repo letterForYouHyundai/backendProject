@@ -29,8 +29,8 @@ import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
 import site.letterforyou.spring.board.dto.CommentModifyResponseDTO;
 import site.letterforyou.spring.board.dto.CommentPostRequestDTO;
 import site.letterforyou.spring.board.dto.CommentPostResponseDTO;
-import site.letterforyou.spring.board.dto.GetBoardListResponseDTO;
-import site.letterforyou.spring.board.dto.GetBoardResponseDTO;
+import site.letterforyou.spring.board.dto.BoardGetListResponseDTO;
+import site.letterforyou.spring.board.dto.BoardGetResponseDTO;
 import site.letterforyou.spring.board.service.BoardService;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 
@@ -43,7 +43,7 @@ public class BoardController {
 	private BoardService boardService;
 	
 	@GetMapping("/list")
-	public ResponseEntity<ResponseSuccessDTO<GetBoardListResponseDTO>> getBoardList(
+	public ResponseEntity<ResponseSuccessDTO<BoardGetListResponseDTO>> getBoardList(
 			@RequestParam(value = "page" , required = false) Long page ,@RequestParam(value= "sortBy" ,required = false) String sortBy, @RequestParam(value= "inOrder" ,required = false) Integer inOrder) {
 
 	    Long defaultPage = 1L;
@@ -58,7 +58,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/{boardNo}")
-	public ResponseEntity<ResponseSuccessDTO<GetBoardResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo) {
+	public ResponseEntity<ResponseSuccessDTO<BoardGetResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo) {
     	
     	
         log.info(": /board/"+boardNo);

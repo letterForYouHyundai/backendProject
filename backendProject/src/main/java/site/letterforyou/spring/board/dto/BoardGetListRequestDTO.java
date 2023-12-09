@@ -12,7 +12,7 @@ import site.letterforyou.spring.board.domain.PageVO;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetBoardListRequestDTO {
+public class BoardGetListRequestDTO {
 
 	private String sortBy;
 	// 0 : asc, 1: desc
