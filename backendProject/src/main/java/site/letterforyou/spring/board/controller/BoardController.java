@@ -2,7 +2,6 @@ package site.letterforyou.spring.board.controller;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,7 +29,6 @@ import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
 import site.letterforyou.spring.board.dto.CommentModifyResponseDTO;
 import site.letterforyou.spring.board.dto.CommentPostRequestDTO;
 import site.letterforyou.spring.board.dto.CommentPostResponseDTO;
-import site.letterforyou.spring.board.dto.GetBoardListRequestDTO;
 import site.letterforyou.spring.board.dto.GetBoardListResponseDTO;
 import site.letterforyou.spring.board.dto.GetBoardResponseDTO;
 import site.letterforyou.spring.board.service.BoardService;
@@ -46,15 +44,17 @@ public class BoardController {
 	
 	@GetMapping("/list")
 	public ResponseEntity<ResponseSuccessDTO<GetBoardListResponseDTO>> getBoardList(
-			@RequestParam(value = "page") Optional<Long> page ,@RequestParam String sortBy, @RequestParam int inOrder	) {
-		
-	    Long currentPage = page.orElse(1L);
-	    GetBoardListRequestDTO getBoardListRequestDTO = new GetBoardListRequestDTO();
-	    getBoardListRequestDTO.setInOrder(inOrder);
-	    getBoardListRequestDTO.setSortBy(sortBy);
-	    log.info(": /board/list/" + currentPage);
+			@RequestParam(value = "page" , required = false) Long page ,@RequestParam(value= "sortBy" ,required = false) String sortBy, @RequestParam(value= "inOrder" ,required = false) Integer inOrder) {
 
-	    return ResponseEntity.ok(boardService.getBoardList(getBoardListRequestDTO, currentPage));
+	    Long defaultPage = 1L;
+	    String defaultSortBy="DESC";
+	    int defaultInOrder =1;
+	    Long p  = page == null ? defaultPage :page;
+	    String sb = sortBy == null? defaultSortBy : sortBy;
+	    int io = inOrder == null ? defaultInOrder :inOrder;
+	    log.info(": /board/list/" + page);
+	    
+	    return ResponseEntity.ok(boardService.getBoardList(sb, io, p));
 	}
 	
 	@GetMapping("/{boardNo}")
