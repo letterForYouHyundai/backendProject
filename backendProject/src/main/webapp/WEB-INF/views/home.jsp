@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="false" %>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>;
 <html>
 <head>
 	<title>Home</title>

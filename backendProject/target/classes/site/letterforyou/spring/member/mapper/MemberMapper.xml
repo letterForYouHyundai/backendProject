@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.letterforyou.spring.member.mapper.MemberMapper">
+
+	<select id="selectMemberCnt" parameterType="site.letterforyou.spring.member.domain.MemberDTO" resultType="int">
+		SELECT
+		   	COUNT(*)
+		FROM 
+		   TBL_USER
+		<if test="userEmail!=null and !userEmail.equals('')">
+				WHERE USER_EMAIL = #{userEmail}
+		</if>
+	</select>
+	
+	<insert id="insertMemberInfo" parameterType="site.letterforyou.spring.member.domain.MemberDTO">
+		INSERT INTO TBL_USER 
+				(user_name, user_email, user_nickname, user_image)
+        VALUES 
+        	(#{userName}, #{userEmail}, #{userNickname}, #{userImage})
+	</insert>
+</mapper>
