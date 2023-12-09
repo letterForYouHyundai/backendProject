@@ -5,12 +5,11 @@
 <mapper
 	namespace="site.letterforyou.spring.board.mapper.BoardMapper">
 
-	<select id="getBoardList"
-		
-		resultType="site.letterforyou.spring.board.domain.BoardVO">
-		SELECT 
+	<select id="getBoardList" resultType="site.letterforyou.spring.board.domain.BoardVO">
+    SELECT 
         b.board_no as boardNo,
         b.user_id as userId,
+        u.user_nickname as userNickname, 
         b.board_title as boardTitle,
         b.regist_dt as registDate,
         b.board_view as boardView,
@@ -27,11 +26,13 @@
             board_thumbnail
         FROM tbl_board) b
     LEFT JOIN 
+        tbl_user u ON b.user_id = u.user_id 
+    LEFT JOIN 
         TBL_COMMENT c ON b.BOARD_NO = c.BOARD_NO
     LEFT JOIN 
         TBL_BOARD_LIKE bl ON b.BOARD_NO = bl.BOARD_NO AND bl.LIKE_YN = 'Y'
     GROUP BY 
-        b.board_no, b.user_id, b.board_title, b.regist_dt, b.board_view, b.board_thumbnail
+        b.board_no, b.user_id, u.user_nickname, b.board_title, b.regist_dt, b.board_view, b.board_thumbnail <!-- Added u.user_nickname in GROUP BY -->
     <choose>
         <when test="sortBy == 'comments'">
             ORDER BY commentCount ${inOrder} , registDate DESC
@@ -51,7 +52,8 @@
     </choose>
     OFFSET 
         #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
-	</select>
+</select>
+	
 	
 	<select id="getTotalCountBoard" resultType="int">
 	select count(*) as totalCount
@@ -60,17 +62,29 @@
 	
 	</select>
 	<select id="getBoard" parameterType="_long" resultType="site.letterforyou.spring.board.domain.BoardVO">
-	select board_no as boardNo ,
-		user_id  as userId,
-		board_title as boardTitle,
-		board_content as boardContent ,
-		regist_dt as registDate,
-		board_view as boardView
-		
-		from tbl_board
-		where board_no = #{boardNo}
-	
-	</select>
+    SELECT 
+        b.board_no as boardNo,
+        b.user_id as userId,
+        u.user_nickname as userNickname,  
+        u.user_image as userImage,        
+        b.board_title as boardTitle,
+        to_char(b.board_content) as boardContent,
+        b.regist_dt as registDate,
+        b.board_view as boardView,
+        COUNT(bl.BOARD_LIKE_NO) as likeCount  
+    FROM 
+        tbl_board b
+    LEFT JOIN 
+        tbl_board_like bl ON b.board_no = bl.board_no AND bl.LIKE_YN = 'Y' 
+    LEFT JOIN 
+        tbl_user u ON b.user_id = u.user_id  <!-- Joining tbl_user -->
+    WHERE 
+        b.board_no = #{boardNo}
+    GROUP BY 
+        b.board_no, b.user_id, u.user_nickname, u.user_image, b.board_title, to_char(b.board_content), b.regist_dt, b.board_view
+</select>
+
+
 	
 	 <select id ="getAttachByBoardNo" parameterType="_long" resultType="site.letterforyou.spring.board.domain.AttachVO">
 	 select attach_no as attachNo, 
@@ -81,12 +95,6 @@
 	 </select>
 	
 	
-	<select id="getBoardLikeCountByBoardNo" resultType="_long">
-	
-	select count(*) as boardLike
-	from tbl_board_like
-	where board_no=#{boardNo}
-	</select>
 	
 <insert id="addBoard" useGeneratedKeys="true" parameterType="site.letterforyou.spring.board.domain.BoardVO" >
     INSERT INTO TBL_BOARD (board_no, user_id, board_title, board_content, board_thumbnail) 
@@ -119,7 +127,17 @@ where board_no=#{boardNo}
 
 
 
-
+<insert id="modifyBoardLike">
+    MERGE INTO tbl_board_like tbl
+    USING dual
+    ON (tbl.board_no = #{boardNo} AND tbl.user_id = #{userId})
+    WHEN MATCHED THEN
+        UPDATE SET tbl.like_yn = CASE tbl.like_yn WHEN 'Y' THEN 'N' ELSE 'Y' END, 
+                  tbl.change_dt = CURRENT_TIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (tbl.user_id, tbl.board_no, tbl.like_yn, tbl.regist_dt)
+        VALUES (#{userId}, #{boardNo}, 'Y', CURRENT_TIMESTAMP)
+</insert>
 
 
 	

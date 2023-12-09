@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import site.letterforyou.spring.board.domain.Pagination;
+import site.letterforyou.spring.common.domain.Pagination;
 
 @Data
 @Builder

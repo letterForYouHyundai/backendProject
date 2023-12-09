@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import site.letterforyou.spring.board.dto.BoardDeleteResponseDTO;
+import site.letterforyou.spring.board.dto.BoardGetListResponseDTO;
+import site.letterforyou.spring.board.dto.BoardGetResponseDTO;
 import site.letterforyou.spring.board.dto.BoardLikeUpdateResponseDTO;
 import site.letterforyou.spring.board.dto.BoardModifyRequestDTO;
 import site.letterforyou.spring.board.dto.BoardModifyResponseDTO;
@@ -16,8 +18,6 @@ import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
 import site.letterforyou.spring.board.dto.CommentModifyResponseDTO;
 import site.letterforyou.spring.board.dto.CommentPostRequestDTO;
 import site.letterforyou.spring.board.dto.CommentPostResponseDTO;
-import site.letterforyou.spring.board.dto.BoardGetListResponseDTO;
-import site.letterforyou.spring.board.dto.BoardGetResponseDTO;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 
 public interface BoardService {
@@ -40,7 +40,7 @@ public interface BoardService {
 	
 	public ResponseSuccessDTO<CommentDeleteResponseDTO> deleteComment(Long commentNo);
 	
-	public ResponseSuccessDTO<BoardLikeUpdateResponseDTO> updateBoardLike(Long boardNo);
+	public ResponseSuccessDTO<BoardLikeUpdateResponseDTO> updateBoardLike(Long boardNo, String userId);
 	
 	
 }
