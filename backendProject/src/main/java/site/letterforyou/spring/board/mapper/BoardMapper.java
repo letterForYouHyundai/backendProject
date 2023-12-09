@@ -26,13 +26,10 @@ public interface BoardMapper {
 	
 	public void deleteBoard(Long boardNo);
 	
-	public void modifyBoardLike(Long userId, Long boardNo);
-	
-	
+	public void modifyBoardLike(@Param("boardNo")Long boardNo, @Param("userId")String userId);
 	
 	public List<AttachVO> getAttachByBoardNo(Long boardNo);
 	
 	
-	public Long getBoardLikeCountByBoardNo(@Param("boardNo") Long boardNo);
 }
 	

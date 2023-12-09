@@ -34,4 +34,8 @@ public class BoardVO {
 	private Long commentCount;
 	
 	private Long likeCount;
+	
+	private String userNickname;
+	
+	private String userImage;
 }

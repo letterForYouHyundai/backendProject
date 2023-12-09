@@ -13,30 +13,28 @@ import lombok.extern.slf4j.Slf4j;
 import site.letterforyou.spring.board.domain.AttachVO;
 import site.letterforyou.spring.board.domain.BoardVO;
 import site.letterforyou.spring.board.domain.CommentVO;
-import site.letterforyou.spring.board.domain.PageVO;
-import site.letterforyou.spring.board.domain.Pagination;
 import site.letterforyou.spring.board.dto.BoardDTO;
 import site.letterforyou.spring.board.dto.BoardDeleteResponseDTO;
+import site.letterforyou.spring.board.dto.BoardGetListResponseDTO;
+import site.letterforyou.spring.board.dto.BoardGetResponseDTO;
 import site.letterforyou.spring.board.dto.BoardLikeUpdateResponseDTO;
 import site.letterforyou.spring.board.dto.BoardModifyRequestDTO;
 import site.letterforyou.spring.board.dto.BoardModifyResponseDTO;
 import site.letterforyou.spring.board.dto.BoardPostRequestDTO;
 import site.letterforyou.spring.board.dto.BoardPostResponseDTO;
 import site.letterforyou.spring.board.dto.CommentDeleteResponseDTO;
+import site.letterforyou.spring.board.dto.CommentGetResponseDTO;
 import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
 import site.letterforyou.spring.board.dto.CommentModifyResponseDTO;
 import site.letterforyou.spring.board.dto.CommentPostRequestDTO;
 import site.letterforyou.spring.board.dto.CommentPostResponseDTO;
-import site.letterforyou.spring.board.dto.BoardGetListResponseDTO;
-import site.letterforyou.spring.board.dto.BoardGetResponseDTO;
-import site.letterforyou.spring.board.dto.CommentGetResponseDTO;
 import site.letterforyou.spring.board.mapper.BoardMapper;
 import site.letterforyou.spring.comment.mapper.CommentMapper;
+import site.letterforyou.spring.common.domain.PageVO;
+import site.letterforyou.spring.common.domain.Pagination;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.common.util.ResponseUtil;
 import site.letterforyou.spring.common.util.TimeService;
-import site.letterforyou.spring.member.domain.UserVO;
-import site.letterforyou.spring.member.mapper.MemberMapper;
 
 @Service
 @Slf4j
@@ -47,8 +45,6 @@ public class BoardServiceImpl implements BoardService {
 	@Autowired
 	private BoardMapper boardMapper;
 	
-	@Autowired
-	private MemberMapper userMapper;
 
 	@Autowired
 	private CommentMapper commentMapper;
@@ -89,7 +85,7 @@ public class BoardServiceImpl implements BoardService {
 			boardDTO.setBoardView(b.getBoardView());
 			boardDTO.setCommentCount(b.getCommentCount());
 			boardDTO.setImage(b.getBoardThumbNail());
-			boardDTO.setUserNickname(userMapper.getUserByUserId(b.getUserId()).getUserNickname());
+			boardDTO.setUserNickname(b.getUserNickname());
 			boardDTO.setRegistDate(timeService.parseLocalDateTime(b.getRegistDate()));
 			boardDTO.setLikeCount(b.getLikeCount());
 
@@ -107,13 +103,16 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public ResponseSuccessDTO<BoardGetResponseDTO> getBoard(Long boardNo) {
-		// 조회수도 검증
-		BoardGetResponseDTO responseDTO = new BoardGetResponseDTO();
+		// 조회수 검증 추가
+		
+		
+		//
+ 		BoardGetResponseDTO responseDTO = new BoardGetResponseDTO();
 		
 		BoardVO boardVo = boardMapper.getBoard(boardNo);
 		
 		List<CommentVO> commentVoList = commentMapper.getCommentList(boardNo);
-		UserVO user = userMapper.getUserByUserId(boardVo.getUserId());
+		
 		List<AttachVO> attachVoList = boardMapper.getAttachByBoardNo(boardNo);
 		
 		List<CommentGetResponseDTO> commentList = new ArrayList<>();
@@ -122,10 +121,10 @@ public class BoardServiceImpl implements BoardService {
 		for(CommentVO c: commentVoList) {
 			CommentGetResponseDTO commentDTO = new CommentGetResponseDTO();
 			commentDTO.setCommentId(c.getCommentId());
-			commentDTO.setUserNickname(c.getUserId());
+			commentDTO.setUserNickname(c.getUserNickname());
 			commentDTO.setCommentDate(timeService.parseTime(c.getRegistDate()));
 			commentDTO.setCommentContent(c.getCommentContent());
-			commentDTO.setUserImage(userMapper.getUserByUserId(c.getUserId()).getUserImage());
+			commentDTO.setUserImage(c.getUserImage());
 			commentList.add(commentDTO);
 		}
 		
@@ -136,9 +135,9 @@ public class BoardServiceImpl implements BoardService {
 		responseDTO.setBoardTitle(boardVo.getBoardTitle());
 		responseDTO.setBoardContent(boardVo.getBoardContent());
 		responseDTO.setBoardDate(timeService.parseTime(boardVo.getRegistDate()));
-		responseDTO.setBoardLike(boardMapper.getBoardLikeCountByBoardNo(boardNo));
-		responseDTO.setUserNickname(user.getUserNickname());
-		responseDTO.setUserImage(user.getUserImage());
+		responseDTO.setBoardLike(boardVo.getLikeCount());
+		responseDTO.setUserNickname(boardVo.getUserNickname());
+		responseDTO.setUserImage(boardVo.getUserImage());
 		responseDTO.setCommentList(commentList);
 		responseDTO.setAttachList(attachList);
 		
@@ -245,8 +244,9 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public ResponseSuccessDTO<BoardLikeUpdateResponseDTO> updateBoardLike(Long boardNo) {
-		
+	public ResponseSuccessDTO<BoardLikeUpdateResponseDTO> updateBoardLike(Long boardNo, String userId) {
+		userId = "user2";
+		boardMapper.modifyBoardLike(boardNo, userId);
 		ResponseSuccessDTO<BoardLikeUpdateResponseDTO> res =  responseUtil.successResponse( boardNo+ "번 게시물의 좋아요가 변경되었습니다.", HttpStatus.OK);
 		return res;
 	}

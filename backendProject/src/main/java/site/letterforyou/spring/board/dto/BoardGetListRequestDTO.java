@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import site.letterforyou.spring.board.domain.PageVO;
+import site.letterforyou.spring.common.domain.PageVO;
 
 @Getter
 @Setter

@@ -11,28 +11,23 @@
 		where board_no = #{boardNo}
 	</select>
 
-
-	<!-- <select id="getCommentList"
-		parameterType="_long"
-		resultType="site.letterforyou.spring.board.domain.CommentVO">
-		select comment_id as commentId ,
-		user_id  as userId,
-		comment_content as commentContent,
-		regist_dt as registDate
-		
-		from tbl_comment
-		where use_yn = 'Y' and board_no= #{boardNo} 
-	</select> -->
 	
 	   <select id="getCommentList" parameterType="long" resultType="site.letterforyou.spring.board.domain.CommentVO">
-        SELECT comment_id AS commentId,
-               user_id AS userId,
-               comment_content AS commentContent,
-               regist_dt AS registDate
-        FROM tbl_comment
-        
-        where board_no=#{boardNo}
-    </select>
+    SELECT 
+        c.comment_id AS commentId,
+        c.user_id AS userId,
+        c.comment_content AS commentContent,
+        c.regist_dt AS registDate,
+        u.user_image AS userImage,
+        u.user_nickname AS userNickname
+    FROM 
+        tbl_comment c
+    LEFT JOIN 
+        tbl_user u ON c.user_id = u.user_id  
+    WHERE 
+        c.board_no=#{boardNo}
+</select>
+
 	
 	
 	<update id="deleteCommentByBoardNo">
