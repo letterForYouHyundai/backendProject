@@ -27,7 +27,6 @@ import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
 import site.letterforyou.spring.board.dto.CommentModifyResponseDTO;
 import site.letterforyou.spring.board.dto.CommentPostRequestDTO;
 import site.letterforyou.spring.board.dto.CommentPostResponseDTO;
-import site.letterforyou.spring.board.dto.GetBoardListRequestDTO;
 import site.letterforyou.spring.board.dto.GetBoardListResponseDTO;
 import site.letterforyou.spring.board.dto.GetBoardResponseDTO;
 import site.letterforyou.spring.board.dto.GetCommentResponseDTO;
@@ -62,14 +61,18 @@ public class BoardServiceImpl implements BoardService {
 	@Autowired
 	private ThumbnailService thumbnailService;
 	
-	public ResponseSuccessDTO<GetBoardListResponseDTO> getBoardList(GetBoardListRequestDTO getBoardListRequestDTO, Long page) {
+	public ResponseSuccessDTO<GetBoardListResponseDTO> getBoardList(String sortBy, int inOrder, Long page) {
+		 
 		PageVO pageVo = new PageVO(page);
+		if(sortBy ==null) {
+			inOrder =1;
+			sortBy="DESC";
+	    }
+		pageVo.setSortBy(sortBy);
 		
-		pageVo.setSortBy(getBoardListRequestDTO.getSortBy());
-		
-		if(getBoardListRequestDTO.getInOrder()==0)
+		if(inOrder==0)
 			pageVo.setOrderBy("ASC");
-		else
+		else if(inOrder==1)
 			pageVo.setOrderBy("DESC");
 		
 		Long offset = pageVo.getOffset();
