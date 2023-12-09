@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetBoardResponseDTO {
+public class BoardGetResponseDTO {
 	
 	private String boardTitle;
 	
@@ -28,7 +28,7 @@ public class GetBoardResponseDTO {
 	
 	private List<String> attachList;
 	
-	private List<GetCommentResponseDTO> commentList;
+	private List<CommentGetResponseDTO> commentList;
 	
 	
 }
