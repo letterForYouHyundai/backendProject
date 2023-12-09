@@ -10,8 +10,12 @@ import site.letterforyou.spring.board.domain.BoardVO;
 public interface BoardMapper {
 
 	
-	public List<BoardVO> getBoardList();
+	public List<BoardVO> getBoardList(@Param("sortBy") String sortBy, 
+            @Param("inOrder") String inOrder, 
+            @Param("offset") Long offset, 
+            @Param("size") Long size);
 	
+	public int getTotalCountBoard();
 	public BoardVO getBoard(Long boardNo);
 	
 	public Long addBoard(@Param("boardVo")BoardVO boardVo);

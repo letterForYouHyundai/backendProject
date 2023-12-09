@@ -31,4 +31,7 @@ public class BoardVO {
 	
 	private String boardThumbNail;
 	
+	private Long commentCount;
+	
+	private Long likeCount;
 }

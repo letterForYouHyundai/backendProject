@@ -1,23 +1,30 @@
 package site.letterforyou.spring.board.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import site.letterforyou.spring.board.domain.Pagination;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class GetBoardListResponseDTO {
-
-private List<BoardDTO> boardList;
-
-private Pagination pagination;
+public class BoardDTO {
+	private Long boardNo;
 	
+	private String userNickname;
+		
+	private String boardTitle;
+
+	private String image;
+
+	private Long commentCount;
+
+	private Long likeCount;
+		
+	private String registDate;
+		
+	private Long boardView;
 }

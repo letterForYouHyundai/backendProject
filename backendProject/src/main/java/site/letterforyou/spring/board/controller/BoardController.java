@@ -2,6 +2,7 @@ package site.letterforyou.spring.board.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +30,7 @@ import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
 import site.letterforyou.spring.board.dto.CommentModifyResponseDTO;
 import site.letterforyou.spring.board.dto.CommentPostRequestDTO;
 import site.letterforyou.spring.board.dto.CommentPostResponseDTO;
+import site.letterforyou.spring.board.dto.GetBoardListRequestDTO;
 import site.letterforyou.spring.board.dto.GetBoardListResponseDTO;
 import site.letterforyou.spring.board.dto.GetBoardResponseDTO;
 import site.letterforyou.spring.board.service.BoardService;
@@ -42,14 +45,17 @@ public class BoardController {
 	private BoardService boardService;
 	
 	@GetMapping("/list")
-	public ResponseEntity<ResponseSuccessDTO<List<GetBoardListResponseDTO>>> getBoardList() {
-    	
-    	
-        log.info(": /board/list");
-    
-        return ResponseEntity.ok(boardService.getBoardList());
+	public ResponseEntity<ResponseSuccessDTO<GetBoardListResponseDTO>> getBoardList(
+			@RequestParam(value = "page") Optional<Long> page ,@RequestParam String sortBy, @RequestParam int inOrder	) {
+		
+	    Long currentPage = page.orElse(1L);
+	    GetBoardListRequestDTO getBoardListRequestDTO = new GetBoardListRequestDTO();
+	    getBoardListRequestDTO.setInOrder(inOrder);
+	    getBoardListRequestDTO.setSortBy(sortBy);
+	    log.info(": /board/list/" + currentPage);
 
-    }
+	    return ResponseEntity.ok(boardService.getBoardList(getBoardListRequestDTO, currentPage));
+	}
 	
 	@GetMapping("/{boardNo}")
 	public ResponseEntity<ResponseSuccessDTO<GetBoardResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo) {
@@ -101,7 +107,7 @@ public class BoardController {
 	@PostMapping(value="/likes/{boardNo}")
 		public ResponseEntity<ResponseSuccessDTO<BoardLikeUpdateResponseDTO>> updateBoardLike(@PathVariable("boardNo") Long boardNo)
 		{
-		// userId 받는 검증 필요 
+		// userId 받는 검증 필요 아직 완성 안 됨
 		return ResponseEntity.ok(boardService.updateBoardLike(boardNo));
 			
 		}
