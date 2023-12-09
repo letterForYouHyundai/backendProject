@@ -15,17 +15,12 @@ public interface MemberService {
 	/**
 	 카카오의 accessToken을 이용하여 User정보를 가져온다
 	 */
-	MemberDTO getKaKaoUserInfo(String refresh_token , String access_token);
+	MemberDTO getKaKaoUserInfo(String code);
 	
 	/**
 	 User정보를 멤버 테이블에 저장한다.
 	 */
 	MemberDTO insertMemberInfo( Map<String, Object> map);
-	
-	/**
-	 새로운 refresh토큰 정보를 저장한다.
-	 */
-	int insertRefreshToken(MemberDTO mdto);
 	
 
 }

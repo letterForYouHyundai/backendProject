@@ -35,79 +35,35 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-    public MemberDTO getKaKaoAccessAndRefreshToken(String code) {
-        MemberDTO mdto = new MemberDTO(); 
-
-        String access_token = "";
-        String refresh_token = "";
-
-        //oauth token 요청 URL
-        String requestURL = "https://kauth.kakao.com/oauth/token";
-
+	public MemberDTO getKaKaoAccessAndRefreshToken(String code) {
+		
+		MemberDTO mdto = new MemberDTO();
+		
+		String access_token="";
+		String refresh_token="";
+		
+		//oauth token 요청 URL
+		String requestURL ="https://kauth.kakao.com/oauth/token";
+		
         try {
-            URL url = new URL(requestURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+        	
+        	URL url = new URL(requestURL);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			
+			conn.setRequestMethod("POST");
+	        conn.setDoOutput(true);
+	        
+	        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
-            sb.append("&client_id=ad117e5251ddb446c15d829ce0967079"); // REST_API_KEY
-
-            // 이후에 프론트 localhost:3000과 라우팅 주소로 변경
-            sb.append("&redirect_uri=http://localhost:8081/api/member/kakaoLoginPage"); // 인가코드 받은 redirect_uri 입력
+            sb.append("&client_id=ad117e5251ddb446c15d829ce0967079"); //REST_API_KEY 
+            
+            //이후에 프론트 localhost:3000과 라우팅 주소로 변경
+            sb.append("&redirect_uri=http://localhost:8081/api/member/kakaoLoginPage"); //인가코드 받은 redirect_uri 입력
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
-
-            int responseCode = conn.getResponseCode();
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line = "";
-            StringBuilder result = new StringBuilder();
-
-            while ((line = bufferedReader.readLine()) != null) {
-                result.append(line);
-            }
-
-            log.info("result 응답코드 : " + result);
-
-            /**result에서 access_token과 refresh_token 가져오기 */
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> returnMap = mapper.readValue(result.toString(), Map.class);
-
-            access_token = returnMap.get("access_token");
-            refresh_token = returnMap.get("refresh_token");
-
-            mdto = getKaKaoUserInfo(refresh_token, access_token);
-            mdto.setRefreshToken(refresh_token);
-            mdto.setAccessToken(access_token);
             
-            log.info("oauth mdto : " + mdto.toString());
-            //insertRefreshToken(mdto);
-        } catch (IOException e) {
-            log.error("oauth token 발급 요청 중 에러" + e.getMessage());
-        }
-
-        return mdto;
-    }
-
-    @Override
-    public MemberDTO getKaKaoUserInfo(String refreshToken, String accessToken) {
-        String requestURL = "https://kapi.kakao.com/v2/user/me";
-        MemberDTO mdto = new MemberDTO();
-
-        try {
-            URL url;
-            url = new URL(requestURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Authorization", "Bearer " + refreshToken);
-
             int responseCode = conn.getResponseCode();
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -117,21 +73,78 @@ public class MemberServiceImpl implements MemberService{
             while ((line = bufferedReader.readLine()) != null) {
                 result.append(line);
             }
+            
+           log.info("result 응답코드 : "+ result);
+           
+           /**result에서 access_token과 refresh_token가져오기*/
+           ObjectMapper mapper = new ObjectMapper();
+           Map<String, String> returnMap = mapper.readValue(result.toString(), Map.class);
+           
+           access_token = returnMap.get("access_token");
+           refresh_token = returnMap.get("refresh_token");
+            
+            log.info("oauth 응답코드 : "+ responseCode);
+            MemberDTO paramDto = getKaKaoUserInfo(access_token);
+            
+            
+            //refresh 토큰 value를 insert
+            mdto.setUserId(paramDto.getUserId());
+            mdto.setUserEmail(paramDto.getUserEmail());
+            mdto.setUserName(paramDto.getUserName());
+            mdto.setUserNickname(paramDto.getUserNickname());
+            mdto.setAccessToken(access_token);
+            mdto.setRefreshToken(refresh_token);
+            memberMapper. insertRefreshToken(mdto);
+            
+		}catch (IOException e) {
+			log.error("oauth token 발급 요청 ing 중 에러"+e.getMessage());
+		}
+		
+		return mdto;
+	}
 
-            /**result에서 사용자 정보 가져오기 */
+	@Override
+	public MemberDTO getKaKaoUserInfo(String refreshToken) {
+		
+		String requestURL = "https://kapi.kakao.com/v2/user/me";
+		
+		MemberDTO mdto = null;
+		try {
+			 URL url;
+			 url = new URL(requestURL);
+			 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+		    conn.setRequestMethod("POST");
+		    conn.setDoOutput(true);
+		    conn.setRequestProperty("Authorization",   "Bearer "+refreshToken); 
+
+		    int responseCode = conn.getResponseCode();
+		   
+		    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            StringBuilder result = new StringBuilder();
+
+            while ((line = bufferedReader.readLine()) != null) {
+               result.append(line);
+            }
+           
+           
+            /**result에서 사용자 정보 가져오기*/
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> returnMap = mapper.readValue(result.toString(), Map.class);
+            
+            
+            /**사용자 정보를 member테이블에 저장한다.*/
+            mdto =  insertMemberInfo(returnMap);
+       
+           
+		} catch (Exception e) {
+			log.error("유저 정보 조회 요청 중 에러"+e.getMessage());
+		}
+	      
 
-            /**사용자 정보를 member 테이블에 저장 */
-            mdto = insertMemberInfo(returnMap);
-
-        } catch (Exception e) {
-            log.error("유저 정보 조회 요청 중 에러" + e.getMessage());
-        }
-
-        return mdto;
-    }
-
+		return mdto;
+	}
 
 	@Override
 	public MemberDTO insertMemberInfo(Map<String, Object> map) {
@@ -154,8 +167,6 @@ public class MemberServiceImpl implements MemberService{
          mdto.setUserNickname(name);
          mdto.setUserImage(userImage);
          mdto.setChkMemberEmail("Y");
-         mdto.setRefreshToken(String.valueOf(map.get("refreshToken")));
-         mdto.setAccessToken(String.valueOf(map.get("accessToken")));
          
          int chkCnt = memberMapper.selectMemberCnt(mdto);
          
@@ -168,22 +179,10 @@ public class MemberServiceImpl implements MemberService{
         	 memberMapper.insertMemberInfo(mdto);
          }
          
-         /**
-          기존에 존재하는 정보 혹은 새로운 가입정보를 찾아 return한다.
-         */
-         MemberDTO nDTO = memberMapper.selectMemberInfo(mdto);
-         return nDTO;
+         MemberDTO returnDto = memberMapper.selectMemberInfo(mdto);
          
-	}
-
-	@Override
-	public int insertRefreshToken(MemberDTO mdto) {
-		 /**
- 			해당 카카오 계정으로 로그인한 정보를 바탕으로 Refresh Token을 삽입한다.
-		 */
-		int result =  memberMapper.insertRefreshToken(mdto);
-		
-		return result;
+         return returnDto;
+         
 	}
 
 }
