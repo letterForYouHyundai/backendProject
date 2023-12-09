@@ -20,4 +20,26 @@
         VALUES 
         	(#{userName}, #{userEmail}, #{userNickname}, #{userImage})
 	</insert>
+	
+	<select id="selectMemberInfo" parameterType="site.letterforyou.spring.member.domain.MemberDTO" resultType="site.letterforyou.spring.member.domain.MemberDTO">
+		SELECT
+		    USER_ID AS userId
+		    , USER_NAME  AS userName
+		    , USER_EMAIL  AS userEmail
+		    , USER_NICKNAME AS userNickname
+		    , USER_IMAGE AS userImage
+		    , USER_SIGNUP_DT AS userSignupDt
+		FROM 
+		    TBL_USER
+		<if test="userEmail!=null and !userEmail.equals('')">
+			WHERE USER_EMAIL = #{userEmail}
+		</if>
+	</select>
+	 <insert id="insertRefreshToken" parameterType="site.letterforyou.spring.member.domain.MemberDTO">
+
+        INSERT INTO TBL_REFRESH_TOKEN 
+        	(USER_ID, TOKEN_VALUE)
+        VALUES 
+        	(#{userId}, #{refreshToken})
+    </insert>
 </mapper>
