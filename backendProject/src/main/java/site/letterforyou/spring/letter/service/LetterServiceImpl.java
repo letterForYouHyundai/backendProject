@@ -70,7 +70,7 @@ public class LetterServiceImpl implements LetterService {
 		letterDTO.setLetterColorNo(letterVo.getLetterColorNo());
 		letterDTO.setReceiverNickname(letterVo.getReceiverNickname());
 		letterDTO.setSenderNickname(letterVo.getSenderNickname());
-		letterDTO.setRegistDate(timeService.parseLocalDateTime(letterVo.getRegistDate()));
+		letterDTO.setRegistDate(timeService.parseLocalDateTimeForLetter(letterVo.getRegistDate()));
 		result.setLetterDTO(letterDTO);
 		ResponseSuccessDTO<LetterGetLetterResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
 
@@ -122,7 +122,7 @@ public class LetterServiceImpl implements LetterService {
 		letterDTO.setLetterColorNo(letterVo.getLetterColorNo());
 		letterDTO.setReceiverNickname(letterVo.getReceiverNickname());
 		letterDTO.setSenderNickname(letterVo.getSenderNickname());
-		letterDTO.setRegistDate(timeService.parseLocalDateTime(letterVo.getRegistDate()));
+		letterDTO.setRegistDate(timeService.parseLocalDateTimeForLetter(letterVo.getRegistDate()));
 		result.setLetterDTO(letterDTO);
 		ResponseSuccessDTO<LetterGetLetterResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
 
