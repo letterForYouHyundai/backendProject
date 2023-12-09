@@ -41,4 +41,9 @@ public class TimeService {
         return localDateTime.format(formatter);
     }
     
+    public String parseLocalDateTimeForLetter(LocalDateTime localDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+        return localDateTime.format(formatter);
+    }
+    
 }
