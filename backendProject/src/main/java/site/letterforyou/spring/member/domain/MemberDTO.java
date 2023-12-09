@@ -8,7 +8,7 @@ public class MemberDTO {
 	/**
 	 회원 아이디 
 	 */
-	private String userID;
+	private String userId;
 	/**
 	  회원 이름 
 	 */
@@ -39,4 +39,14 @@ public class MemberDTO {
 	  멤버 이메일 체크
 	 */
 	private String chkMemberEmail;
+	
+	/**
+	  accessToekn
+	 */
+	private String accessToken;
+	
+	/**
+	  refreshToken
+	 */
+	private String refreshToken;
 }

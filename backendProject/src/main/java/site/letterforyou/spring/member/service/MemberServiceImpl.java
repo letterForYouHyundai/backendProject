@@ -31,11 +31,13 @@ public class MemberServiceImpl implements MemberService{
 		
 		int cnt = memberMapper.selectMemberCnt(mvo);
 		
-		return 0;
+		return cnt;
 	}
 
 	@Override
-	public String getKaKaoAccessAndRefreshToken(String code) {
+	public MemberDTO getKaKaoAccessAndRefreshToken(String code) {
+		
+		MemberDTO mdto = new MemberDTO();
 		
 		String access_token="";
 		String refresh_token="";
@@ -82,20 +84,31 @@ public class MemberServiceImpl implements MemberService{
            refresh_token = returnMap.get("refresh_token");
             
             log.info("oauth 응답코드 : "+ responseCode);
-            getKaKaoUserInfo(access_token);
+            MemberDTO paramDto = getKaKaoUserInfo(access_token);
+            
+            
+            //refresh 토큰 value를 insert
+            mdto.setUserId(paramDto.getUserId());
+            mdto.setUserEmail(paramDto.getUserEmail());
+            mdto.setUserName(paramDto.getUserName());
+            mdto.setUserNickname(paramDto.getUserNickname());
+            mdto.setAccessToken(access_token);
+            mdto.setRefreshToken(refresh_token);
+            memberMapper. insertRefreshToken(mdto);
             
 		}catch (IOException e) {
 			log.error("oauth token 발급 요청 ing 중 에러"+e.getMessage());
 		}
 		
-		return null;
+		return mdto;
 	}
 
 	@Override
-	public String getKaKaoUserInfo(String refreshToken) {
+	public MemberDTO getKaKaoUserInfo(String refreshToken) {
 		
 		String requestURL = "https://kapi.kakao.com/v2/user/me";
-		 
+		
+		MemberDTO mdto = null;
 		try {
 			 URL url;
 			 url = new URL(requestURL);
@@ -122,7 +135,7 @@ public class MemberServiceImpl implements MemberService{
             
             
             /**사용자 정보를 member테이블에 저장한다.*/
-            insertMemberInfo(returnMap);
+            mdto =  insertMemberInfo(returnMap);
        
            
 		} catch (Exception e) {
@@ -130,11 +143,11 @@ public class MemberServiceImpl implements MemberService{
 		}
 	      
 
-		return null;
+		return mdto;
 	}
 
 	@Override
-	public void insertMemberInfo(Map<String, Object> map) {
+	public MemberDTO insertMemberInfo(Map<String, Object> map) {
 		
 		 MemberDTO mdto = new MemberDTO();
 	     Map<String, Object> kakao_account = (Map<String, Object>) map.get("kakao_account");
@@ -166,6 +179,9 @@ public class MemberServiceImpl implements MemberService{
         	 memberMapper.insertMemberInfo(mdto);
          }
          
+         MemberDTO returnDto = memberMapper.selectMemberInfo(mdto);
+         
+         return returnDto;
          
 	}
 

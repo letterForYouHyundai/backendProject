@@ -17,11 +17,19 @@
     }
     function active() {
         $.ajax({
-            url: '/api/member/getKaKaoAccessToken',
-            data: { code: code }, // code 값을 객체 형태로 전달
-            type: 'GET', // POST 요청 사용
+            url: '/api/member/kakaoLogin',
+            data: { code: code },
+            type: 'GET',
             success: function onData(data) {
-                console.log(data);
+                // 예시: 사용자 정보 출력
+                const userInfo = data.userInfo;
+          		console.log(data);
+          		if (userInfo) {
+                    const userInfoDiv = document.getElementById('userInfo');
+                    console.log(userInfo);
+                    userInfoDiv.innerText = 'Welcome, ' + userInfo.userNickname;
+                    userInfoDiv.style.display = 'block'; // 닉네임이 있는 경우 해당 div 보이도록 설정
+                }
             },
             error: function onError(error) {
                 console.error(error);
@@ -47,5 +55,6 @@
     <h2>카카오로그인페이지</h2>
     <a href="${kakaoLoginURL}">카카오 로그인</a>
     <button id="loginBtn" onclick="loginTest()">로그인 테스트</button>
+  	<div id="userInfo" style="display: none;"></div>
 </body>
 </html>
