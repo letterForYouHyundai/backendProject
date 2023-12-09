@@ -1,4 +1,4 @@
-package site.letterforyou.spring.board.domain;
+package site.letterforyou.spring.common.domain;
 
 import lombok.Getter;
 import lombok.Setter;
