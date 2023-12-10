@@ -17,13 +17,13 @@ public class ResponseUtil<T> {
 	
 	@Autowired
 	private TimeService timeService;
-	  public ResponseSuccessDTO<T> successResponse(T data, HttpStatus status) {
+	  public ResponseSuccessDTO<T> successResponse(T result, HttpStatus status) {
 		  ResponseSuccessDTO<T> res = ResponseSuccessDTO
 	                .<T>builder()
 	                .timeStamp(timeService.parseLocalDateTime(LocalDateTime.now()))
 	                .code(status.value())
 	                .status(status)
-	                .data(data)
+	                .result(result)
 	                .build();
 		
 	        return res;

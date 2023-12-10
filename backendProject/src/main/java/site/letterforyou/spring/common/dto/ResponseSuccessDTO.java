@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResponseSuccessDTO<T> extends ResponseCommonDTO {
 
-    private T data;
+    private T result;
 
     @Builder
-    public ResponseSuccessDTO(String timeStamp, int code, HttpStatus status, T data){
+    public ResponseSuccessDTO(String timeStamp, int code, HttpStatus status, T result){
         super(timeStamp, code, status);
-        this.data = data;
+        this.result = result;
     }
 }
