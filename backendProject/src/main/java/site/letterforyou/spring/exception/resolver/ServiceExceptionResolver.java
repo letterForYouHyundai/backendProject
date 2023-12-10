@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import site.letterforyou.spring.common.dto.ResponseErrorDTO;
 import site.letterforyou.spring.common.util.ResponseUtil;
+import site.letterforyou.spring.exception.service.BadVariableRequestException;
 import site.letterforyou.spring.exception.service.EntityNullException;
 import site.letterforyou.spring.exception.service.NotAuthorizedUserException;
 
@@ -32,7 +33,13 @@ public class ServiceExceptionResolver {
 		return responseUtil.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(),
 				request.getRequestURI());
 	}
-
+	
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(value = BadVariableRequestException.class)
+	public ResponseErrorDTO<?> handle(BadVariableRequestException e, HttpServletRequest request) {
+		return responseUtil.buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), request.getRequestURI());
+	}
+	
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(value = EntityNullException.class)
 	public ResponseErrorDTO<?> handle(EntityNullException e, HttpServletRequest request) {
