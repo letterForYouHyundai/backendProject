@@ -10,7 +10,6 @@
 		        LETTER_SEND_ID,
 		        LETTER_TITLE,
 		        LETTER_CONTENT,
-		        LETTER_URL,
 		        KAKAO_SEND_YN,
 		        LETTER_COLOR_NO,
 		        LETTER_RECEIVE_YN
@@ -19,10 +18,33 @@
 		        , #{letterSendId}
 		        , #{letterTitle}
 		        , #{letterContent}
-		        , #{letterUrl}
 		        , #{kakaoSendYn}
 		        , #{letterColorNo}
 		        , #{letterReceiveYn}
 		    )
 	</insert>
+	<select id="selectLastInsertKey" parameterType="site.letterforyou.spring.letter.domain.LetterDTO" resultType="String">
+	SELECT
+    	T2.LETTER_NO AS LETTER_NO
+	FROM TBL_USER TU
+	INNER JOIN (
+	    SELECT
+	        MAX(LETTER_NO) AS LETTER_NO
+	        , LETTER_SEND_ID
+	    FROM
+	        TBL_LETTER
+	    WHERE 
+			LETTER_SEND_ID = #{letterSendId}
+	    GROUP BY LETTER_SEND_ID
+	)T2
+	ON TU.USER_ID= T2.LETTER_SEND_ID
+ </select>
+ <update id="updateURL" parameterType="site.letterforyou.spring.letter.domain.LetterDTO">
+ 	UPDATE
+ 		TBL_LETTER
+ 	SET 
+ 		LETTER_URL = #{letterUrl}
+ 	WHERE 
+		LETTER_NO = #{letterNo}
+ </update>
 </mapper>

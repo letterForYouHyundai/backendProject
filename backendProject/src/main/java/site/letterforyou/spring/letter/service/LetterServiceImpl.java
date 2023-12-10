@@ -8,6 +8,7 @@ import java.util.Map;
 import org.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,19 +25,32 @@ public class LetterServiceImpl implements LetterService {
 	private LetterMapper letterMapper;
 
 	@Override
-	public void insertLetter(LetterDTO ldto) {
+	public String insertLetter(LetterDTO ldto) {
+		
+		String url="";
 		
 		//ldto.setLetterReceiveId("user1");
-		//ldto.setLetterSendId("user1");
+		//ldto.setLetterSendId("user1"); //이후에 확인 후 제거
 		//ldto.setLetterTitle("title");
 		//ldto.setLetterContent("content");
-		//ldto.setLetterUrl("urlurl");
 		//ldto.setKakaoSendYn("N");
 		//ldto.setLetterColorNo("46");
-		ldto.setLetterReceiveYn("2");
+		//ldto.setLetterReceiveYn("2");
 		
 		letterMapper.insertLetter(ldto);
+		
+		String letterNo = letterMapper.selectLastInsertKey(ldto);
+		
 		log.info(ldto.toString());
+		//이후에 호스팅 주소로 변경
+		String URL ="http://localhost:8081/api/letter/receive/"+letterNo;
+				
+		log.info(ldto.toString());
+		log.info("letterNo: "+ letterNo);
+		ldto.setLetterUrl(URL);
+		ldto.setLetterNo(letterNo);
+		letterMapper.updateURL(ldto);
+		return url;
 		
 	}
 
@@ -65,11 +79,10 @@ public class LetterServiceImpl implements LetterService {
 	        linkObj.put("ios_execution_params", "contentId=100");
 
 	        JSONObject templateObj = new JSONObject();
-	        templateObj.put("object_type", "feed");
+	        templateObj.put("object_type", "text");
 	        templateObj.put("content", new JSONObject()
-	            .put("title", "제목 디저트")
-	            .put("description", "내용 디저트")
-	            .put("image_url", "http://urltoimage.com/image.png")
+	            .put("title", ldto.getLetterTitle())
+	            .put("description",ldto.getLetterContent())
 	            .put("link", linkObj)
 	        );
 
@@ -97,6 +110,14 @@ public class LetterServiceImpl implements LetterService {
 	        log.error("카카오 API 메시지 전송 요청 중 에러: " + e.getMessage());
 	    }
 	    return null;
+	}
+
+	@Override
+	public String makeURL(LetterDTO ldto) {
+		
+		
+		
+		return null;
 	}
 
 }
