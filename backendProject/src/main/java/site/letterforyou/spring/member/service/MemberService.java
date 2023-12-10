@@ -2,6 +2,8 @@ package site.letterforyou.spring.member.service;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import site.letterforyou.spring.member.domain.MemberDTO;
 
 public interface MemberService {
@@ -21,6 +23,11 @@ public interface MemberService {
 	 User정보를 멤버 테이블에 저장한다.
 	 */
 	MemberDTO insertMemberInfo( Map<String, Object> map);
+
+	/**
+	 카카오정보를 로그아웃한다.
+	 */
+	int  kakaoLogout(MemberDTO mdto);
 	
 
 }

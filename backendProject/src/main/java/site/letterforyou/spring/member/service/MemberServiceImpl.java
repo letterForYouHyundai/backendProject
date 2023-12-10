@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -183,6 +184,37 @@ public class MemberServiceImpl implements MemberService{
          
          return returnDto;
          
+	}
+
+	@Override
+	public int kakaoLogout(MemberDTO mdto) {
+		
+		String access_token = mdto.getAccessToken();
+		log.info("access_token: "+access_token);
+		String requestURL ="https://kapi.kakao.com/v1/user/logout";
+		try {
+		URL url;
+		 url = new URL(requestURL);
+		 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+		 conn.setRequestMethod("POST");
+		 conn.setDoOutput(true);
+		 conn.setRequestProperty("Authorization",   "Bearer "+access_token); 
+		 
+		  BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+          String line = "";
+          StringBuilder result = new StringBuilder();
+
+          while ((line = bufferedReader.readLine()) != null) {
+             result.append(line);
+          }
+          
+		}catch(Exception e) {
+			log.error("로그아웃 처리중 에러: "+e.getMessage());
+			return 401;
+		}
+		
+		return 200;
 	}
 
 }

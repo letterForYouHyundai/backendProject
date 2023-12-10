@@ -36,6 +36,22 @@
             }
         });
     }
+    function loginOut(){
+    	$.ajax({
+            url: '/api/member/kakaoLogout',
+            data: { code: code },
+            type: 'GET',
+            success: function onData(data) {
+               if(data.result == 200){
+            	   const userInfoDiv2 = document.getElementById('userInfo');
+            	   userInfoDiv2.innerText = '로그아웃 완료';
+               }
+            },
+            error: function onError(error) {
+                console.error(error);
+            }
+        });
+    }
 
     // 페이지 로드 시 실행되는 함수 =>로그인 메인화면과 로그인 이후 리액트 화면을 분리해야할거같다.
     window.onload = function() {
@@ -55,6 +71,7 @@
     <h2>카카오로그인페이지</h2>
     <a href="${kakaoLoginURL}">카카오 로그인</a>
     <button id="loginBtn" onclick="loginTest()">로그인 테스트</button>
+     <button id="loginBtn" onclick="loginOut()">로그 아웃 테스트</button>
   	<div id="userInfo" style="display: none;"></div>
 </body>
 </html>
