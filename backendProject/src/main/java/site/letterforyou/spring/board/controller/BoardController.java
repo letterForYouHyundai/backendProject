@@ -47,7 +47,7 @@ public class BoardController {
 			@RequestParam(value = "page" , required = false) Long page ,@RequestParam(value= "sortBy" ,required = false) String sortBy, @RequestParam(value= "inOrder" ,required = false) Integer inOrder) {
 
 	    Long defaultPage = 1L;
-	    String defaultSortBy="DESC";
+	    String defaultSortBy="dates";
 	    int defaultInOrder =1;
 	    Long p  = page == null ? defaultPage :page;
 	    String sb = sortBy == null? defaultSortBy : sortBy;

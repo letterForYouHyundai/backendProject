@@ -74,7 +74,7 @@ public class BoardServiceImpl implements BoardService {
 		
 		Long offset = pageVo.getOffset();
 		Long size = pageVo.getRecordSize();
-		log.info(pageVo.getSortBy()+" "+ pageVo.getSortBy()+" "+ pageVo.getOffset() +" "+pageVo.getRecordSize());
+		log.info(pageVo.getSortBy()+" "+ pageVo.getOrderBy()+" "+ pageVo.getOffset() +" "+pageVo.getRecordSize());
 		List<BoardVO> boardVoList = boardMapper.getBoardList(pageVo.getSortBy(),pageVo.getOrderBy(),offset,size);
 
 		BoardGetListResponseDTO result = new BoardGetListResponseDTO();
@@ -94,7 +94,7 @@ public class BoardServiceImpl implements BoardService {
 		}
 		result.setBoardList(boardList);
 		int count = boardMapper.getTotalCountBoard();
-		log.info(" "+count);
+		//log.info(" "+count);
 		Pagination pagination = new Pagination(count, pageVo);
 		result.setPagination(pagination);
 		ResponseSuccessDTO<BoardGetListResponseDTO> res =  responseUtil.successResponse(result, HttpStatus.OK);
