@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.letterforyou.spring.template.mapper.TemplateMapper">
+
+	<select id="getTemplateList" resultType="site.letterforyou.spring.template.domain.TemplateVO">
+		SELECT 
+    t.TEMPLATE_NO as templateNo,
+    t.TEMPLATE_TITLE as templateTitle,
+    to_char(t.TEMPLATE_CONTENT) as templateContent,
+    t.REGIST_DT as registDate,
+    COUNT(tl.TEMPLATE_LIKE_NO) as templateLikes
+FROM 
+    (SELECT 
+        TEMPLATE_NO,
+        TEMPLATE_TITLE,
+        TEMPLATE_CONTENT,
+        REGIST_DT
+    FROM tbl_template) t
+
+LEFT JOIN 
+    tbl_template_like tl ON t.TEMPLATE_NO = tl.TEMPLATE_NO AND tl.LIKE_YN = 'Y'
+GROUP BY 
+    t.TEMPLATE_NO, t.TEMPLATE_TITLE, to_char(t.TEMPLATE_CONTENT), t.REGIST_DT
+<choose>
+    <when test="sortBy == 'likes'">
+        ORDER BY templateLikes ${inOrder} , registDate DESC
+    </when>
+    <when test="sortBy == 'dates'">
+        ORDER BY registDate ${inOrder}
+    </when>
+    <otherwise>
+        ORDER BY t.REGIST_DT DESC
+    </otherwise>
+</choose>
+OFFSET 
+    #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+
+	</select>
+	
+	
+	<select id="getTemplateSearchList" resultType="site.letterforyou.spring.template.domain.TemplateVO">
+		SELECT 
+    t.TEMPLATE_NO as templateNo,
+    t.TEMPLATE_TITLE as templateTitle,
+    to_char(t.TEMPLATE_CONTENT) as templateContent,
+    t.REGIST_DT as registDate,
+    COUNT(tl.TEMPLATE_LIKE_NO) as templateLikes
+FROM 
+    (SELECT 
+        TEMPLATE_NO,
+        TEMPLATE_TITLE,
+        TEMPLATE_CONTENT,
+        REGIST_DT
+    FROM tbl_template
+    WHERE TEMPLATE_TITLE LIKE '%' || #{keyword} || '%') t
+    
+
+LEFT JOIN 
+    tbl_template_like tl ON t.TEMPLATE_NO = tl.TEMPLATE_NO AND tl.LIKE_YN = 'Y'
+GROUP BY 
+    t.TEMPLATE_NO, t.TEMPLATE_TITLE, to_char(t.TEMPLATE_CONTENT), t.REGIST_DT
+<choose>
+    <when test="sortBy == 'likes'">
+        ORDER BY templateLikes ${inOrder} , registDate DESC
+    </when>
+    <when test="sortBy == 'dates'">
+        ORDER BY registDate ${inOrder}
+    </when>
+    <otherwise>
+        ORDER BY t.REGIST_DT DESC
+    </otherwise>
+</choose>
+OFFSET 
+    #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+
+	</select>
+	
+	<select id="getTotalCountTemplate" resultType="int">
+	select count(*)
+	from tbl_template
+	</select>
+	
+	<select id="getTotalCountTemplateByKeyword" parameterType="String" resultType="int">
+	select count(*)
+	from tbl_template
+	where template_title LIKE '%' || #{keyword} || '%'
+	</select>
+</mapper>
