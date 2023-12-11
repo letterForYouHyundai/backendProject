@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.letterforyou.spring.letter.mapper.LetterMapper">
+
+	<insert id="insertLetter" parameterType="site.letterforyou.spring.letter.domain.LetterDTO">
+			 INSERT INTO TBL_LETTER (
+		        LETTER_RECEIVE_ID,
+		        LETTER_SEND_ID,
+		        LETTER_TITLE,
+		        LETTER_CONTENT,
+		        LETTER_URL,
+		        KAKAO_SEND_YN,
+		        LETTER_COLOR_NO,
+		        LETTER_RECEIVE_YN
+		    ) VALUES (
+		        #{letterReceiveId}
+		        , #{letterSendId}
+		        , #{letterTitle}
+		        , #{letterContent}
+		        , #{letterUrl}
+		        , #{kakaoSendYn}
+		        , #{letterColorNo}
+		        , #{letterReceiveYn}
+		    )
+	</insert>
+</mapper>

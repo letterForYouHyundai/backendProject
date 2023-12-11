@@ -238,6 +238,12 @@
 		    <artifactId>spring-security-taglibs</artifactId>
 		    <version>${org.spring-security-version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20230618</version>
+		</dependency>
 	</dependencies>
     <build>
         <plugins>
