@@ -87,4 +87,16 @@ OFFSET
 	from tbl_template
 	where template_title LIKE '%' || #{keyword} || '%'
 	</select>
+	
+	<insert id ="modifyTemplateLike">
+	 MERGE INTO tbl_template_like tbl
+    USING dual
+    ON (tbl.template_no = #{templateNo} AND tbl.user_id = #{userId})
+    WHEN MATCHED THEN
+        UPDATE SET tbl.like_yn = CASE tbl.like_yn WHEN 'Y' THEN 'N' ELSE 'Y' END, 
+                  tbl.change_dt = CURRENT_TIMESTAMP
+    WHEN NOT MATCHED THEN
+        INSERT (tbl.user_id, tbl.template_no, tbl.like_yn, tbl.regist_dt)
+        VALUES (#{userId}, #{templateNo}, 'Y', CURRENT_TIMESTAMP)
+	</insert>
 </mapper>

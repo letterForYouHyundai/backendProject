@@ -14,9 +14,11 @@ import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.common.util.ResponseUtil;
 import site.letterforyou.spring.common.util.TimeService;
 import site.letterforyou.spring.exception.service.BadVariableRequestException;
+import site.letterforyou.spring.exception.service.EntityNullException;
 import site.letterforyou.spring.template.domain.TemplateVO;
 import site.letterforyou.spring.template.dto.TemplateDTO;
 import site.letterforyou.spring.template.dto.TemplateGetListResponseDTO;
+import site.letterforyou.spring.template.dto.TemplatePostLikeResponseDTO;
 import site.letterforyou.spring.template.mapper.TemplateMapper;
 
 @Service
@@ -119,6 +121,17 @@ public class TemplateServiceImpl implements TemplateService{
 		Pagination pagination = new Pagination(count, pageVo);
 		result.setPagination(pagination);
 		ResponseSuccessDTO<TemplateGetListResponseDTO> res =  responseUtil.successResponse(result, HttpStatus.OK);
+		return res;
+	}
+
+	@Override
+	public ResponseSuccessDTO<TemplatePostLikeResponseDTO> postTemplateLike(Long templateNo, String userId) {
+		if(userId == null) {
+			throw new EntityNullException("아이디가 비어 있습니다.");
+		}
+		
+		templateMapper.modifyTemplateLike(templateNo, userId);
+		ResponseSuccessDTO<TemplatePostLikeResponseDTO> res =  responseUtil.successResponse(userId+" 아이디의 "+templateNo+" 번 Template like가 post 되었습니다,", HttpStatus.OK);
 		return res;
 	}
 	
