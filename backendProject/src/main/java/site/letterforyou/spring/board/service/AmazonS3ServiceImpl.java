@@ -1,7 +1,9 @@
-package site.letterforyou.spring.sample.service;
+package site.letterforyou.spring.board.service;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +27,11 @@ public class AmazonS3ServiceImpl implements AmazonS3Service{
 	@Autowired
 	private final AmazonS3 amazonS3Client;
 	
-	public void uploadFile(MultipartFile multipartFile) throws IOException{
+	public List<String> uploadFile(String boardNo, List<MultipartFile> multipartFiles) throws IOException{
 		
-		 String filePath = "test/";
+		 String filePath = boardNo+"/";
+		 List<String> returnURL = new ArrayList<>();
+		 for(MultipartFile multipartFile : multipartFiles) {
 		 String fileName = multipartFile.getOriginalFilename();
 		 String originalName = filePath+URLEncoder.encode(fileName,"UTF-8");
 		 
@@ -40,7 +44,11 @@ public class AmazonS3ServiceImpl implements AmazonS3Service{
 				 new PutObjectRequest(S3Bucket, originalName, multipartFile.getInputStream(),objectMetaData)
 				 .withCannedAcl(CannedAccessControlList.PublicRead)
 				 );
-		
+		 
+		 returnURL.add(amazonS3Client.getUrl(S3Bucket, originalName).toString());
+		 }
+		 
+		return returnURL;
 	}
 	 
 	 
