@@ -73,6 +73,9 @@ public class SwaggerConfig implements WebMvcConfigurer {
 		public Docket boardApi() {
 			return getDocket("board", Predicates.or(PathSelectors.regex("/board.*")));
 		}
-	  
+	    @Bean
+		public Docket templateApi() {
+			return getDocket("template", Predicates.or(PathSelectors.regex("/template.*")));
+		}
 
 }
