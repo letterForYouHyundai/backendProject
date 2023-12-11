@@ -11,7 +11,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class LetterDTO {
+public class Letterdtos {
 
 	private Long letterNo;
 	

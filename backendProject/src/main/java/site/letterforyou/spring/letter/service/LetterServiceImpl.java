@@ -4,17 +4,29 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import org.json.JSONObject;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j;
+import site.letterforyou.spring.common.domain.PageVO;
+import site.letterforyou.spring.common.domain.Pagination;
+import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
+import site.letterforyou.spring.common.util.ResponseUtil;
+import site.letterforyou.spring.common.util.TimeService;
 import site.letterforyou.spring.letter.domain.LetterDTO;
+import site.letterforyou.spring.letter.domain.LetterVO;
+import site.letterforyou.spring.letter.dto.LetterDeleteLetterResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterGetLetterResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterGetListResponseDTO;
+import site.letterforyou.spring.letter.dto.Letterdtos;
 import site.letterforyou.spring.letter.mapper.LetterMapper;
 
 @Service
@@ -157,7 +169,7 @@ public class LetterServiceImpl implements LetterService {
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getReceivedLetter(Long letterNo) {
 		LetterVO letterVo = letterMapper.getReceivedLetter(letterNo);
 		LetterGetLetterResponseDTO result = new LetterGetLetterResponseDTO();
-		LetterDTO letterDTO = new LetterDTO();
+		Letterdtos letterDTO = new Letterdtos();
 		letterDTO.setLetterNo(letterVo.getLetterNo());
 		letterDTO.setLetterTitle(letterVo.getLetterTitle());
 		letterDTO.setLetterContent(letterVo.getLetterContent());
@@ -209,7 +221,7 @@ public class LetterServiceImpl implements LetterService {
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getSendLetter(Long letterNo) {
 		LetterVO letterVo = letterMapper.getSendLetter(letterNo);
 		LetterGetLetterResponseDTO result = new LetterGetLetterResponseDTO();
-		LetterDTO letterDTO = new LetterDTO();
+		Letterdtos letterDTO = new Letterdtos();
 		letterDTO.setLetterNo(letterVo.getLetterNo());
 		letterDTO.setLetterTitle(letterVo.getLetterTitle());
 		letterDTO.setLetterContent(letterVo.getLetterContent());

@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class LetterGetLetterResponseDTO {
-	private LetterDTO letterDTO;
+	private Letterdtos LetterDTO;
 }
