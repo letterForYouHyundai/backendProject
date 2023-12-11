@@ -1,5 +1,11 @@
 package site.letterforyou.spring.member.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,14 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import lombok.extern.log4j.Log4j;
 import site.letterforyou.spring.member.domain.MemberDTO;
 import site.letterforyou.spring.member.service.MemberService;
-import lombok.extern.log4j.Log4j;
-
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 @Log4j
@@ -59,9 +61,17 @@ public class MemberController {
     }
     
     @GetMapping("/kakaoLogout")
-    public String logout(HttpSession session) {
+    public ResponseEntity<Map<String, Object>> logout(HttpSession session) {
+    	Map<String, Object> map = new HashMap<>();
+
+        MemberDTO mdto = (MemberDTO)session.getAttribute("userInfo");
+        
+        int result = memberService.kakaoLogout(mdto);
+        
+        map.put("result", result);
         session.removeAttribute("userInfo"); 
-        return "redirect:/member/kakaoLoginPage";
+        
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     @GetMapping("/kakaoRegister")

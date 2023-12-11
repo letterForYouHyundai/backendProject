@@ -38,6 +38,7 @@
             }
         });
     }
+
     function getFriends() {
         if (ACCESS_TOKEN) {
             const apiUrl = 'https://kapi.kakao.com/v1/api/talk/friends';
@@ -99,9 +100,6 @@
     <h2>카카오로그인페이지</h2>
     <a href="${kakaoLoginURL}">카카오 로그인</a>
     <button id="loginBtn" onclick="loginTest()">로그인 테스트</button>
-     <button id="loginBtn2" onclick="loginTest2()">로그인 테스트2</button>
-    <button id="getFriends" onclick="getFriends()">메시지 전송</button>
-    <button id="getFriends" onclick="getFriends2()">메시지 전송2</button>
   	<div id="userInfo" style="display: none;"></div>
 </body>
 </html>
