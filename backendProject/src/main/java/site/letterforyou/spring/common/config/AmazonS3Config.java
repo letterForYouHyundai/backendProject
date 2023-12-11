@@ -1,4 +1,4 @@
-package site.letterforyou.spring.config;
+package site.letterforyou.spring.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

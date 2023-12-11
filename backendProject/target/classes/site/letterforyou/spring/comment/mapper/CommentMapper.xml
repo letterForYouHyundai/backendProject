@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.letterforyou.spring.comment.mapper.CommentMapper">
+	
+<select id="getCommentCount"
+		resultType="_long">
+		select count(*) as commentCount
+		from tbl_comment
+		where board_no = #{boardNo}
+	</select>
+
+	
+	   <select id="getCommentList" parameterType="long" resultType="site.letterforyou.spring.board.domain.CommentVO">
+    SELECT 
+        c.comment_id AS commentId,
+        c.user_id AS userId,
+        c.comment_content AS commentContent,
+        c.regist_dt AS registDate,
+        u.user_image AS userImage,
+        u.user_nickname AS userNickname
+    FROM 
+        tbl_comment c
+    LEFT JOIN 
+        tbl_user u ON c.user_id = u.user_id  
+    WHERE 
+        c.board_no=#{boardNo}
+</select>
+
+	
+	
+	<update id="deleteCommentByBoardNo">
+	
+	UPDATE TBL_COMMENT
+	SET use_yn = 'N'
+	where board_no=#{boardNo}
+	</update>
+	
+	<update id="deleteCommentByCommentId">
+	
+	UPDATE TBL_COMMENT
+	SET use_yn = 'N'
+	where comment_id=#{commentId}
+	</update>
+	
+	<insert id= "postComment">
+    INSERT INTO TBL_COMMENT (COMMENT_ID , BOARD_NO, USER_ID, COMMENT_CONTENT)
+    VALUES (TBL_COMMENT_SEQ.nextval, #{boardNo}, #{userId}, #{commentContent})
+</insert>
+
+<update id="modifyComment">
+	
+	UPDATE TBL_COMMENT
+	SET comment_content = #{commentContent}
+	where comment_id=#{commentId}
+	</update>
+	
+</mapper>

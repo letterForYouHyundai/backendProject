@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,10 +24,17 @@ import site.letterforyou.spring.member.mapper.MemberMapper;
 
 @Log4j
 @Service
+@PropertySource("classpath:application.properties")
 public class MemberServiceImpl implements MemberService{
 	
 	@Autowired
 	private MemberMapper memberMapper;
+	
+	@Value("${kakao.client.id}")
+	String client_id;
+	
+	@Value("${kakao.redirect_uri}")
+	String redirect_uri;
 
 	@Override
 	public int selectMemberCnt(MemberDTO mvo) {
@@ -37,11 +46,13 @@ public class MemberServiceImpl implements MemberService{
 
 	@Override
 	public MemberDTO getKaKaoAccessAndRefreshToken(String code) {
-		
+		log.info(redirect_uri+" "+ client_id);
 		MemberDTO mdto = new MemberDTO();
 		
 		String access_token="";
 		String refresh_token="";
+		
+		
 		
 		//oauth token 요청 URL
 		String requestURL ="https://kauth.kakao.com/oauth/token";
@@ -57,10 +68,10 @@ public class MemberServiceImpl implements MemberService{
 	        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
-            sb.append("&client_id=ad117e5251ddb446c15d829ce0967079"); //REST_API_KEY 
+            sb.append("&client_id="+client_id); //REST_API_KEY 
             
             //이후에 프론트 localhost:3000과 라우팅 주소로 변경
-            sb.append("&redirect_uri=http://localhost:8081/api/member/kakaoLoginPage"); //인가코드 받은 redirect_uri 입력
+            sb.append("&redirect_uri="+redirect_uri); //인가코드 받은 redirect_uri 입력
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
