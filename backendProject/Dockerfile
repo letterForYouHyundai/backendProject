@@ -21,7 +21,7 @@ RUN rm -rf /usr/local/tomcat/webapps/*
 COPY --from=build /home/app/target/*.war /usr/local/tomcat/webapps/ROOT.war
 
 
-EXPOSE 8081
+EXPOSE 8080
 
 
 
