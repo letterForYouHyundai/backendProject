@@ -145,5 +145,13 @@ where board_no=#{boardNo}
     WHERE board_no = #{boardNo} AND user_id = #{userId}
 </select>
 
+
+<update id="updateBoardLike">
+
+update tbl_board
+set board_view= board_view+1
+where board_no = {boardNo}
+</update>
+
 	
 </mapper>

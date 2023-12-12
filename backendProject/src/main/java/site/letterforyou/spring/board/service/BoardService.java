@@ -25,7 +25,7 @@ public interface BoardService {
 	
 	public ResponseSuccessDTO<BoardGetListResponseDTO> getBoardList(String sortBy, int inOrder , Long page);
 	
-	public ResponseSuccessDTO<BoardGetResponseDTO> getBoard(Long boardNo);
+	public ResponseSuccessDTO<BoardGetResponseDTO> getBoard(Long boardNo, String userId);
 
 	ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles, BoardPostRequestDTO boardDTO, String userId) throws IOException;
 	
