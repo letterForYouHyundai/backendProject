@@ -104,7 +104,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 	
 	@Override
-	public ResponseSuccessDTO<BoardGetResponseDTO> getBoard(Long boardNo) {
+	public ResponseSuccessDTO<BoardGetResponseDTO> getBoard(Long boardNo, String userId) {
 		// 조회수 검증 추가
 		
 		
@@ -115,6 +115,9 @@ public class BoardServiceImpl implements BoardService {
 		
 		if(boardVo==null) {
 			throw new EntityNullException("게시물이 존재하지 않습니다.");
+		}
+		if(!boardVo.getUserId().equals(userId)) { // 글쓴이가 아니라면 조회수 증가 
+			boardMapper.updateBoardLike(boardNo);
 		}
 		List<CommentVO> commentVoList = commentMapper.getCommentList(boardNo);
 		

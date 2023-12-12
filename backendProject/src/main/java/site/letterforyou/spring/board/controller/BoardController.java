@@ -75,11 +75,12 @@ public class BoardController {
 
 	@ApiOperation(value = "자유게시판 - 게시글 상세보기", notes = " 자유게시판 게시글 하나를 상세보기합니다. ")
 	@GetMapping("/{boardNo}")
-	public ResponseEntity<ResponseSuccessDTO<BoardGetResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo) {
-
+	public ResponseEntity<ResponseSuccessDTO<BoardGetResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo, HttpSession session) {
 		log.info(": /board/" + boardNo);
+		
+		String userId = sessionUtil.validSession(session);
 
-		return ResponseEntity.ok(boardService.getBoard(boardNo));
+		return ResponseEntity.ok(boardService.getBoard(boardNo,userId));
 
 	}
 
