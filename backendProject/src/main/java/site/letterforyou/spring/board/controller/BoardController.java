@@ -131,11 +131,8 @@ public class BoardController {
 	public ResponseEntity<ResponseSuccessDTO<BoardLikeUpdateResponseDTO>> updateBoardLike(
 			@PathVariable("boardNo") Long boardNo, HttpSession session) {
 		MemberDTO mdto = (MemberDTO) session.getAttribute("userInfo");
-		//String userId = mdto.getUserId();
-		String userId = "1";
-		// userId 받는 검증 필요 아직 완성 안 됨
-
-		return ResponseEntity.ok(boardService.updateBoardLike(boardNo, userId));
+		
+		return ResponseEntity.ok(boardService.updateBoardLike(boardNo, mdto.getUserId()));
 
 	}
 

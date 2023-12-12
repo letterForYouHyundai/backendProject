@@ -250,8 +250,8 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public ResponseSuccessDTO<BoardLikeUpdateResponseDTO> updateBoardLike(Long boardNo, String userId) {
-		userId = "user1";
-		if(userId.equals("user2")) {
+		
+		if(userId==null) {
 			throw new EntityNullException("유저 아이디가 들어오지 않았습니다.");
 		}
 		if (boardMapper.getBoard(boardNo)==null) {
