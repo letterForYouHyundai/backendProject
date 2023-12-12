@@ -38,6 +38,7 @@ import site.letterforyou.spring.board.service.BoardService;
 import site.letterforyou.spring.common.dto.PageRequestDTO;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.common.util.PageUtil;
+import site.letterforyou.spring.exception.service.NotAuthorizedUserException;
 import site.letterforyou.spring.member.domain.MemberDTO;
 
 @RestController
@@ -69,6 +70,7 @@ public class BoardController {
 		return ResponseEntity.ok(boardService.getBoardList(pageRequestDTO.getSortBy(), pageRequestDTO.getInOrder(),
 				pageRequestDTO.getPage()));
 	}
+
 	@ApiOperation(value = "자유게시판 - 게시글 상세보기", notes = " 자유게시판 게시글 하나를 상세보기합니다. ")
 	@GetMapping("/{boardNo}")
 	public ResponseEntity<ResponseSuccessDTO<BoardGetResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo) {
@@ -91,47 +93,50 @@ public class BoardController {
 		return ResponseEntity.ok(boardService.addBoard(multipartFiles, boardDTO));
 	}
 
-	@ApiOperation(value = "자유게시판 - 게시물 변경",notes = " 게시글을 수정합니다. ")
+	@ApiOperation(value = "자유게시판 - 게시물 변경", notes = " 게시글을 수정합니다. ")
 	@PostMapping(value = "/{boardNo}")
 	public ResponseEntity<ResponseSuccessDTO<BoardModifyResponseDTO>> modifyBoard(@PathVariable("boardNo") Long boardNo,
 			@RequestPart BoardModifyRequestDTO boardDTO) {
 		return ResponseEntity.ok(boardService.modifyBoard(boardNo, boardDTO));
 	}
-	
-	@ApiOperation(value = "자유게시판 - 게시물 삭제",notes = " 게시글을 삭제합니다. ")
+
+	@ApiOperation(value = "자유게시판 - 게시물 삭제", notes = " 게시글을 삭제합니다. ")
 	@PutMapping(value = "/{boardNo}")
 	public ResponseEntity<ResponseSuccessDTO<BoardDeleteResponseDTO>> deleteBoard(
 			@PathVariable("boardNo") Long boardNo) {
 		return ResponseEntity.ok(boardService.deleteBoard(boardNo));
 	}
-	
-	
-	@ApiOperation(value = "자유게시판 - 댓글 등록",notes = " 댓글을 등록합니다. ")
+
+	@ApiOperation(value = "자유게시판 - 댓글 등록", notes = " 댓글을 등록합니다. ")
 	@PostMapping(value = "/comment")
 	public ResponseEntity<ResponseSuccessDTO<CommentPostResponseDTO>> postComment(
 			@RequestBody CommentPostRequestDTO commentDTO) {
 		return ResponseEntity.ok(boardService.postComment(commentDTO));
 	}
-	@ApiOperation(value = "자유게시판 - 댓글 수정",notes = " 댓글을 수정합니다. ")
+
+	@ApiOperation(value = "자유게시판 - 댓글 수정", notes = " 댓글을 수정합니다. ")
 	@PostMapping(value = "/comment/{commentNo}")
 	public ResponseEntity<ResponseSuccessDTO<CommentModifyResponseDTO>> modifyComment(
 			@PathVariable("commentNo") Long commentNo, @RequestBody CommentModifyRequestDTO commentDTO) {
 		return ResponseEntity.ok(boardService.modifyComment(commentNo, commentDTO));
 	}
 
-	@ApiOperation(value = "자유게시판 - 댓글 삭제",notes = " 댓글을 삭제합니다. ")
+	@ApiOperation(value = "자유게시판 - 댓글 삭제", notes = " 댓글을 삭제합니다. ")
 	@PutMapping(value = "/comment/{commentNo}")
 	public ResponseEntity<ResponseSuccessDTO<CommentDeleteResponseDTO>> deleteComment(
 			@PathVariable("commentNo") Long commentNo) {
 		return ResponseEntity.ok(boardService.deleteComment(commentNo));
 	}
 
-	@ApiOperation(value = "자유게시판 - 게시글 추천/비추천",notes = " 게시글을 추천 혹은 비추천합니다. ")
+	@ApiOperation(value = "자유게시판 - 게시글 추천/비추천", notes = " 게시글을 추천 혹은 비추천합니다. ")
 	@PostMapping(value = "/likes/{boardNo}")
 	public ResponseEntity<ResponseSuccessDTO<BoardLikeUpdateResponseDTO>> updateBoardLike(
 			@PathVariable("boardNo") Long boardNo, HttpSession session) {
-		MemberDTO mdto = (MemberDTO) session.getAttribute("userInfo");
 		
+		MemberDTO mdto = (MemberDTO) session.getAttribute("userInfo");
+		if(mdto==null) {
+			throw new NotAuthorizedUserException("허가되지 않은 사용자입니다.");
+		}
 		return ResponseEntity.ok(boardService.updateBoardLike(boardNo, mdto.getUserId()));
 
 	}
