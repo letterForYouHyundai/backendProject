@@ -33,7 +33,7 @@ import site.letterforyou.spring.letter.mapper.LetterMapper;
 @Log4j
 public class LetterServiceImpl implements LetterService {
 
-@Autowired
+    @Autowired
 	ResponseUtil responseUtil;
 	
 	@Autowired
@@ -43,7 +43,7 @@ public class LetterServiceImpl implements LetterService {
 	private LetterMapper letterMapper;
 
 	@Override
-	public String insertLetter(LetterDTO ldto) {
+	public ResponseSuccessDTO<LetterDTO> insertLetter(LetterDTO result) {
 		
 		String url="";
 		
@@ -55,20 +55,22 @@ public class LetterServiceImpl implements LetterService {
 		//ldto.setLetterColorNo("46");
 		//ldto.setLetterReceiveYn("2");
 		
-		letterMapper.insertLetter(ldto);
+		letterMapper.insertLetter(result);
 		
-		String letterNo = letterMapper.selectLastInsertKey(ldto);
+		String letterNo = letterMapper.selectLastInsertKey(result);
 		
-		log.info(ldto.toString());
+		log.info(result.toString());
 		//이후에 호스팅 주소로 변경
 		String URL ="http://localhost:8081/api/letter/receive/"+letterNo;
 				
-		log.info(ldto.toString());
+		log.info(result.toString());
 		log.info("letterNo: "+ letterNo);
-		ldto.setLetterUrl(URL);
-		ldto.setLetterNo(letterNo);
-		letterMapper.updateURL(ldto);
-		return url;
+		result.setLetterUrl(URL);
+		result.setLetterNo(letterNo);
+		letterMapper.updateURL(result);
+		
+		
+		return  responseUtil.successResponse(result, HttpStatus.OK);
 		
 	}
 

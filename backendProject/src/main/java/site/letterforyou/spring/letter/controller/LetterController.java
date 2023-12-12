@@ -34,15 +34,13 @@ public class LetterController {
 	private LetterService letterService;
 	
 	@PostMapping("/insertLetter")
-	public ResponseEntity<Map<String, Object>> insertLetter(LetterDTO ldto, HttpSession session){
+	public ResponseEntity<ResponseSuccessDTO<LetterDTO>> insertLetter(LetterDTO ldto, HttpSession session){
 		
 		MemberDTO user = (MemberDTO) session.getAttribute("userInfo");
 		
-		Map <String, Object> map = new HashMap<String, Object>();
-		//ldto.setLetterSendId(user.getUserId());
-		letterService.insertLetter(ldto);
-		
-		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+		 ldto.setLetterSendId(user.getUserId());
+		 
+		 return ResponseEntity.ok(letterService.insertLetter(ldto));
 	}
 	
 	@GetMapping("/testKaKaoMesage")
@@ -54,7 +52,7 @@ public class LetterController {
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	
 	}
-@GetMapping("/receive/list")
+	@GetMapping("/receive/list")
 	public ResponseEntity<ResponseSuccessDTO<LetterGetListResponseDTO>> getReceivedLetters(
 			@RequestParam(value = "pageNo", required = false) Long page) {
 
