@@ -9,7 +9,7 @@ import site.letterforyou.spring.common.domain.Pagination;
 
 public class LetterGetListResponseDTO {
 
-	private List<Long> letterList;
+	private List<Letterdtos> letterList;
 	
 	private Pagination pagination;
 }

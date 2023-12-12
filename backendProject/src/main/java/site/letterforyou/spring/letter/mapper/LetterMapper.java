@@ -6,9 +6,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import site.letterforyou.spring.letter.domain.LetterVO;
 import site.letterforyou.spring.letter.domain.LetterDTO;
-import site.letterforyou.spring.member.domain.MemberDTO;
+import site.letterforyou.spring.letter.domain.LetterVO;
 
 public interface LetterMapper {
 
@@ -38,6 +37,8 @@ public interface LetterMapper {
 	public void deleteSendLetter(Long letterNo);
 	public int getTotalCountReceivedLetterByUserId(String userId);
 	public int getTotalCountSendLetterByUserId(String userId);
+	
+	public void updateLetterRecieve(Long letterNo);
 
 
 
