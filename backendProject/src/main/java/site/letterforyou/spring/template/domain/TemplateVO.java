@@ -17,7 +17,9 @@ public class TemplateVO {
 	private String templateTitle;
 	private String templateContent;
 	private LocalDateTime registDate;
-	
+	private String likeYn;
 	private Long templateLikes;
+	
+	
 
 }
