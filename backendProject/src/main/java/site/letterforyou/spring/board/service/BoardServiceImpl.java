@@ -155,13 +155,13 @@ public class BoardServiceImpl implements BoardService {
 	
 	
 	@Override
-	public ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles, BoardPostRequestDTO boardDTO) throws IOException {
+	public ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles, BoardPostRequestDTO boardDTO,String userId) throws IOException {
 		// Thumbnail은 처음 이미지 따서 board에 저장
 //		
 		BoardVO boardVo = new BoardVO();
 		boardVo.setBoardContent(boardDTO.getBoardContent());
 		boardVo.setBoardTitle(boardDTO.getBoardTitle());
-		boardVo.setUserId(boardDTO.getUserId());
+		boardVo.setUserId(userId);
 		if(multiPartFiles.size()>=1) {
 			MultipartFile thumbnailFile = thumbnailService.makeThumbNail(multiPartFiles.get(0), 100, 100);
 			List<MultipartFile> thumbFiles = new ArrayList<>();
@@ -194,7 +194,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public ResponseSuccessDTO<BoardModifyResponseDTO> modifyBoard(Long boardNo, BoardModifyRequestDTO boardDTO) {
+	public ResponseSuccessDTO<BoardModifyResponseDTO> modifyBoard(Long boardNo, BoardModifyRequestDTO boardDTO, String userId) {
 		BoardVO boardVo = new BoardVO();
 		boardVo.setBoardTitle(boardDTO.getBoardTitle());
 		boardVo.setBoardContent(boardDTO.getBoardContent());
@@ -215,13 +215,13 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public ResponseSuccessDTO<CommentPostResponseDTO> postComment(CommentPostRequestDTO commentDTO) {
+	public ResponseSuccessDTO<CommentPostResponseDTO> postComment(CommentPostRequestDTO commentDTO, String userId) {
 		
 	CommentVO commentVo = new CommentVO();
 	Long boardNo = commentDTO.getBoardNo();
 	commentVo.setBoardNo(commentDTO.getBoardNo());
 	commentVo.setCommentContent(commentDTO.getCommentContent());
-	commentVo.setUserId(commentDTO.getUserId());
+	commentVo.setUserId(userId);
 	log.info(commentVo.toString());
 		commentMapper.postComment(commentVo);
 		ResponseSuccessDTO<CommentPostResponseDTO> res =  responseUtil.successResponse( " comment 가 등록되었습니다.", HttpStatus.OK);
@@ -251,9 +251,7 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public ResponseSuccessDTO<BoardLikeUpdateResponseDTO> updateBoardLike(Long boardNo, String userId) {
 		
-		if(userId==null) {
-			throw new EntityNullException("유저 아이디가 들어오지 않았습니다.");
-		}
+		
 		if (boardMapper.getBoard(boardNo)==null) {
 			throw new EntityNullException("게시물이 존재하지 않습니다.");
 		}
