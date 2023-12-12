@@ -11,23 +11,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Letterdtos {
-
+public class LetterNumDTO {
 	private String letterNo;
 	
-	private String letterTitle;
-	
-	private String letterContent;
-	
-	private String letterColorNo;
-	
-	private String senderNickname;
-	
-	private String receiverNickname;
-	
-	private String registDate;
-	
 	private String LetterReceiveYn;
-	
-	
 }
