@@ -9,7 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardLikeUpdateResponseDTO {
+public class BoardUpdateDTO {
+
+	private Long boardNo;
+	private String likeYn;
+	private String message;
 	
-	BoardUpdateDTO boardDTO;
 }

@@ -30,6 +30,7 @@ public interface BoardMapper {
 	
 	public List<AttachVO> getAttachByBoardNo(Long boardNo);
 	
+	public BoardVO getBoardLike(@Param("boardNo")Long boardNo, @Param("userId")String userId);
 	
 }
 	
