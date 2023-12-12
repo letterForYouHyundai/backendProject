@@ -82,6 +82,12 @@ OFFSET
 	from tbl_template
 	</select>
 	
+	<select id="getTemplate" resultType="site.letterforyou.spring.template.domain.TemplateVO">
+	select like_yn as likeYn
+	from tbl_template_like
+	where template_no = #{templateNo}
+	</select>
+	
 	<select id="getTotalCountTemplateByKeyword" parameterType="String" resultType="int">
 	select count(*)
 	from tbl_template
