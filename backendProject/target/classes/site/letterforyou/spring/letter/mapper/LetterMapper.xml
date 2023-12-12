@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.letterforyou.spring.letter.mapper.LetterMapper">
+
+	<insert id="insertLetter" parameterType="site.letterforyou.spring.letter.domain.LetterDTO">
+			 INSERT INTO TBL_LETTER (
+		        LETTER_RECEIVE_ID,
+		        LETTER_SEND_ID,
+		        LETTER_TITLE,
+		        LETTER_CONTENT,
+		        LETTER_URL,
+		        KAKAO_SEND_YN,
+		        LETTER_COLOR_NO,
+		        LETTER_RECEIVE_YN
+		    ) VALUES (
+		        #{letterReceiveId}
+		        , #{letterSendId}
+		        , #{letterTitle}
+		        , #{letterContent}
+		        , #{letterUrl}
+		        , #{kakaoSendYn}
+		        , #{letterColorNo}
+		        , #{letterReceiveYn}
+		    )
+	</insert>
+	
+	<select id="selectLastInsertKey" parameterType="site.letterforyou.spring.letter.domain.LetterDTO" resultType="String">
+	SELECT
+    	T2.LETTER_NO AS LETTER_NO
+	FROM TBL_USER TU
+	INNER JOIN (
+	    SELECT
+	        MAX(LETTER_NO) AS LETTER_NO
+	        , LETTER_SEND_ID
+	    FROM
+	        TBL_LETTER
+	    WHERE 
+			LETTER_SEND_ID = #{letterSendId}
+	    GROUP BY LETTER_SEND_ID
+	)T2
+	ON TU.USER_ID= T2.LETTER_SEND_ID
+ </select>
+ <update id="updateURL" parameterType="site.letterforyou.spring.letter.domain.LetterDTO">
+ 	UPDATE
+ 		TBL_LETTER
+ 	SET 
+ 		LETTER_URL = #{letterUrl}
+ 	WHERE 
+		LETTER_NO = #{letterNo}
+ </update>
+<select id="getReceivedLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
+select letter_no as letterNo
+from tbl_letter
+where letter_receive_id = #{userId} 
+order by regist_dt desc
+offset #{offset} rows fetch next #{size} rows only
+</select>
+
+<select id="getSendLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
+select letter_no as letterNo
+from tbl_letter
+where letter_send_id = #{userId} 
+order by regist_dt desc
+offset #{offset} rows fetch next #{size} rows only
+</select>
+
+
+<select id="getReceivedLetter" resultType="site.letterforyou.spring.letter.domain.LetterVO">
+    SELECT 
+        l.letter_no as letterNo,
+        l.letter_title as letterTitle,
+        l.letter_content as letterContent,
+        l.letter_color_no as letterColorNo,
+        sender.user_nickname as senderNickname,  
+        receiver.user_nickname as receiverNickname,  
+        l.regist_dt as registDate
+    FROM 
+        tbl_letter l
+    LEFT JOIN 
+        tbl_user sender ON l.letter_send_id = sender.user_id  
+    LEFT JOIN 
+        tbl_user receiver ON l.letter_receive_id = receiver.user_id  
+    WHERE 
+        l.letter_no = #{letterNo}
+</select>
+
+<select id="getSendLetter" resultType="site.letterforyou.spring.letter.domain.LetterVO">
+    SELECT 
+        l.letter_no as letterNo,
+        l.letter_title as letterTitle,
+        l.letter_content as letterContent,
+        l.letter_color_no as letterColorNo,
+        sender.user_nickname as senderNickname,  
+        receiver.user_nickname as receiverNickname,  
+        l.regist_dt as registDate
+    FROM 
+        tbl_letter l
+    LEFT JOIN 
+        tbl_user sender ON l.letter_send_id = sender.user_id  
+    LEFT JOIN 
+        tbl_user receiver ON l.letter_receive_id = receiver.user_id  
+    WHERE 
+        l.letter_no = #{letterNo}
+</select>
+
+<update id="deleteReceivedLetter">
+UPDATE TBL_LETTER
+SET use_yn = 'N'
+where letter_no=#{letterNo}
+</update>
+
+<update id="deleteSendLetter">
+UPDATE TBL_LETTER
+SET use_yn = 'N'
+where letter_no=#{letterNo}
+</update>
+<select id="getTotalCountReceivedLetterByUserId">
+select count(*)
+from tbl_letter
+where letter_receive_id = #{userId}
+</select>
+
+<select id="getTotalCountSendLetterByUserId">
+select count(*)
+from tbl_letter
+where letter_send_id = #{userId}
+</select>
+
+</mapper>
