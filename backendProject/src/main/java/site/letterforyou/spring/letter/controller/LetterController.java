@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
+import site.letterforyou.spring.common.util.SessionUtil;
 import site.letterforyou.spring.letter.domain.LetterDTO;
 import site.letterforyou.spring.letter.dto.LetterDeleteLetterResponseDTO;
 import site.letterforyou.spring.letter.dto.LetterGetLetterResponseDTO;
@@ -32,6 +33,9 @@ public class LetterController {
 	
 	@Autowired
 	private LetterService letterService;
+	
+	@Autowired
+	private SessionUtil sessionUtil;
 	
 	@PostMapping("/insertLetter")
 	public ResponseEntity<ResponseSuccessDTO<LetterDTO>> insertLetter(LetterDTO ldto, HttpSession session) throws Exception{
@@ -54,15 +58,15 @@ public class LetterController {
 	}
 	@GetMapping("/receive/list")
 	public ResponseEntity<ResponseSuccessDTO<LetterGetListResponseDTO>> getReceivedLetters(
-			@RequestParam(value = "pageNo", required = false) Long page) {
+			@RequestParam(value = "pageNo", required = false) Long page, HttpSession session) {
 
 		Long defaultPage = 1L;
 
 		Long p = page == null ? defaultPage : page;
-
+		String userId = sessionUtil.validSession(session);
 		log.info(": /letter/receive/list"+p);
 		// user 검증 추가
-		return ResponseEntity.ok(letterService.getLetterReceiveList(p, "user1"));
+		return ResponseEntity.ok(letterService.getLetterReceiveList(p, userId));
 
 	}
 	

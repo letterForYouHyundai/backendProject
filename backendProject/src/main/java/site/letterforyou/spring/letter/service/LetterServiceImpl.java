@@ -21,6 +21,7 @@ import site.letterforyou.spring.common.domain.Pagination;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.common.util.ResponseUtil;
 import site.letterforyou.spring.common.util.TimeService;
+import site.letterforyou.spring.exception.service.EntityNullException;
 import site.letterforyou.spring.letter.domain.LetterDTO;
 import site.letterforyou.spring.letter.domain.LetterVO;
 import site.letterforyou.spring.letter.dto.LetterDeleteLetterResponseDTO;
@@ -159,11 +160,12 @@ public class LetterServiceImpl implements LetterService {
 		log.info(page+" "+ userId+" " +offset+" "+size);
 		List<LetterVO> letterVoList = letterMapper.getReceivedLetters(userId, offset, size);
 
-		List<Long> letterList = new ArrayList<>();
+		List<Letterdtos> letterList = new ArrayList<>();
 		for (LetterVO l : letterVoList) {
-			
-
-			letterList.add(l.getLetterNo());
+			Letterdtos letterDTO = new Letterdtos();
+			letterDTO.setLetterNo(l.getLetterNo());
+			letterDTO.setLetterReceiveYn(l.getLetterReceiveYn());
+			letterList.add(letterDTO);
 		}
 		
 		int count = letterMapper.getTotalCountReceivedLetterByUserId(userId);
@@ -179,6 +181,12 @@ public class LetterServiceImpl implements LetterService {
 	@Override
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getReceivedLetter(Long letterNo) {
 		LetterVO letterVo = letterMapper.getReceivedLetter(letterNo);
+		if(letterVo==null) {
+			
+			throw new EntityNullException("받은 편지가 존재하지 않습니다.");
+		}
+		letterMapper.updateLetterRecieve(letterNo);
+		
 		LetterGetLetterResponseDTO result = new LetterGetLetterResponseDTO();
 		Letterdtos letterDTO = new Letterdtos();
 		letterDTO.setLetterNo(letterVo.getLetterNo());
@@ -188,6 +196,7 @@ public class LetterServiceImpl implements LetterService {
 		letterDTO.setReceiverNickname(letterVo.getReceiverNickname());
 		letterDTO.setSenderNickname(letterVo.getSenderNickname());
 		letterDTO.setRegistDate(timeService.parseLocalDateTimeForLetter(letterVo.getRegistDate()));
+		letterDTO.setLetterReceiveYn(letterVo.getLetterReceiveYn());
 		result.setLetterDTO(letterDTO);
 		ResponseSuccessDTO<LetterGetLetterResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
 
@@ -211,11 +220,12 @@ public class LetterServiceImpl implements LetterService {
 		log.info(page+" "+ userId+" " +offset+" "+size);
 		List<LetterVO> letterVoList = letterMapper.getSendLetters(userId, offset, size);
 
-		List<Long> letterList = new ArrayList<>();
+		List<Letterdtos> letterList = new ArrayList<>();
 		for (LetterVO l : letterVoList) {
-			
-
-			letterList.add(l.getLetterNo());
+			Letterdtos letterDTO = new Letterdtos();
+			letterDTO.setLetterNo(l.getLetterNo());
+			letterDTO.setLetterReceiveYn(l.getLetterReceiveYn());
+			letterList.add(letterDTO);
 		}
 		
 		int count = letterMapper.getTotalCountSendLetterByUserId(userId);
@@ -231,6 +241,10 @@ public class LetterServiceImpl implements LetterService {
 	@Override
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getSendLetter(Long letterNo) {
 		LetterVO letterVo = letterMapper.getSendLetter(letterNo);
+		
+		if(letterVo==null) {
+			throw new EntityNullException("받은 편지를 불러올 수 없습니다.");
+		}
 		LetterGetLetterResponseDTO result = new LetterGetLetterResponseDTO();
 		Letterdtos letterDTO = new Letterdtos();
 		letterDTO.setLetterNo(letterVo.getLetterNo());

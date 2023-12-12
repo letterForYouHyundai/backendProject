@@ -27,5 +27,7 @@ public class Letterdtos {
 	
 	private String registDate;
 	
+	private String LetterReceiveYn;
+	
 	
 }
