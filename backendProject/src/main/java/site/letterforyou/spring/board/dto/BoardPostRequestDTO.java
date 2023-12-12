@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardPostRequestDTO {
 	
-	private String userId;
-	
 	private String boardTitle;
 	
 	private String boardContent;

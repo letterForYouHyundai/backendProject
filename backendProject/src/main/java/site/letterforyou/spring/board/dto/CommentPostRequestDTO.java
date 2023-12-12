@@ -15,8 +15,6 @@ public class CommentPostRequestDTO {
 	
 	private String commentContent;
 	
-	private String userId;
-	
 	
 
 }

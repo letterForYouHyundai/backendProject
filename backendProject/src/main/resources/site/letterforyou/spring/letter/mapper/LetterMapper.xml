@@ -10,7 +10,6 @@
 		        LETTER_SEND_ID,
 		        LETTER_TITLE,
 		        LETTER_CONTENT,
-		        LETTER_URL,
 		        KAKAO_SEND_YN,
 		        LETTER_COLOR_NO,
 		        LETTER_RECEIVE_YN
@@ -19,7 +18,6 @@
 		        , #{letterSendId}
 		        , #{letterTitle}
 		        , #{letterContent}
-		        , #{letterUrl}
 		        , #{kakaoSendYn}
 		        , #{letterColorNo}
 		        , #{letterReceiveYn}
@@ -51,7 +49,7 @@
 		LETTER_NO = #{letterNo}
  </update>
 <select id="getReceivedLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
-select letter_no as letterNo
+select letter_no as letterNo, letter_receive_yn as letterReceiveYn
 from tbl_letter
 where letter_receive_id = #{userId} 
 order by regist_dt desc
@@ -59,7 +57,7 @@ offset #{offset} rows fetch next #{size} rows only
 </select>
 
 <select id="getSendLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
-select letter_no as letterNo
+select letter_no as letterNo , letter_receive_yn as letterReceiveYn
 from tbl_letter
 where letter_send_id = #{userId} 
 order by regist_dt desc
@@ -73,6 +71,7 @@ offset #{offset} rows fetch next #{size} rows only
         l.letter_title as letterTitle,
         l.letter_content as letterContent,
         l.letter_color_no as letterColorNo,
+        l.letter_receive_yn as letterReceiveYn,
         sender.user_nickname as senderNickname,  
         receiver.user_nickname as receiverNickname,  
         l.regist_dt as registDate
@@ -92,6 +91,7 @@ offset #{offset} rows fetch next #{size} rows only
         l.letter_title as letterTitle,
         l.letter_content as letterContent,
         l.letter_color_no as letterColorNo,
+        l.letter_receive_yn as letterReceiveYn,
         sender.user_nickname as senderNickname,  
         receiver.user_nickname as receiverNickname,  
         l.regist_dt as registDate
@@ -104,6 +104,12 @@ offset #{offset} rows fetch next #{size} rows only
     WHERE 
         l.letter_no = #{letterNo}
 </select>
+
+<update id="updateLetterRecieve">
+UPDATE TBL_LETTER
+SET letter_receive_yn = 'Y'
+where letter_no=#{letterNo}
+</update>
 
 <update id="deleteReceivedLetter">
 UPDATE TBL_LETTER
