@@ -130,6 +130,8 @@ public class TemplateServiceImpl implements TemplateService{
 			throw new EntityNullException("아이디가 비어 있습니다.");
 		}
 		
+			
+		// templateMapper.get
 		templateMapper.modifyTemplateLike(templateNo, userId);
 		ResponseSuccessDTO<TemplatePostLikeResponseDTO> res =  responseUtil.successResponse(userId+" 아이디의 "+templateNo+" 번 Template like가 post 되었습니다,", HttpStatus.OK);
 		return res;

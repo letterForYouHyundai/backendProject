@@ -38,4 +38,6 @@ public class BoardVO {
 	private String userNickname;
 	
 	private String userImage;
+	
+	private String likeYn;
 }

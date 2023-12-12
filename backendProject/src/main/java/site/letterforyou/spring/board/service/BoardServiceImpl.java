@@ -22,6 +22,7 @@ import site.letterforyou.spring.board.dto.BoardModifyRequestDTO;
 import site.letterforyou.spring.board.dto.BoardModifyResponseDTO;
 import site.letterforyou.spring.board.dto.BoardPostRequestDTO;
 import site.letterforyou.spring.board.dto.BoardPostResponseDTO;
+import site.letterforyou.spring.board.dto.BoardUpdateDTO;
 import site.letterforyou.spring.board.dto.CommentDeleteResponseDTO;
 import site.letterforyou.spring.board.dto.CommentGetResponseDTO;
 import site.letterforyou.spring.board.dto.CommentModifyRequestDTO;
@@ -112,6 +113,9 @@ public class BoardServiceImpl implements BoardService {
 		
 		BoardVO boardVo = boardMapper.getBoard(boardNo);
 		
+		if(boardVo==null) {
+			throw new EntityNullException("게시물이 존재하지 않습니다.");
+		}
 		List<CommentVO> commentVoList = commentMapper.getCommentList(boardNo);
 		
 		List<AttachVO> attachVoList = boardMapper.getAttachByBoardNo(boardNo);
@@ -246,12 +250,23 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public ResponseSuccessDTO<BoardLikeUpdateResponseDTO> updateBoardLike(Long boardNo, String userId) {
-		userId = "user2";
-		if(userId.equals("user2")) {
+		
+		if(userId==null) {
 			throw new EntityNullException("유저 아이디가 들어오지 않았습니다.");
 		}
+		if (boardMapper.getBoard(boardNo)==null) {
+			throw new EntityNullException("게시물이 존재하지 않습니다.");
+		}
 		boardMapper.modifyBoardLike(boardNo, userId);
-		ResponseSuccessDTO<BoardLikeUpdateResponseDTO> res =  responseUtil.successResponse( boardNo+ "번 게시물의 좋아요가 변경되었습니다.", HttpStatus.OK);
+		
+		BoardLikeUpdateResponseDTO result = new BoardLikeUpdateResponseDTO();
+		BoardUpdateDTO boardDTO = new BoardUpdateDTO();
+		BoardVO boardVo = boardMapper.getBoardLike(boardNo, userId);
+		boardDTO.setBoardNo(boardVo.getBoardNo());
+		boardDTO.setLikeYn(boardVo.getLikeYn());
+		boardDTO.setMessage(boardNo+ "번 게시물의 좋아요가 변경되었습니다.");
+		result.setBoardDTO(boardDTO);
+		ResponseSuccessDTO<BoardLikeUpdateResponseDTO> res =  responseUtil.successResponse(result, HttpStatus.OK);
 		return res;
 	}
 

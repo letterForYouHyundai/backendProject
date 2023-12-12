@@ -139,6 +139,11 @@ where board_no=#{boardNo}
         VALUES (#{userId}, #{boardNo}, 'Y', CURRENT_TIMESTAMP)
 </insert>
 
+<select id="getBoardLike" resultType="site.letterforyou.spring.board.domain.BoardVO">
+    SELECT board_no as boardNo , like_yn as likeYn
+    FROM tbl_board_like
+    WHERE board_no = #{boardNo} AND user_id = #{userId}
+</select>
 
 	
 </mapper>
