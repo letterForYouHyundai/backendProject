@@ -63,6 +63,10 @@ public class BoardController {
 			@RequestParam(value = "sortBy", required = false) String sortBy,
 			@RequestParam(value = "inOrder", required = false) Integer inOrder, HttpSession session) {
 
+		MemberDTO mdto = (MemberDTO) session.getAttribute("userInfo");
+		if (mdto == null) {
+			throw new NotAuthorizedUserException("허가되지 않은 사용자입니다.");
+		}
 		PageRequestDTO pageRequestDTO = pageUtil.parsePaginationComponents(page, sortBy, inOrder);
 		log.info(pageRequestDTO.getSortBy() + " " + pageRequestDTO.getInOrder() + " " + pageRequestDTO.getPage());
 		log.info(": /board/list/" + page);
@@ -132,9 +136,9 @@ public class BoardController {
 	@PostMapping(value = "/likes/{boardNo}")
 	public ResponseEntity<ResponseSuccessDTO<BoardLikeUpdateResponseDTO>> updateBoardLike(
 			@PathVariable("boardNo") Long boardNo, HttpSession session) {
-		
+
 		MemberDTO mdto = (MemberDTO) session.getAttribute("userInfo");
-		if(mdto==null) {
+		if (mdto == null) {
 			throw new NotAuthorizedUserException("허가되지 않은 사용자입니다.");
 		}
 		return ResponseEntity.ok(boardService.updateBoardLike(boardNo, mdto.getUserId()));
