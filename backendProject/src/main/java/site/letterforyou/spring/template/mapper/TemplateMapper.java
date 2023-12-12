@@ -19,4 +19,6 @@ public interface TemplateMapper {
 	public int getTotalCountTemplateByKeyword(@Param("keyword") String keyword);
 	
 	public void modifyTemplateLike(@Param("templateNo")Long templateNo, @Param("userId")String userId);
+	
+	public TemplateVO getTemplate(@Param("templateNo") Long templateNo);
 }

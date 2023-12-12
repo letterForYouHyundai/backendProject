@@ -26,4 +26,6 @@ public class LetterVO {
 	private String receiverNickname;
 	
 	private LocalDateTime registDate;
+	
+	private String letterReceiveYn;
 }

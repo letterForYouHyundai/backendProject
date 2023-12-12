@@ -38,8 +38,7 @@ import site.letterforyou.spring.board.service.BoardService;
 import site.letterforyou.spring.common.dto.PageRequestDTO;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.common.util.PageUtil;
-import site.letterforyou.spring.exception.service.NotAuthorizedUserException;
-import site.letterforyou.spring.member.domain.MemberDTO;
+import site.letterforyou.spring.common.util.SessionUtil;
 
 @RestController
 @RequestMapping("/board/*")
@@ -52,6 +51,9 @@ public class BoardController {
 	@Autowired
 	private PageUtil pageUtil;
 
+	@Autowired
+	private SessionUtil sessionUtil;
+
 	@ApiOperation(value = "자유게시판 - 게시글 리스트", notes = " 자유게시판 리스트를 가져옵니다. ")
 //	@ApiImplicitParams({
 //			@ApiImplicitParam(name = "page", value = "페이지 번호", required = false, dataType = "Long", paramType = "path", defaultValue = "None"),
@@ -61,12 +63,8 @@ public class BoardController {
 	public ResponseEntity<ResponseSuccessDTO<BoardGetListResponseDTO>> getBoardList(
 			@RequestParam(value = "page", required = false) Long page,
 			@RequestParam(value = "sortBy", required = false) String sortBy,
-			@RequestParam(value = "inOrder", required = false) Integer inOrder, HttpSession session) {
-
-		MemberDTO mdto = (MemberDTO) session.getAttribute("userInfo");
-		if (mdto == null) {
-			throw new NotAuthorizedUserException("허가되지 않은 사용자입니다.");
-		}
+			@RequestParam(value = "inOrder", required = false) Integer inOrder) {
+		
 		PageRequestDTO pageRequestDTO = pageUtil.parsePaginationComponents(page, sortBy, inOrder);
 		log.info(pageRequestDTO.getSortBy() + " " + pageRequestDTO.getInOrder() + " " + pageRequestDTO.getPage());
 		log.info(": /board/list/" + page);
@@ -77,11 +75,12 @@ public class BoardController {
 
 	@ApiOperation(value = "자유게시판 - 게시글 상세보기", notes = " 자유게시판 게시글 하나를 상세보기합니다. ")
 	@GetMapping("/{boardNo}")
-	public ResponseEntity<ResponseSuccessDTO<BoardGetResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo) {
-
+	public ResponseEntity<ResponseSuccessDTO<BoardGetResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo, HttpSession session) {
 		log.info(": /board/" + boardNo);
+		
+		String userId = sessionUtil.validSession(session);
 
-		return ResponseEntity.ok(boardService.getBoard(boardNo));
+		return ResponseEntity.ok(boardService.getBoard(boardNo,userId));
 
 	}
 
@@ -90,18 +89,20 @@ public class BoardController {
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseSuccessDTO<BoardPostResponseDTO>> addBoard(
 			@RequestPart(value = "multipartFiles", required = false) List<MultipartFile> multipartFiles,
-			@RequestPart BoardPostRequestDTO boardDTO) throws IOException {
-
+			@RequestPart BoardPostRequestDTO boardDTO, HttpSession session) throws IOException {
+		
+		String userId = sessionUtil.validSession(session);
 		log.info(": /board/regist");
 
-		return ResponseEntity.ok(boardService.addBoard(multipartFiles, boardDTO));
+		return ResponseEntity.ok(boardService.addBoard(multipartFiles, boardDTO, userId));
 	}
 
 	@ApiOperation(value = "자유게시판 - 게시물 변경", notes = " 게시글을 수정합니다. ")
 	@PostMapping(value = "/{boardNo}")
 	public ResponseEntity<ResponseSuccessDTO<BoardModifyResponseDTO>> modifyBoard(@PathVariable("boardNo") Long boardNo,
-			@RequestPart BoardModifyRequestDTO boardDTO) {
-		return ResponseEntity.ok(boardService.modifyBoard(boardNo, boardDTO));
+			@RequestPart BoardModifyRequestDTO boardDTO,HttpSession session) {
+		String userId = sessionUtil.validSession(session);
+		return ResponseEntity.ok(boardService.modifyBoard(boardNo, boardDTO, userId));
 	}
 
 	@ApiOperation(value = "자유게시판 - 게시물 삭제", notes = " 게시글을 삭제합니다. ")
@@ -114,8 +115,9 @@ public class BoardController {
 	@ApiOperation(value = "자유게시판 - 댓글 등록", notes = " 댓글을 등록합니다. ")
 	@PostMapping(value = "/comment")
 	public ResponseEntity<ResponseSuccessDTO<CommentPostResponseDTO>> postComment(
-			@RequestBody CommentPostRequestDTO commentDTO) {
-		return ResponseEntity.ok(boardService.postComment(commentDTO));
+			@RequestBody CommentPostRequestDTO commentDTO, HttpSession session) {
+		String userId = sessionUtil.validSession(session);
+		return ResponseEntity.ok(boardService.postComment(commentDTO, userId));
 	}
 
 	@ApiOperation(value = "자유게시판 - 댓글 수정", notes = " 댓글을 수정합니다. ")
@@ -137,11 +139,8 @@ public class BoardController {
 	public ResponseEntity<ResponseSuccessDTO<BoardLikeUpdateResponseDTO>> updateBoardLike(
 			@PathVariable("boardNo") Long boardNo, HttpSession session) {
 
-		MemberDTO mdto = (MemberDTO) session.getAttribute("userInfo");
-		if (mdto == null) {
-			throw new NotAuthorizedUserException("허가되지 않은 사용자입니다.");
-		}
-		return ResponseEntity.ok(boardService.updateBoardLike(boardNo, mdto.getUserId()));
+		String userId = sessionUtil.validSession(session);
+		return ResponseEntity.ok(boardService.updateBoardLike(boardNo, userId));
 
 	}
 

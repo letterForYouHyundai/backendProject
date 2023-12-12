@@ -85,7 +85,7 @@ public class TemplateServiceImpl implements TemplateService{
 			throw new BadVariableRequestException("Keyword 가 비어있습니다.");
 		}
 		
-		PageVO pageVo = new PageVO(page, 6L, 10L);
+		PageVO pageVo = new PageVO(page, 9L, 10L);
 		if(sortBy ==null) {
 			inOrder =1;
 			sortBy="DESC";
@@ -126,14 +126,17 @@ public class TemplateServiceImpl implements TemplateService{
 
 	@Override
 	public ResponseSuccessDTO<TemplatePostLikeResponseDTO> postTemplateLike(Long templateNo, String userId) {
+		userId="user2";
 		if(userId == null) {
 			throw new EntityNullException("아이디가 비어 있습니다.");
 		}
-		
-			
-		// templateMapper.get
+		TemplatePostLikeResponseDTO result = new  TemplatePostLikeResponseDTO();
 		templateMapper.modifyTemplateLike(templateNo, userId);
-		ResponseSuccessDTO<TemplatePostLikeResponseDTO> res =  responseUtil.successResponse(userId+" 아이디의 "+templateNo+" 번 Template like가 post 되었습니다,", HttpStatus.OK);
+		// templateMapper.get
+		TemplateVO templateVo = templateMapper.getTemplate(templateNo);
+		result.setLikeYn(templateVo.getLikeYn());
+		result.setMessage(userId+" 아이디의 "+templateNo+" 번 Template like가 post 되었습니다");
+		ResponseSuccessDTO<TemplatePostLikeResponseDTO> res =  responseUtil.successResponse(result, HttpStatus.OK);
 		return res;
 	}
 	
