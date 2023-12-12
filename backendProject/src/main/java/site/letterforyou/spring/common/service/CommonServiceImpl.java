@@ -1,43 +1,47 @@
 package site.letterforyou.spring.common.service;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-import org.springframework.stereotype.Service;
-import java.security.InvalidKeyException;
 import java.security.Key;
 import java.util.Base64;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 @Service
 public class CommonServiceImpl implements CommonService {
-	
-	private static final String ALGORITHM = "AES";
-    private static final String SECRET_KEY = "jwybtZEALFFmheND"; // 반드시 16, 24 또는 32바이트여야 함
+
+    @Value("${encrypt.algorithm}")
+    private String ALGORITHM;
+    @Value("${encrypt.secret}")
+    private String SECRET_KEY; // Must be 16, 24, or 32 bytes
 
     public String encrypt(String plainText) throws Exception {
-        Key key = generateKey();
+        Key key = generateKey(SECRET_KEY, ALGORITHM);
         Cipher cipher = Cipher.getInstance(ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
-        return Base64.getEncoder().encodeToString(encryptedBytes);
+        return Base64.getUrlEncoder().encodeToString(encryptedBytes);
     }
 
-    public String decrypt(String encryptedText) throws Exception {
+    public Long decrypt(String encryptedText) throws Exception {
         try {
-            Key key = generateKey();
+            Key key = generateKey(SECRET_KEY, ALGORITHM);
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, key);
-            byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedText));
-            
-            return new String(decryptedBytes);
+            byte[] decryptedBytes = cipher.doFinal(Base64.getUrlDecoder().decode(encryptedText));
+            String decryptedString = new String(decryptedBytes);
+            return Long.parseLong(decryptedString);
+        } catch (NumberFormatException e) {
+            throw new Exception(" String -> Long Exception" + e.getMessage());
         } catch (Exception e) {
             throw new Exception("Decryption failed: " + e.getMessage());
         }
     }
 
-    private static Key generateKey() {
-        return new SecretKeySpec(SECRET_KEY.getBytes(), ALGORITHM);
+    private static Key generateKey(String secretKey, String algorithm) {
+        return new SecretKeySpec(secretKey.getBytes(), algorithm);
     }
 }
+
