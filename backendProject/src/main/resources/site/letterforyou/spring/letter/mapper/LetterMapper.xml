@@ -10,7 +10,6 @@
 		        LETTER_SEND_ID,
 		        LETTER_TITLE,
 		        LETTER_CONTENT,
-		        LETTER_URL,
 		        KAKAO_SEND_YN,
 		        LETTER_COLOR_NO,
 		        LETTER_RECEIVE_YN
@@ -19,7 +18,6 @@
 		        , #{letterSendId}
 		        , #{letterTitle}
 		        , #{letterContent}
-		        , #{letterUrl}
 		        , #{kakaoSendYn}
 		        , #{letterColorNo}
 		        , #{letterReceiveYn}

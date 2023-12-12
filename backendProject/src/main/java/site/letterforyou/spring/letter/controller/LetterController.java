@@ -34,11 +34,11 @@ public class LetterController {
 	private LetterService letterService;
 	
 	@PostMapping("/insertLetter")
-	public ResponseEntity<ResponseSuccessDTO<LetterDTO>> insertLetter(LetterDTO ldto, HttpSession session){
+	public ResponseEntity<ResponseSuccessDTO<LetterDTO>> insertLetter(LetterDTO ldto, HttpSession session) throws Exception{
 		
 		MemberDTO user = (MemberDTO) session.getAttribute("userInfo");
 		
-		 ldto.setLetterSendId(user.getUserId());
+		 //ldto.setLetterSendId(user.getUserId());
 		 
 		 return ResponseEntity.ok(letterService.insertLetter(ldto));
 	}
@@ -93,8 +93,8 @@ public class LetterController {
 	}
 	
 	@GetMapping("/send/{letterNo}")
-	public ResponseEntity<ResponseSuccessDTO<LetterGetLetterResponseDTO>> getSendLetter(
-			@PathVariable(value="letterNo") Long letterNo){
+	public ResponseEntity<ResponseSuccessDTO<LetterGetLetterResponseDTO>> getSendLetter (
+			@PathVariable(value="letterNo") Long letterNo) throws Exception{
 		return ResponseEntity.ok(letterService.getSendLetter(letterNo));
 	}
 	

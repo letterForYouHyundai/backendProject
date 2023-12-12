@@ -28,6 +28,7 @@ import site.letterforyou.spring.letter.dto.LetterGetLetterResponseDTO;
 import site.letterforyou.spring.letter.dto.LetterGetListResponseDTO;
 import site.letterforyou.spring.letter.dto.Letterdtos;
 import site.letterforyou.spring.letter.mapper.LetterMapper;
+import site.letterforyou.spring.common.service.CommonService;
 
 @Service
 @Log4j
@@ -38,6 +39,9 @@ public class LetterServiceImpl implements LetterService {
 	
 	@Autowired
 	TimeService timeService;
+	
+	@Autowired
+	CommonService CommonService;
 
 	@Autowired
 	private LetterMapper letterMapper;
@@ -47,28 +51,33 @@ public class LetterServiceImpl implements LetterService {
 		
 		String url="";
 		
-		//ldto.setLetterReceiveId("user1");
-		//ldto.setLetterSendId("user1"); //이후에 확인 후 제거
-		//ldto.setLetterTitle("title");
-		//ldto.setLetterContent("content");
-		//ldto.setKakaoSendYn("N");
-		//ldto.setLetterColorNo("46");
-		//ldto.setLetterReceiveYn("2");
+		// result.setLetterReceiveId("user1");
+		// result.setLetterSendId("user1"); //이후에 확인 후 제거
+		// result.setLetterTitle("title");
+		// result.setLetterContent("content");
+		// result.setKakaoSendYn("N");
+		// result.setLetterColorNo("46");
+		// result.setLetterReceiveYn("2");
 		
 		letterMapper.insertLetter(result);
 		
 		String letterNo = letterMapper.selectLastInsertKey(result);
-		
+		String encryptNo="";
 		log.info(result.toString());
 		//이후에 호스팅 주소로 변경
-		String URL ="http://localhost:8081/api/letter/receive/"+letterNo;
-				
+		try {
+			encryptNo = CommonService.encrypt(letterNo);
+			log.info("letterNo: "+ letterNo);
+		} catch (Exception e) {
+			log.info("암호화 중 오류 발생"+ e.getMessage());
+		}
+		String URL ="http://localhost:8081/api/letter/receive/"+encryptNo;
+		
+		//String URL ="https://letter4u.site/letter/receive/"+letterNo;
 		log.info(result.toString());
-		log.info("letterNo: "+ letterNo);
 		result.setLetterUrl(URL);
 		result.setLetterNo(letterNo);
 		letterMapper.updateURL(result);
-		
 		
 		return  responseUtil.successResponse(result, HttpStatus.OK);
 		
