@@ -38,7 +38,8 @@ public class LetterController {
 		
 		MemberDTO user = (MemberDTO) session.getAttribute("userInfo");
 		
-		 //ldto.setLetterSendId(user.getUserId());
+		 //개발 환경 테스트시 하위 코드 주석처리
+		 ldto.setLetterSendId(user.getUserId());
 		 
 		 return ResponseEntity.ok(letterService.insertLetter(ldto));
 	}
