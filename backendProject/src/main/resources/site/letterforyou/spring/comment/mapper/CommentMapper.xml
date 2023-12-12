@@ -26,6 +26,8 @@
         tbl_user u ON c.user_id = u.user_id  
     WHERE 
         c.board_no=#{boardNo}
+   	ORDER BY
+   		c.regist_dt ASC
 </select>
 
 	
