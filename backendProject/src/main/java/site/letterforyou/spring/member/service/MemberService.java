@@ -4,6 +4,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
+import site.letterforyou.spring.letter.domain.LetterDTO;
+import site.letterforyou.spring.letter.dto.LetterGetListResponseDTO;
 import site.letterforyou.spring.member.domain.MemberDTO;
 
 public interface MemberService {
@@ -12,8 +15,12 @@ public interface MemberService {
 	
 	/**
 	 카카오의 accessToken과 RefreshToken을 가져온다. 
+	 * @param session 
 	 */
-	MemberDTO getKaKaoAccessAndRefreshToken(String code);
+	
+	public ResponseSuccessDTO<MemberDTO> getKaKaoAccessAndRefreshToken(String code, HttpSession session);	
+	////MemberDTO getKaKaoAccessAndRefreshToken(String code);
+	
 	/**
 	 카카오의 accessToken을 이용하여 User정보를 가져온다
 	 */
@@ -27,7 +34,7 @@ public interface MemberService {
 	/**
 	 카카오정보를 로그아웃한다.
 	 */
-	int  kakaoLogout(MemberDTO mdto);
+	public ResponseSuccessDTO<MemberDTO>  kakaoLogout(HttpSession session);
 	
 
 }

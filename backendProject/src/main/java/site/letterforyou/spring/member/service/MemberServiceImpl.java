@@ -14,11 +14,14 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j;
+import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
+import site.letterforyou.spring.common.util.ResponseUtil;
 import site.letterforyou.spring.member.domain.MemberDTO;
 import site.letterforyou.spring.member.mapper.MemberMapper;
 
@@ -35,6 +38,11 @@ public class MemberServiceImpl implements MemberService{
 	
 	@Value("${kakao.redirect_uri}")
 	String redirect_uri;
+	
+
+    @Autowired
+	ResponseUtil responseUtil;
+	
 
 	@Override
 	public int selectMemberCnt(MemberDTO mvo) {
@@ -45,14 +53,12 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	public MemberDTO getKaKaoAccessAndRefreshToken(String code) {
+	public ResponseSuccessDTO<MemberDTO> getKaKaoAccessAndRefreshToken(String code, HttpSession session) {
 		log.info(redirect_uri+" "+ client_id);
-		MemberDTO mdto = new MemberDTO();
+		MemberDTO result = new MemberDTO();
 		
 		String access_token="";
 		String refresh_token="";
-		
-		
 		
 		//oauth token 요청 URL
 		String requestURL ="https://kauth.kakao.com/oauth/token";
@@ -80,17 +86,17 @@ public class MemberServiceImpl implements MemberService{
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = "";
-            StringBuilder result = new StringBuilder();
+            StringBuilder apiResult = new StringBuilder();
 
             while ((line = bufferedReader.readLine()) != null) {
-                result.append(line);
+            	apiResult.append(line);
             }
             
-           log.info("result 응답코드 : "+ result);
+           log.info("result 응답코드 : "+ responseCode);
            
            /**result에서 access_token과 refresh_token가져오기*/
            ObjectMapper mapper = new ObjectMapper();
-           Map<String, String> returnMap = mapper.readValue(result.toString(), Map.class);
+           Map<String, String> returnMap = mapper.readValue(apiResult.toString(), Map.class);
            
            access_token = returnMap.get("access_token");
            refresh_token = returnMap.get("refresh_token");
@@ -100,19 +106,27 @@ public class MemberServiceImpl implements MemberService{
             
             
             //refresh 토큰 value를 insert
-            mdto.setUserId(paramDto.getUserId());
-            mdto.setUserEmail(paramDto.getUserEmail());
-            mdto.setUserName(paramDto.getUserName());
-            mdto.setUserNickname(paramDto.getUserNickname());
-            mdto.setAccessToken(access_token);
-            mdto.setRefreshToken(refresh_token);
-            memberMapper. insertRefreshToken(mdto);
+            result.setUserId(paramDto.getUserId());
+            result.setUserEmail(paramDto.getUserEmail());
+            result.setUserName(paramDto.getUserName());
+            result.setUserNickname(paramDto.getUserNickname());
+            result.setAccessToken(access_token);
+            result.setRefreshToken(refresh_token);
+            
+            
+            memberMapper. insertRefreshToken(result);
+            
+            if (result.getAccessToken() != null && !result.getAccessToken().isEmpty()) {
+                session.setAttribute("userInfo", result);
+            }
             
 		}catch (IOException e) {
 			log.error("oauth token 발급 요청 ing 중 에러"+e.getMessage());
+			return  responseUtil.successResponse(result, HttpStatus.UNAUTHORIZED);
 		}
-		
-		return mdto;
+       
+        return  responseUtil.successResponse(result, HttpStatus.OK);
+        
 	}
 
 	@Override
@@ -198,8 +212,9 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	public int kakaoLogout(MemberDTO mdto) {
-		
+	public ResponseSuccessDTO<MemberDTO> kakaoLogout(HttpSession session) {
+		 MemberDTO mdto = (MemberDTO)session.getAttribute("userInfo");
+		 
 		String access_token = mdto.getAccessToken();
 		log.info("access_token: "+access_token);
 		String requestURL ="https://kapi.kakao.com/v1/user/logout";
@@ -214,18 +229,19 @@ public class MemberServiceImpl implements MemberService{
 		 
 		  BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
           String line = "";
-          StringBuilder result = new StringBuilder();
+          StringBuilder apiResult = new StringBuilder();
 
           while ((line = bufferedReader.readLine()) != null) {
-             result.append(line);
+        	  apiResult.append(line);
           }
           
+          session.removeAttribute("userInfo"); 
 		}catch(Exception e) {
 			log.error("로그아웃 처리중 에러: "+e.getMessage());
-			return 401;
+			return  responseUtil.successResponse(mdto, HttpStatus.UNAUTHORIZED);
 		}
 		
-		return 200;
+		return  responseUtil.successResponse(mdto, HttpStatus.OK);
 	}
 
 }

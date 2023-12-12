@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import lombok.extern.log4j.Log4j;
+import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
+import site.letterforyou.spring.letter.dto.LetterGetLetterResponseDTO;
 import site.letterforyou.spring.member.domain.MemberDTO;
 import site.letterforyou.spring.member.service.MemberService;
 
@@ -43,35 +45,18 @@ public class MemberController {
 
     @GetMapping("/kakaoLogin")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getKaKaoAccessToken(@RequestParam("code") String code, HttpSession session, HttpServletResponse response) {
-        
-    	Map<String, Object> map = new HashMap<>();
-        MemberDTO mdto = memberService.getKaKaoAccessAndRefreshToken(code);
-
-        if (mdto.getAccessToken() != null && !mdto.getAccessToken().isEmpty()) {
-            session.setAttribute("userInfo", mdto);
-            map.put("message", "Login successful");
-            map.put("userInfo", mdto);
-            return new ResponseEntity<>(map, HttpStatus.OK);
-            
-        } else {
-            map.put("message", "Login failed");
-            return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<ResponseSuccessDTO<MemberDTO>> getKaKaoAccessToken(@RequestParam("code") String code, HttpSession session, HttpServletResponse response) {
+     
+    	 ResponseSuccessDTO<MemberDTO>  result = memberService.getKaKaoAccessAndRefreshToken(code,session);
+ 
+    	//if(result.getStatus().equals(200))  //return ResponseEntity.ok(result);
+    	 return ResponseEntity.ok(result);
     }
     
     @GetMapping("/kakaoLogout")
-    public ResponseEntity<Map<String, Object>> logout(HttpSession session) {
-    	Map<String, Object> map = new HashMap<>();
-
-        MemberDTO mdto = (MemberDTO)session.getAttribute("userInfo");
-        
-        int result = memberService.kakaoLogout(mdto);
-        
-        map.put("result", result);
-        session.removeAttribute("userInfo"); 
-        
-        return new ResponseEntity<>(map, HttpStatus.OK);
+    public ResponseEntity<ResponseSuccessDTO<MemberDTO>> logout(HttpSession session) {
+    
+        return ResponseEntity.ok(memberService.kakaoLogout(session));
     }
 
     @GetMapping("/kakaoRegister")
