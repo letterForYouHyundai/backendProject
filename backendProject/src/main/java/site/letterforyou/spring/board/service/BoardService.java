@@ -27,13 +27,13 @@ public interface BoardService {
 	
 	public ResponseSuccessDTO<BoardGetResponseDTO> getBoard(Long boardNo);
 
-	ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles, BoardPostRequestDTO boardDTO) throws IOException;
+	ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles, BoardPostRequestDTO boardDTO, String userId) throws IOException;
 	
-	public ResponseSuccessDTO<BoardModifyResponseDTO> modifyBoard(Long boardNo ,BoardModifyRequestDTO boardDTO);
+	public ResponseSuccessDTO<BoardModifyResponseDTO> modifyBoard(Long boardNo ,BoardModifyRequestDTO boardDTO, String userId);
 	
 	public ResponseSuccessDTO<BoardDeleteResponseDTO> deleteBoard(Long boardNo);
 	
-	public ResponseSuccessDTO<CommentPostResponseDTO> postComment(CommentPostRequestDTO commentDTO);
+	public ResponseSuccessDTO<CommentPostResponseDTO> postComment(CommentPostRequestDTO commentDTO, String userId);
 	
 	public ResponseSuccessDTO<CommentModifyResponseDTO> modifyComment(Long commentNo, CommentModifyRequestDTO commentDTO);
 

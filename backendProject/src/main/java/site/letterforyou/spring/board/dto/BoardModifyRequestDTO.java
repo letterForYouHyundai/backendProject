@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardModifyRequestDTO {
-
-	private String userId;
 	
 	private String boardTitle;
 	
