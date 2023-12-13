@@ -118,12 +118,15 @@ where letter_color_no = #{letterColorNo}
         l.letter_content as letterContent,
         l.letter_color_no as letterColorNo,
         l.letter_receive_yn as letterReceiveYn,
-        sender.user_nickname as senderNickname,    
+        sender.user_nickname as senderNickname,  
+        receiver.user_nickname as receiverNickname,  
         l.regist_dt as registDate
     FROM 
         tbl_letter l
     LEFT JOIN 
         tbl_user sender ON l.letter_send_id = sender.user_id  
+    LEFT JOIN 
+        tbl_user receiver ON l.letter_receive_id = receiver.user_id  
     WHERE 
         l.letter_no = #{letterNo}
 </select>

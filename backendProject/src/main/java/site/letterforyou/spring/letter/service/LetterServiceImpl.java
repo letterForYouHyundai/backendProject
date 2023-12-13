@@ -307,6 +307,7 @@ public class LetterServiceImpl implements LetterService {
 		letterDTO.setReceiverNickname(letterVo.getReceiverNickname());
 		letterDTO.setSenderNickname(letterVo.getSenderNickname());
 		letterDTO.setRegistDate(timeService.parseLocalDateTimeForLetter(letterVo.getRegistDate()));
+		letterDTO.setLetterReceiveYn(letterVo.getLetterReceiveYn());
 		result.setLetterDTO(letterDTO);
 		ResponseSuccessDTO<LetterGetLetterResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
 
