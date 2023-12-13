@@ -5,26 +5,19 @@
 <mapper namespace="site.letterforyou.spring.letter.mapper.LetterMapper">
 
 	<insert id="insertLetter" parameterType="site.letterforyou.spring.letter.domain.LetterDTO">
-			 INSERT INTO TBL_LETTER (
-			 	<if test="letterReceiveId !=null  and ! letterReceiveId.equals('')">
-		        LETTER_RECEIVE_ID ,
-		        </if>
-		        LETTER_SEND_ID
-		        , LETTER_TITLE
-		        , LETTER_CONTENT
-		        , LETTER_COLOR_NO
-		        , USER_ALIAS
-		    ) VALUES (
-		    	<if test="letterReceiveId !=null  and ! letterReceiveId.equals('')">
-		        #{letterReceiveId} ,
-		         </if>
-		         #{letterSendId}
-		        , #{letterTitle}
-		        , #{letterContent}
-		        , #{letterColorNo}
-		        ,  #{userAlias}
-		    )
-	</insert>
+    INSERT INTO TBL_LETTER (
+        <if test="letterReceiveId != null and !letterReceiveId.equals('')">
+            LETTER_RECEIVE_ID,
+        </if>
+        LETTER_SEND_ID, LETTER_TITLE, LETTER_CONTENT, LETTER_COLOR_NO, USER_ALIAS
+    ) VALUES (
+        <if test="letterReceiveId != null and !letterReceiveId.equals('')">
+            #{letterReceiveId,jdbcType=STRING}, <!-- Modify this line -->
+        </if>
+        #{letterSendId}, #{letterTitle}, #{letterContent}, #{letterColorNo}, #{userAlias}
+    )
+</insert>
+
 	
 	<select id="selectLastInsertKey" parameterType="site.letterforyou.spring.letter.domain.LetterDTO" resultType="String">
 	SELECT
