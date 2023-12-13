@@ -81,8 +81,8 @@ public class BoardController {
 	public ResponseEntity<ResponseSuccessDTO<BoardGetResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo, HttpSession session) {
 		log.info(": /board/" + boardNo);
 		
-		//String userId = sessionUtil.validSession(session);
-		String userId= "2";
+		String userId = sessionUtil.validSession(session);
+		
 		return ResponseEntity.ok(boardService.getBoard(boardNo,userId));
 
 	}
