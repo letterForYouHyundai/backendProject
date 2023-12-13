@@ -94,8 +94,8 @@ public class BoardController {
 			@RequestPart(value = "multipartFiles", required = false) List<MultipartFile> multipartFiles,
 			@RequestPart BoardPostRequestDTO boardDTO, HttpSession session) throws IOException {
 		
-		//String userId = sessionUtil.validSession(session);
-		String userId = "user1";
+		String userId = sessionUtil.validSession(session);
+
 		log.info(": /board/regist");
 
 		return ResponseEntity.ok(boardService.addBoard(multipartFiles, boardDTO, userId));
