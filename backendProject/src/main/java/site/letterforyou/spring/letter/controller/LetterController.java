@@ -102,7 +102,8 @@ public class LetterController {
 	
 	@GetMapping("/send/{letterNo}")
 	public ResponseEntity<ResponseSuccessDTO<LetterGetLetterResponseDTO>> getSendLetter (
-			@PathVariable(value="letterNo") String letterNo){
+			@PathVariable(value="letterNo") String letterNo,HttpSession session){
+		sessionUtil.validSession(session);
 		return ResponseEntity.ok(letterService.getSendLetter(letterNo));
 	}
 	
