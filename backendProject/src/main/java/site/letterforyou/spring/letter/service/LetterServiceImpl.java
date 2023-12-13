@@ -84,7 +84,7 @@ public class LetterServiceImpl implements LetterService {
 			log.info("암호화 중 오류 발생" + e.getMessage());
 		}
 		// String URL ="http://localhost:8080/api/letter/receive/"+encryptNo;
-		String URL = contextUrl+"/api/letter/receive/" + encryptNo;
+		String URL = contextUrl+"/letter/receive/" + encryptNo;
 
 		// 운영 환경 세팅
 		// String URL ="https://letter4u.site/letter/receive/"+letterNo;
