@@ -60,14 +60,14 @@ public class LetterController {
 	}
 	@GetMapping("/receive/list")
 	public ResponseEntity<ResponseSuccessDTO<LetterGetListResponseDTO>> getReceivedLetters(
-			@RequestParam(value = "pageNo", required = false) Long page, HttpSession session) {
+			@RequestParam(value = "page", required = false) Long page, HttpSession session) {
 
 		Long defaultPage = 1L;
 
 		Long p = page == null ? defaultPage : page;
 	
-		String userId = sessionUtil.validSession(session);
-		
+		//String userId = sessionUtil.validSession(session);
+		String userId = "user1";
 		log.info(": /letter/receive/list"+p);
 		
 		return ResponseEntity.ok(letterService.getLetterReceiveList(p, userId));
@@ -77,6 +77,8 @@ public class LetterController {
 	@GetMapping("/receive/{letterNo}")
 	public ResponseEntity<ResponseSuccessDTO<LetterGetLetterResponseDTO>> getReceivedLetter(
 			@PathVariable(value="letterNo") String letterNo){
+		
+		
 		return ResponseEntity.ok(letterService.getReceivedLetter(letterNo));
 	}
 	
@@ -88,22 +90,24 @@ public class LetterController {
 	
 	@GetMapping("/send/list")
 	public ResponseEntity<ResponseSuccessDTO<LetterGetListResponseDTO>> getSendLetters(
-			@RequestParam(value = "pageNo", required = false) Long page, HttpSession session) {
+			@RequestParam(value = "page", required = false) Long page, HttpSession session) {
 
 		Long defaultPage = 1L;
 
 		Long p = page == null ? defaultPage : page;
 
 		log.info(": /letter/send/list"+p);
-		String userId = sessionUtil.validSession(session);
+		// String userId = sessionUtil.validSession(session);
+		String userId = "2";
 		return ResponseEntity.ok(letterService.getLetterSendList(p, userId));
 
 	}
 	
 	@GetMapping("/send/{letterNo}")
 	public ResponseEntity<ResponseSuccessDTO<LetterGetLetterResponseDTO>> getSendLetter (
-			@PathVariable(value="letterNo") String letterNo,HttpSession session){
-		sessionUtil.validSession(session);
+			@PathVariable(value="letterNo") String letterNo){
+		//String userId = sessionUtil.validSession(session);
+		
 		return ResponseEntity.ok(letterService.getSendLetter(letterNo));
 	}
 	

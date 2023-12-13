@@ -24,6 +24,7 @@ import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.common.service.CommonService;
 import site.letterforyou.spring.common.util.ResponseUtil;
 import site.letterforyou.spring.common.util.TimeService;
+import site.letterforyou.spring.exception.service.DecryptionFailedException;
 import site.letterforyou.spring.exception.service.DefaultException;
 import site.letterforyou.spring.exception.service.EntityNullException;
 import site.letterforyou.spring.letter.domain.LetterDTO;
@@ -77,7 +78,7 @@ public class LetterServiceImpl implements LetterService {
 		log.info(result.toString());
 		// 이후에 호스팅 주소로 변경
 		try {
-			encryptNo = commonService.encrypt(letterNo);
+			encryptNo = commonService.encryptReceive(letterNo);
 			log.info("letterNo: " + letterNo);
 		} catch (Exception e) {
 			log.info("암호화 중 오류 발생" + e.getMessage());
@@ -174,7 +175,7 @@ public class LetterServiceImpl implements LetterService {
 			LetterNumDTO letterDTO = new LetterNumDTO();
 			
 			try {
-				letterDTO.setLetterNo(commonService.encrypt(l.getLetterNo() + ""));
+				letterDTO.setLetterNo(commonService.encryptReceive(l.getLetterNo() + ""));
 			} catch (Exception e) {
 				throw new DefaultException("암호화 중 오류 발생");
 			}
@@ -197,9 +198,9 @@ public class LetterServiceImpl implements LetterService {
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getReceivedLetter(String letterNo) {
 		Long no;
 		try {
-			no = commonService.decrypt(letterNo);
+			no = commonService.decryptReceive(letterNo);
 		} catch (Exception e) {
-			throw new DefaultException(e.getMessage());
+			throw new DecryptionFailedException("접근할 수 없는 페이지 입니다.");
 		}
 		LetterVO letterVo = letterMapper.getReceivedLetter(no);
 		if (letterVo == null) {
@@ -211,7 +212,7 @@ public class LetterServiceImpl implements LetterService {
 		LetterGetLetterResponseDTO result = new LetterGetLetterResponseDTO();
 		Letterdtos letterDTO = new Letterdtos();
 		try {
-			letterDTO.setLetterNo(commonService.encrypt(letterVo.getLetterNo() + ""));
+			letterDTO.setLetterNo(commonService.encryptReceive(letterVo.getLetterNo() + ""));
 		} catch (Exception e) {
 			throw new DefaultException("암호화 중 오류 발생");
 		}
@@ -232,7 +233,7 @@ public class LetterServiceImpl implements LetterService {
 	public ResponseSuccessDTO<LetterDeleteLetterResponseDTO> deleteReceivedLetter(String letterNo) {
 		Long no;
 		try {
-			no = commonService.decrypt(letterNo);
+			no = commonService.decryptReceive(letterNo);
 		} catch (Exception e) {
 			throw new DefaultException(e.getMessage());
 		}
@@ -256,7 +257,7 @@ public class LetterServiceImpl implements LetterService {
 		for (LetterVO l : letterVoList) {
 			LetterNumDTO letterDTO = new LetterNumDTO();
 			try {
-				letterDTO.setLetterNo(commonService.encrypt(l.getLetterNo() + ""));
+				letterDTO.setLetterNo(commonService.encryptSend(l.getLetterNo() + ""));
 			} catch (Exception e) {
 				throw new DefaultException("암호화 중 오류 발생");
 			}
@@ -279,19 +280,20 @@ public class LetterServiceImpl implements LetterService {
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getSendLetter(String letterNo) {
 		Long no;
 		try {
-			no = commonService.decrypt(letterNo);
+			no = commonService.decryptSend(letterNo);
 		} catch (Exception e) {
-			throw new DefaultException(e.getMessage());
+			throw new DecryptionFailedException("접근할 수 없는 페이지 입니다.");
 		}
 		LetterVO letterVo = letterMapper.getSendLetter(no);
-
+		
+		
 		if (letterVo == null) {
 			throw new EntityNullException("받은 편지가 존재하지 않습니다.");
 		}
 		LetterGetLetterResponseDTO result = new LetterGetLetterResponseDTO();
 		Letterdtos letterDTO = new Letterdtos();
 		try {
-			letterDTO.setLetterNo(commonService.encrypt(letterVo.getLetterNo() + ""));
+			letterDTO.setLetterNo(commonService.encryptSend(letterVo.getLetterNo() + ""));
 		} catch (Exception e) {
 			throw new DefaultException("암호화 중 오류 발생");
 		}
@@ -311,7 +313,7 @@ public class LetterServiceImpl implements LetterService {
 	public ResponseSuccessDTO<LetterDeleteLetterResponseDTO> deleteSendLetter(String letterNo) {
 		Long no;
 		try {
-			no = commonService.decrypt(letterNo);
+			no = commonService.decryptSend(letterNo);
 		} catch (Exception e) {
 			throw new DefaultException(e.getMessage());
 		}

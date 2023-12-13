@@ -12,23 +12,29 @@ import org.springframework.stereotype.Service;
 @Service
 public class CommonServiceImpl implements CommonService {
 
-    @Value("${encrypt.algorithm}")
-    private String ALGORITHM;
-    @Value("${encrypt.secret}")
-    private String SECRET_KEY; // Must be 16, 24, or 32 bytes
+    @Value("${encrypt.receive.algorithm}")
+    private String RECEIVE_ALGORITHM;
+    @Value("${encrypt.receive.secret}")
+    private String RECEIVE_SECRET_KEY; // Must be 16, 24, or 32 bytes
+    
+    @Value("${encrypt.send.algorithm}")
+    private String SEND_ALGORITHM;
+    
+    @Value("${encrypt.send.secret}")
+    private String SEND_SECRET_KEY;
 
-    public String encrypt(String plainText) throws Exception {
-        Key key = generateKey(SECRET_KEY, ALGORITHM);
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
+    public String encryptReceive(String plainText) throws Exception {
+        Key key = generateKeyForReceive(RECEIVE_SECRET_KEY, RECEIVE_ALGORITHM);
+        Cipher cipher = Cipher.getInstance(RECEIVE_ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
         return Base64.getUrlEncoder().encodeToString(encryptedBytes);
     }
 
-    public Long decrypt(String encryptedText) throws Exception {
+    public Long decryptReceive(String encryptedText) throws Exception {
         try {
-            Key key = generateKey(SECRET_KEY, ALGORITHM);
-            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            Key key = generateKeyForReceive(RECEIVE_SECRET_KEY, RECEIVE_ALGORITHM);
+            Cipher cipher = Cipher.getInstance(RECEIVE_ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] decryptedBytes = cipher.doFinal(Base64.getUrlDecoder().decode(encryptedText));
             String decryptedString = new String(decryptedBytes);
@@ -39,9 +45,37 @@ public class CommonServiceImpl implements CommonService {
             throw new Exception("Decryption failed: " + e.getMessage());
         }
     }
+    
+    public String encryptSend(String plainText) throws Exception {
+        Key key = generateKeyForReceive(SEND_SECRET_KEY, SEND_ALGORITHM);
+        Cipher cipher = Cipher.getInstance(SEND_ALGORITHM);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
+        return Base64.getUrlEncoder().encodeToString(encryptedBytes);
+    }
 
-    private static Key generateKey(String secretKey, String algorithm) {
+    public Long decryptSend(String encryptedText) throws Exception {
+        try {
+            Key key = generateKeyForReceive(SEND_SECRET_KEY, SEND_ALGORITHM);
+            Cipher cipher = Cipher.getInstance(SEND_ALGORITHM);
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            byte[] decryptedBytes = cipher.doFinal(Base64.getUrlDecoder().decode(encryptedText));
+            String decryptedString = new String(decryptedBytes);
+            return Long.parseLong(decryptedString);
+        } catch (NumberFormatException e) {
+            throw new Exception(" String -> Long Exception" + e.getMessage());
+        } catch (Exception e) {
+            throw new Exception("Decryption failed: " + e.getMessage());
+        }
+    }
+    private static Key generateKeyForReceive(String secretKey, String algorithm) {
         return new SecretKeySpec(secretKey.getBytes(), algorithm);
     }
+    private static Key generateKeyForSend(String secretKey, String algorithm) {
+    	byte[] keyBytes = new byte[16];
+    	System.arraycopy(secretKey.getBytes(), 0, keyBytes, 0, Math.min(secretKey.getBytes().length, keyBytes.length));
+        return new SecretKeySpec(keyBytes, algorithm);
+    }
+    
 }
 
