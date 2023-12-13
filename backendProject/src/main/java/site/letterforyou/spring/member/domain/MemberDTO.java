@@ -49,4 +49,9 @@ public class MemberDTO {
 	  refreshToken
 	 */
 	private String refreshToken;
+	
+	/**
+	  멤버인지 아닌지 여부를 체크한다.
+	 */
+	private String checkMemberYn;
 }

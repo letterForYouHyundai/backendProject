@@ -22,7 +22,7 @@ public interface MemberService {
 	////MemberDTO getKaKaoAccessAndRefreshToken(String code);
 	
 	/**
-	 카카오의 accessToken을 이용하여 User정보를 가져온다
+	  카카오의 accessToken을 이용하여 User정보를 가져온다
 	 */
 	MemberDTO getKaKaoUserInfo(String code);
 	
@@ -32,9 +32,12 @@ public interface MemberService {
 	MemberDTO insertMemberInfo( Map<String, Object> map);
 
 	/**
-	 카카오정보를 로그아웃한다.
+	  카카오정보를 로그아웃한다.
 	 */
 	public ResponseSuccessDTO<MemberDTO>  kakaoLogout(HttpSession session);
 	
-
+	/**
+	   회원여부를 조회한다.
+	 */
+	public ResponseSuccessDTO<MemberDTO>  checkMemberYn(String userEmail);
 }

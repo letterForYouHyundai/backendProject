@@ -6,17 +6,23 @@
 
 	<insert id="insertLetter" parameterType="site.letterforyou.spring.letter.domain.LetterDTO">
 			 INSERT INTO TBL_LETTER (
-		        LETTER_RECEIVE_ID
-		        , LETTER_SEND_ID
+			 	<if test="letterReceiveId !=null  and ! letterReceiveId.equals('')">
+		        LETTER_RECEIVE_ID ,
+		        </if>
+		        LETTER_SEND_ID
 		        , LETTER_TITLE
 		        , LETTER_CONTENT
 		        , LETTER_COLOR_NO
+		        , USER_ALIAS
 		    ) VALUES (
-		        #{letterReceiveId}
-		        , #{letterSendId}
+		    	<if test="letterReceiveId !=null  and ! letterReceiveId.equals('')">
+		        #{letterReceiveId} ,
+		         </if>
+		         #{letterSendId}
 		        , #{letterTitle}
 		        , #{letterContent}
 		        , #{letterColorNo}
+		        ,  #{userAlias}
 		    )
 	</insert>
 	
