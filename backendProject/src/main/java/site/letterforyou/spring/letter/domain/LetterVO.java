@@ -6,11 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class LetterVO {
 	
 	private Long letterNo;
@@ -19,7 +21,7 @@ public class LetterVO {
 	
 	private String letterContent;
 	
-	private String letterColorNo;
+	private Long letterColorNo;
 	
 	private String senderNickname;
 	
