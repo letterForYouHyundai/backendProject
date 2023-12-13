@@ -6,21 +6,17 @@
 
 	<insert id="insertLetter" parameterType="site.letterforyou.spring.letter.domain.LetterDTO">
 			 INSERT INTO TBL_LETTER (
-		        LETTER_RECEIVE_ID,
-		        LETTER_SEND_ID,
-		        LETTER_TITLE,
-		        LETTER_CONTENT,
-		        KAKAO_SEND_YN,
-		        LETTER_COLOR_NO,
-		        LETTER_RECEIVE_YN
+		        LETTER_RECEIVE_ID
+		        , LETTER_SEND_ID
+		        , LETTER_TITLE
+		        , LETTER_CONTENT
+		        , LETTER_COLOR_NO
 		    ) VALUES (
 		        #{letterReceiveId}
 		        , #{letterSendId}
 		        , #{letterTitle}
 		        , #{letterContent}
-		        , #{kakaoSendYn}
 		        , #{letterColorNo}
-		        , #{letterReceiveYn}
 		    )
 	</insert>
 	
@@ -49,7 +45,7 @@
 		LETTER_NO = #{letterNo}
  </update>
 <select id="getReceivedLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
-select letter_no as letterNo, letter_receive_yn as letterReceiveYn
+select letter_no as letterNo, letter_receive_yn as letterReceiveYn , letter_color_no as letterColorNo
 from tbl_letter
 where letter_receive_id = #{userId} 
 order by regist_dt desc
@@ -57,13 +53,20 @@ offset #{offset} rows fetch next #{size} rows only
 </select>
 
 <select id="getSendLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
-select letter_no as letterNo , letter_receive_yn as letterReceiveYn
+select letter_no as letterNo , letter_receive_yn as letterReceiveYn , letter_color_no as letterColorNo
 from tbl_letter
 where letter_send_id = #{userId} 
 order by regist_dt desc
 offset #{offset} rows fetch next #{size} rows only
 </select>
-
+<select id ="getLetterColor" resultType="site.letterforyou.spring.letter.dto.LetterColorDTO">
+select color_name as colorName,
+color_hex as colorHex,
+color_rgb as colorRgb,
+color_text as colorText
+from tbl_color
+where letter_color_no = #{letterColorNo}
+</select>
 
 <select id="getReceivedLetter" resultType="site.letterforyou.spring.letter.domain.LetterVO">
     SELECT 
@@ -92,15 +95,12 @@ offset #{offset} rows fetch next #{size} rows only
         l.letter_content as letterContent,
         l.letter_color_no as letterColorNo,
         l.letter_receive_yn as letterReceiveYn,
-        sender.user_nickname as senderNickname,  
-        receiver.user_nickname as receiverNickname,  
+        sender.user_nickname as senderNickname,    
         l.regist_dt as registDate
     FROM 
         tbl_letter l
     LEFT JOIN 
         tbl_user sender ON l.letter_send_id = sender.user_id  
-    LEFT JOIN 
-        tbl_user receiver ON l.letter_receive_id = receiver.user_id  
     WHERE 
         l.letter_no = #{letterNo}
 </select>

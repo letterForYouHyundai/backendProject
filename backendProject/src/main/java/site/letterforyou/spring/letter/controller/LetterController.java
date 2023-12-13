@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +39,7 @@ public class LetterController {
 	private SessionUtil sessionUtil;
 	
 	@PostMapping("/insertLetter")
-	public ResponseEntity<ResponseSuccessDTO<LetterDTO>> insertLetter(LetterDTO ldto, HttpSession session) throws Exception{
+	public ResponseEntity<ResponseSuccessDTO<LetterDTO>> insertLetter(@RequestBody LetterDTO ldto, HttpSession session) throws Exception{
 		
 		MemberDTO user = (MemberDTO) session.getAttribute("userInfo");
 		
@@ -66,6 +67,7 @@ public class LetterController {
 		Long p = page == null ? defaultPage : page;
 	
 		String userId = sessionUtil.validSession(session);
+		
 		log.info(": /letter/receive/list"+p);
 		
 		return ResponseEntity.ok(letterService.getLetterReceiveList(p, userId));
@@ -100,7 +102,8 @@ public class LetterController {
 	
 	@GetMapping("/send/{letterNo}")
 	public ResponseEntity<ResponseSuccessDTO<LetterGetLetterResponseDTO>> getSendLetter (
-			@PathVariable(value="letterNo") String letterNo){
+			@PathVariable(value="letterNo") String letterNo,HttpSession session){
+		sessionUtil.validSession(session);
 		return ResponseEntity.ok(letterService.getSendLetter(letterNo));
 	}
 	

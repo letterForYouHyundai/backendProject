@@ -11,9 +11,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class LetterNumDTO {
-	private String letterNo;
-	
-	private LetterColorDTO colorPalette;
-	private String LetterReceiveYn;
+public class LetterColorDTO {
+
+	private String colorName;
+	private String colorHex;
+	private String colorRgb;
+	private String colorText;
 }

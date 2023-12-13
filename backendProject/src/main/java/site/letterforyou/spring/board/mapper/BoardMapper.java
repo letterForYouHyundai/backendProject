@@ -33,5 +33,7 @@ public interface BoardMapper {
 	public BoardVO getBoardLike(@Param("boardNo")Long boardNo, @Param("userId")String userId);
 	
 	public void updateBoardLike(@Param("boardNo") Long boardNo);
+	
+	public Long getLatestBoardNo(); 
 }	
 	

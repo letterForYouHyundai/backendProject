@@ -19,7 +19,7 @@ public class Letterdtos {
 	
 	private String letterContent;
 	
-	private String letterColorNo;
+	private LetterColorDTO colorPalette;
 	
 	private String senderNickname;
 	
