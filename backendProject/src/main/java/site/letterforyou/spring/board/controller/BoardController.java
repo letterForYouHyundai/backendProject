@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import site.letterforyou.spring.board.dto.BoardDeleteResponseDTO;
@@ -54,11 +56,12 @@ public class BoardController {
 	@Autowired
 	private SessionUtil sessionUtil;
 
-	@ApiOperation(value = "자유게시판 - 게시글 리스트", notes = " 자유게시판 리스트를 가져옵니다. ")
-//	@ApiImplicitParams({
-//			@ApiImplicitParam(name = "page", value = "페이지 번호", required = false, dataType = "Long", paramType = "path", defaultValue = "None"),
-//			@ApiImplicitParam(name = "sortBy", value = "조회 기준", required = false, dataType = "string", paramType = "path", defaultValue = "None"),
-//			@ApiImplicitParam(name = "inOrder", value = "정렬 기준", required = false, dataType = "int", paramType = "path", defaultValue = "1") })
+	@ApiOperation(value = "자유게시판 - 게시글 리스트", notes = "자유게시판 리스트를 가져옵니다.")
+	@ApiImplicitParams({
+	    @ApiImplicitParam(name = "page", value = "페이지 번호", required = false, dataTypeClass = Long.class, paramType = "query", defaultValue = "1L"),
+	    @ApiImplicitParam(name = "sortBy", value = "조회 기준", required = false, dataType = "string", paramType = "query", defaultValue = "None"),
+	    @ApiImplicitParam(name = "inOrder", value = "정렬 기준", required = false, dataType = "Integer", paramType = "query", defaultValue = "1")
+	})
 	@GetMapping("/list")
 	public ResponseEntity<ResponseSuccessDTO<BoardGetListResponseDTO>> getBoardList(
 			@RequestParam(value = "page", required = false) Long page,
