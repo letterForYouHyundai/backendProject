@@ -157,15 +157,20 @@ public class LetterServiceImpl implements LetterService {
 		Long size = pageVo.getRecordSize();
 		log.info(page + " " + userId + " " + offset + " " + size);
 		List<LetterVO> letterVoList = letterMapper.getReceivedLetters(userId, offset, size);
-
+		for( LetterVO l : letterVoList) {
+			
+			log.info(l);
+		}
 		List<LetterNumDTO> letterList = new ArrayList<>();
 		for (LetterVO l : letterVoList) {
 			LetterNumDTO letterDTO = new LetterNumDTO();
+			
 			try {
 				letterDTO.setLetterNo(commonService.encrypt(l.getLetterNo() + ""));
 			} catch (Exception e) {
 				throw new DefaultException("암호화 중 오류 발생");
 			}
+			letterDTO.setColorPalette(letterMapper.getLetterColor(l.getLetterColorNo()));
 			letterDTO.setLetterReceiveYn(l.getLetterReceiveYn());
 			letterList.add(letterDTO);
 		}
@@ -204,7 +209,7 @@ public class LetterServiceImpl implements LetterService {
 		}
 		letterDTO.setLetterTitle(letterVo.getLetterTitle());
 		letterDTO.setLetterContent(letterVo.getLetterContent());
-		letterDTO.setLetterColorNo(letterVo.getLetterColorNo());
+		letterDTO.setColorPalette(letterMapper.getLetterColor(letterVo.getLetterColorNo()));
 		letterDTO.setReceiverNickname(letterVo.getReceiverNickname());
 		letterDTO.setSenderNickname(letterVo.getSenderNickname());
 		letterDTO.setRegistDate(timeService.parseLocalDateTimeForLetter(letterVo.getRegistDate()));
@@ -247,13 +252,14 @@ public class LetterServiceImpl implements LetterService {
 			} catch (Exception e) {
 				throw new DefaultException("암호화 중 오류 발생");
 			}
+			letterDTO.setColorPalette(letterMapper.getLetterColor(l.getLetterColorNo()));
 			letterDTO.setLetterReceiveYn(l.getLetterReceiveYn());
 			letterList.add(letterDTO);
 		}
 
 		int count = letterMapper.getTotalCountSendLetterByUserId(userId);
 		Pagination pagination = new Pagination(count, pageVo);
-
+		
 		result.setLetterList(letterList);
 		result.setPagination(pagination);
 		ResponseSuccessDTO<LetterGetListResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
@@ -283,7 +289,7 @@ public class LetterServiceImpl implements LetterService {
 		}
 		letterDTO.setLetterTitle(letterVo.getLetterTitle());
 		letterDTO.setLetterContent(letterVo.getLetterContent());
-		letterDTO.setLetterColorNo(letterVo.getLetterColorNo());
+		letterDTO.setColorPalette(letterMapper.getLetterColor(letterVo.getLetterColorNo()));
 		letterDTO.setReceiverNickname(letterVo.getReceiverNickname());
 		letterDTO.setSenderNickname(letterVo.getSenderNickname());
 		letterDTO.setRegistDate(timeService.parseLocalDateTimeForLetter(letterVo.getRegistDate()));

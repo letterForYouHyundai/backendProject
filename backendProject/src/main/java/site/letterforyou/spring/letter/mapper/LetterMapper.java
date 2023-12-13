@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import site.letterforyou.spring.letter.domain.LetterDTO;
 import site.letterforyou.spring.letter.domain.LetterVO;
+import site.letterforyou.spring.letter.dto.LetterColorDTO;
 
 public interface LetterMapper {
 
@@ -40,6 +41,5 @@ public interface LetterMapper {
 	
 	public void updateLetterRecieve(Long letterNo);
 
-
-
+	public LetterColorDTO getLetterColor(Long letterColorNo);
 }
