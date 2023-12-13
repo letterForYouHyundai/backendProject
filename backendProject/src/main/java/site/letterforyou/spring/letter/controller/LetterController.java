@@ -23,7 +23,8 @@ import site.letterforyou.spring.common.util.SessionUtil;
 import site.letterforyou.spring.letter.domain.LetterDTO;
 import site.letterforyou.spring.letter.dto.LetterDeleteLetterResponseDTO;
 import site.letterforyou.spring.letter.dto.LetterGetLetterResponseDTO;
-import site.letterforyou.spring.letter.dto.LetterGetListResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterGetReceiveListResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterGetSendListResponseDTO;
 import site.letterforyou.spring.letter.service.LetterService;
 import site.letterforyou.spring.member.domain.MemberDTO;
 
@@ -59,7 +60,7 @@ public class LetterController {
 	
 	}
 	@GetMapping("/receive/list")
-	public ResponseEntity<ResponseSuccessDTO<LetterGetListResponseDTO>> getReceivedLetters(
+	public ResponseEntity<ResponseSuccessDTO<LetterGetReceiveListResponseDTO>> getReceivedLetters(
 			@RequestParam(value = "page", required = false) Long page, HttpSession session) {
 
 		Long defaultPage = 1L;
@@ -89,7 +90,7 @@ public class LetterController {
 	}
 	
 	@GetMapping("/send/list")
-	public ResponseEntity<ResponseSuccessDTO<LetterGetListResponseDTO>> getSendLetters(
+	public ResponseEntity<ResponseSuccessDTO<LetterGetSendListResponseDTO>> getSendLetters(
 			@RequestParam(value = "page", required = false) Long page, HttpSession session) {
 
 		Long defaultPage = 1L;

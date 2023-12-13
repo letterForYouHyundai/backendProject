@@ -4,7 +4,8 @@ import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.letter.domain.LetterDTO;
 import site.letterforyou.spring.letter.dto.LetterDeleteLetterResponseDTO;
 import site.letterforyou.spring.letter.dto.LetterGetLetterResponseDTO;
-import site.letterforyou.spring.letter.dto.LetterGetListResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterGetReceiveListResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterGetSendListResponseDTO;
 
 public interface LetterService {
 
@@ -15,8 +16,8 @@ public interface LetterService {
 	
 	String makeURL(LetterDTO ldto);
 
-	public ResponseSuccessDTO<LetterGetListResponseDTO> getLetterReceiveList(Long page, String userId);	
-	public ResponseSuccessDTO<LetterGetListResponseDTO> getLetterSendList(Long page, String userId);
+	public ResponseSuccessDTO<LetterGetReceiveListResponseDTO> getLetterReceiveList(Long page, String userId);	
+	public ResponseSuccessDTO<LetterGetSendListResponseDTO> getLetterSendList(Long page, String userId);
 	
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getReceivedLetter(String letterNo);
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getSendLetter(String letterNo);

@@ -31,8 +31,10 @@ import site.letterforyou.spring.letter.domain.LetterDTO;
 import site.letterforyou.spring.letter.domain.LetterVO;
 import site.letterforyou.spring.letter.dto.LetterDeleteLetterResponseDTO;
 import site.letterforyou.spring.letter.dto.LetterGetLetterResponseDTO;
-import site.letterforyou.spring.letter.dto.LetterGetListResponseDTO;
-import site.letterforyou.spring.letter.dto.LetterNumDTO;
+import site.letterforyou.spring.letter.dto.LetterGetReceiveListResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterGetSendListResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterReceiveDTO;
+import site.letterforyou.spring.letter.dto.LetterSendDTO;
 import site.letterforyou.spring.letter.dto.Letterdtos;
 import site.letterforyou.spring.letter.mapper.LetterMapper;
 
@@ -159,8 +161,8 @@ public class LetterServiceImpl implements LetterService {
 	}
 
 	@Override
-	public ResponseSuccessDTO<LetterGetListResponseDTO> getLetterReceiveList(Long page, String userId) {
-		LetterGetListResponseDTO result = new LetterGetListResponseDTO();
+	public ResponseSuccessDTO<LetterGetReceiveListResponseDTO> getLetterReceiveList(Long page, String userId) {
+		LetterGetReceiveListResponseDTO result = new LetterGetReceiveListResponseDTO();
 		PageVO pageVo = new PageVO(page, 10L, 10L);
 		Long offset = pageVo.getOffset();
 		Long size = pageVo.getRecordSize();
@@ -170,9 +172,9 @@ public class LetterServiceImpl implements LetterService {
 			
 			log.info(l);
 		}
-		List<LetterNumDTO> letterList = new ArrayList<>();
+		List<LetterReceiveDTO> letterList = new ArrayList<>();
 		for (LetterVO l : letterVoList) {
-			LetterNumDTO letterDTO = new LetterNumDTO();
+			LetterReceiveDTO letterDTO = new LetterReceiveDTO();
 			
 			try {
 				letterDTO.setLetterNo(commonService.encryptReceive(l.getLetterNo() + ""));
@@ -181,6 +183,7 @@ public class LetterServiceImpl implements LetterService {
 			}
 			letterDTO.setColorPalette(letterMapper.getLetterColor(l.getLetterColorNo()));
 			letterDTO.setLetterReceiveYn(l.getLetterReceiveYn());
+			letterDTO.setSenderNickname(l.getSenderNickname());
 			letterList.add(letterDTO);
 		}
 
@@ -189,7 +192,7 @@ public class LetterServiceImpl implements LetterService {
 
 		result.setLetterList(letterList);
 		result.setPagination(pagination);
-		ResponseSuccessDTO<LetterGetListResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
+		ResponseSuccessDTO<LetterGetReceiveListResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
 
 		return res;
 	}
@@ -245,22 +248,23 @@ public class LetterServiceImpl implements LetterService {
 	}
 
 	@Override
-	public ResponseSuccessDTO<LetterGetListResponseDTO> getLetterSendList(Long page, String userId) {
-		LetterGetListResponseDTO result = new LetterGetListResponseDTO();
+	public ResponseSuccessDTO<LetterGetSendListResponseDTO> getLetterSendList(Long page, String userId) {
+		LetterGetSendListResponseDTO result = new LetterGetSendListResponseDTO();
 		PageVO pageVo = new PageVO(page, 10L, 10L);
 		Long offset = pageVo.getOffset();
 		Long size = pageVo.getRecordSize();
 		log.info(page + " " + userId + " " + offset + " " + size);
 		List<LetterVO> letterVoList = letterMapper.getSendLetters(userId, offset, size);
 
-		List<LetterNumDTO> letterList = new ArrayList<>();
+		List<LetterSendDTO> letterList = new ArrayList<>();
 		for (LetterVO l : letterVoList) {
-			LetterNumDTO letterDTO = new LetterNumDTO();
+			LetterSendDTO letterDTO = new LetterSendDTO();
 			try {
 				letterDTO.setLetterNo(commonService.encryptSend(l.getLetterNo() + ""));
 			} catch (Exception e) {
 				throw new DefaultException("암호화 중 오류 발생");
 			}
+			letterDTO.setReceiverNickname(l.getReceiverNickname());
 			letterDTO.setColorPalette(letterMapper.getLetterColor(l.getLetterColorNo()));
 			letterDTO.setLetterReceiveYn(l.getLetterReceiveYn());
 			letterList.add(letterDTO);
@@ -271,7 +275,7 @@ public class LetterServiceImpl implements LetterService {
 		
 		result.setLetterList(letterList);
 		result.setPagination(pagination);
-		ResponseSuccessDTO<LetterGetListResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
+		ResponseSuccessDTO<LetterGetSendListResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
 
 		return res;
 	}
@@ -303,6 +307,7 @@ public class LetterServiceImpl implements LetterService {
 		letterDTO.setReceiverNickname(letterVo.getReceiverNickname());
 		letterDTO.setSenderNickname(letterVo.getSenderNickname());
 		letterDTO.setRegistDate(timeService.parseLocalDateTimeForLetter(letterVo.getRegistDate()));
+		letterDTO.setLetterReceiveYn(letterVo.getLetterReceiveYn());
 		result.setLetterDTO(letterDTO);
 		ResponseSuccessDTO<LetterGetLetterResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
 

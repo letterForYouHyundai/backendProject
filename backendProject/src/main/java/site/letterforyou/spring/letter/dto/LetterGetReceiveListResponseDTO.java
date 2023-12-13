@@ -7,9 +7,9 @@ import site.letterforyou.spring.common.domain.Pagination;
 
 @Data
 
-public class LetterGetListResponseDTO {
+public class LetterGetReceiveListResponseDTO {
 
-	private List<LetterNumDTO> letterList;
+	private List<LetterReceiveDTO> letterList;
 	
 	private Pagination pagination;
 }
