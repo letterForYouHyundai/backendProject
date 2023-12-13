@@ -173,9 +173,15 @@ public class BoardServiceImpl implements BoardService {
 			boardVo.setBoardThumbNail(thumbUrlList.get(0));
 		}
 		else if(multiPartFiles== null  || multiPartFiles.size()<=0) {
+			log.info(multiPartFiles.size()+"");
+			
 			boardVo.setBoardThumbNail("https://letter4u-bucket.s3.ap-northeast-2.amazonaws.com/thumb/thumb_default.png");
 		}
-		Long returnBoardNo = boardMapper.addBoard(boardVo);
+		
+		boardMapper.addBoard(boardVo);
+		
+		Long returnBoardNo = boardMapper.getLatestBoardNo();
+		log.info(returnBoardNo+"");
 		
 		if(multiPartFiles != null) {
 			List<String> urlList = s3Service.uploadFile(returnBoardNo+"", multiPartFiles);

@@ -98,7 +98,7 @@
 	
 <insert id="addBoard" useGeneratedKeys="true" parameterType="site.letterforyou.spring.board.domain.BoardVO" >
     INSERT INTO TBL_BOARD (board_no, user_id, board_title, board_content, board_thumbnail) 
-    VALUES (TBL_BOARD_SEQ.NEXTVAL, #{userId}, #{boardTitle}, #{boardContent}, #{boardThumbNail})
+    VALUES (TBL_BOARD_SEQ.NEXTVAL, #{boardVo.userId}, #{boardVo.boardTitle}, #{boardVo.boardContent}, #{boardVo.boardThumbNail})
 </insert>
 
 	
@@ -152,6 +152,14 @@ update tbl_board
 set board_view= board_view+1
 where board_no = {boardNo}
 </update>
+
+<select id="getLatestBoardNo" resultType="long">
+select board_no as boardNo
+from tbl_board
+order by regist_dt desc
+FETCH FIRST 1 ROW ONLY
+
+</select>
 
 	
 </mapper>
