@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -50,11 +51,16 @@ public class LetterServiceImpl implements LetterService {
 	@Autowired
 	private LetterMapper letterMapper;
 
+	@Value("${letter4u.url}")
+	private String contextUrl;
+	
+	
 	@Override
 	public ResponseSuccessDTO<LetterDTO> insertLetter(LetterDTO result) {
 
 		String url = "";
-
+		
+		
 		log.info( "result: "+result.toString());
 		//result.setLetterReceiveId("user1");
 		//result.setLetterSendId("user1"); //이후에 확인 후 제거1
@@ -77,7 +83,7 @@ public class LetterServiceImpl implements LetterService {
 			log.info("암호화 중 오류 발생" + e.getMessage());
 		}
 		// String URL ="http://localhost:8080/api/letter/receive/"+encryptNo;
-		String URL = "http://localhost:3000/api/letter/receive/" + encryptNo;
+		String URL = contextUrl+"/api/letter/receive/" + encryptNo;
 
 		// 운영 환경 세팅
 		// String URL ="https://letter4u.site/letter/receive/"+letterNo;
