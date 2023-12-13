@@ -6,23 +6,17 @@
 
 	<insert id="insertLetter" parameterType="site.letterforyou.spring.letter.domain.LetterDTO">
 			 INSERT INTO TBL_LETTER (
-		        LETTER_RECEIVE_ID,
-		        LETTER_SEND_ID,
-		        LETTER_TITLE,
-		        LETTER_CONTENT,
-		        LETTER_URL,
-		        KAKAO_SEND_YN,
-		        LETTER_COLOR_NO,
-		        LETTER_RECEIVE_YN
+		        LETTER_RECEIVE_ID
+		        , LETTER_SEND_ID
+		        , LETTER_TITLE
+		        , LETTER_CONTENT
+		        , LETTER_COLOR_NO
 		    ) VALUES (
 		        #{letterReceiveId}
 		        , #{letterSendId}
 		        , #{letterTitle}
 		        , #{letterContent}
-		        , #{letterUrl}
-		        , #{kakaoSendYn}
 		        , #{letterColorNo}
-		        , #{letterReceiveYn}
 		    )
 	</insert>
 	

@@ -55,14 +55,13 @@ public class LetterServiceImpl implements LetterService {
 
 		String url = "";
 
-		// result.setLetterReceiveId("user1");
-		// result.setLetterSendId("user1"); //이후에 확인 후 제거
-		// result.setLetterTitle("title");
-		// result.setLetterContent("content");
+		//result.setLetterReceiveId("user1");
+		//result.setLetterSendId("user1"); //이후에 확인 후 제거
+		//result.setLetterTitle("title");
+		//result.setLetterContent("content");
 		// result.setKakaoSendYn("N");
-		// result.setLetterColorNo("46");
+		//result.setLetterColorNo("46");
 		// result.setLetterReceiveYn("2");
-
 		letterMapper.insertLetter(result);
 
 		String letterNo = letterMapper.selectLastInsertKey(result);
