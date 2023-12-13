@@ -10,7 +10,10 @@
 		FROM 
 		   TBL_USER
 		<if test="userEmail!=null and !userEmail.equals('')">
-				WHERE USER_EMAIL = #{userEmail}
+			WHERE USER_EMAIL = #{userEmail}
+		</if>
+		<if test="userId !=null  and !userId.equals('')">
+			WHERE USER_ID = #{userId}
 		</if>
 	</select>
 	
@@ -33,6 +36,9 @@
 		    TBL_USER
 		<if test="userEmail!=null and !userEmail.equals('')">
 			WHERE USER_EMAIL = #{userEmail}
+		</if>
+		<if test="userId !=null  and !userId.equals('')">
+			WHERE USER_ID = #{userId}
 		</if>
 	</select>
 	 <insert id="insertRefreshToken" parameterType="site.letterforyou.spring.member.domain.MemberDTO">
