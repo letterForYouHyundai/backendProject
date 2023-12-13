@@ -14,6 +14,9 @@ RUN mvn -e clean package -DskipTests
 
 FROM tomcat:9.0-jdk11-openjdk
 
+# TimeZone 변경
+ENV TZ=Asia/Seoul
+
 
 RUN rm -rf /usr/local/tomcat/webapps/*
 
