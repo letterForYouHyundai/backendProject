@@ -244,4 +244,23 @@ public class MemberServiceImpl implements MemberService{
 		return  responseUtil.successResponse(mdto, HttpStatus.OK);
 	}
 
+	@Override
+	public ResponseSuccessDTO<MemberDTO> checkMemberYn(String userEmail) {
+
+		MemberDTO mdto = new MemberDTO();
+		mdto.setUserEmail(userEmail);
+		log.info("userEmail: "+userEmail);
+		
+		int checkMember = memberMapper.selectMemberCnt(mdto);
+		
+		//회원인 경우 멤버여부를 Y로 셋팅해 준다.
+		if(checkMember > 0) {
+			mdto.setCheckMemberYn("Y");
+		}else {
+			mdto.setCheckMemberYn("N");
+		}
+		
+		return responseUtil.successResponse(mdto, HttpStatus.OK);
+	}
+
 }

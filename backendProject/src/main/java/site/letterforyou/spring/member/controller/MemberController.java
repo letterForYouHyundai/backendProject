@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -58,6 +59,12 @@ public class MemberController {
     
         return ResponseEntity.ok(memberService.kakaoLogout(session));
     }
+    @GetMapping("/checkMemberYn")
+    @ResponseBody
+    public ResponseEntity<ResponseSuccessDTO<MemberDTO>> checkMemberYn(@RequestParam("userEmail") String userEmail) {
+    	  log.info(userEmail);
+    	  return ResponseEntity.ok(memberService.checkMemberYn(userEmail));	
+    }
 
     @GetMapping("/kakaoRegister")
     @ResponseBody
@@ -66,4 +73,5 @@ public class MemberController {
         // Do something if needed
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
+   
 }
