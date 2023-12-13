@@ -105,10 +105,7 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public ResponseSuccessDTO<BoardGetResponseDTO> getBoard(Long boardNo, String userId) {
-		// 조회수 검증 추가
 		
-		
-		//
  		BoardGetResponseDTO responseDTO = new BoardGetResponseDTO();
 		
 		BoardVO boardVo = boardMapper.getBoard(boardNo);

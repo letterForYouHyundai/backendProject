@@ -150,7 +150,7 @@ where board_no=#{boardNo}
 
 update tbl_board
 set board_view= board_view+1
-where board_no = {boardNo}
+where board_no = #{boardNo}
 </update>
 
 <select id="getLatestBoardNo" resultType="long">
