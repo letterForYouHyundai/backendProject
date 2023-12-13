@@ -43,7 +43,7 @@ public class LetterDTO {
 	  /**
 	   편지 배경번호
 	  */
-	  private String letterColorNo;
+	  private Long letterColorNo;
 	  
 	  /**
 	   받은 편지 열람여부
@@ -54,4 +54,9 @@ public class LetterDTO {
 	   엑세스토큰
 	  */
 	  private String accessToken;
+	  
+	  /**
+	   유저 별칭
+	   */
+	  private String userAlias;
 }
