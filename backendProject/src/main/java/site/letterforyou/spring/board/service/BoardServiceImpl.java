@@ -37,6 +37,7 @@ import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.common.util.ResponseUtil;
 import site.letterforyou.spring.common.util.TimeService;
 import site.letterforyou.spring.exception.service.EntityNullException;
+import site.letterforyou.spring.member.domain.MemberDTO;
 
 @Service
 @Slf4j
@@ -47,6 +48,7 @@ public class BoardServiceImpl implements BoardService {
 	@Autowired
 	private BoardMapper boardMapper;
 	
+
 
 	@Autowired
 	private CommentMapper commentMapper;
@@ -121,6 +123,8 @@ public class BoardServiceImpl implements BoardService {
 		if(bv==null) {
 			userLiked="N";
 		}
+		MemberDTO mdto = boardMapper.getUser(userId);
+		String ownerNick = mdto.getUserNickname();
 		
 		List<CommentVO> commentVoList = commentMapper.getCommentList(boardNo);
 		
@@ -136,6 +140,10 @@ public class BoardServiceImpl implements BoardService {
 			commentDTO.setCommentDate(timeService.parseLocalDateTimeForBoardDetail(c.getRegistDate()));
 			commentDTO.setCommentContent(c.getCommentContent());
 			commentDTO.setUserImage(c.getUserImage());
+			if(c.getUserNickname().equals(ownerNick)) {
+				commentDTO.setIsWriter("Y");
+			}
+			else 	commentDTO.setIsWriter("N");
 			commentList.add(commentDTO);
 		}
 		

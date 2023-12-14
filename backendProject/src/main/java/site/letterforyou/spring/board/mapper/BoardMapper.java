@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import site.letterforyou.spring.board.domain.AttachVO;
 import site.letterforyou.spring.board.domain.BoardVO;
+import site.letterforyou.spring.member.domain.MemberDTO;
 
 public interface BoardMapper {
 
@@ -35,5 +36,7 @@ public interface BoardMapper {
 	public void updateBoardLike(@Param("boardNo") Long boardNo);
 	
 	public Long getLatestBoardNo(); 
+	
+	public MemberDTO getUser(String userId);
 }	
 	

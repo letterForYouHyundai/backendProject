@@ -161,5 +161,17 @@ FETCH FIRST 1 ROW ONLY
 
 </select>
 
+<select id="getUser" resultType = "site.letterforyou.spring.member.domain.MemberDTO">
+SELECT
+		    USER_ID AS userId
+		    , USER_NAME  AS userName
+		    , USER_EMAIL  AS userEmail
+		    , USER_NICKNAME AS userNickname
+		    , USER_IMAGE AS userImage
+		    , USER_SIGNUP_DT AS userSignupDt
+		FROM 
+		    TBL_USER
+		    where user_id = #{userId}
+		   </select>
 	
 </mapper>
