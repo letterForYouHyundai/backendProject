@@ -25,6 +25,7 @@ public class BoardGetResponseDTO {
 	
 	private Long boardLike;
 	
+	private String likeYn;
 	
 	private List<String> attachList;
 	

@@ -116,6 +116,12 @@ public class BoardServiceImpl implements BoardService {
 		if(!boardVo.getUserId().equals(userId)) { // 글쓴이가 아니라면 조회수 증가 
 			boardMapper.updateBoardLike(boardNo);
 		}
+		BoardVO bv = boardMapper.getBoardLike(boardNo, userId);
+		String userLiked = "Y";
+		if(bv==null) {
+			userLiked="N";
+		}
+		
 		List<CommentVO> commentVoList = commentMapper.getCommentList(boardNo);
 		
 		List<AttachVO> attachVoList = boardMapper.getAttachByBoardNo(boardNo);
@@ -143,6 +149,7 @@ public class BoardServiceImpl implements BoardService {
 		responseDTO.setBoardLike(boardVo.getLikeCount());
 		responseDTO.setUserNickname(boardVo.getUserNickname());
 		responseDTO.setUserImage(boardVo.getUserImage());
+		responseDTO.setLikeYn(userLiked);
 		responseDTO.setCommentList(commentList);
 		responseDTO.setAttachList(attachList);
 		
@@ -157,7 +164,6 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles, BoardPostRequestDTO boardDTO,String userId) throws IOException {
 		// Thumbnail은 처음 이미지 따서 board에 저장
-//		
 		BoardVO boardVo = new BoardVO();
 		boardVo.setBoardContent(boardDTO.getBoardContent());
 		boardVo.setBoardTitle(boardDTO.getBoardTitle());
