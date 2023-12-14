@@ -17,6 +17,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j;
@@ -249,16 +250,20 @@ public class MemberServiceImpl implements MemberService{
 
 		MemberDTO mdto = new MemberDTO();
 		mdto.setUserEmail(userEmail);
-		log.info("userEmail: "+userEmail);
 		
-		int checkMember = memberMapper.selectMemberCnt(mdto);
-		
-		//회원인 경우 멤버여부를 Y로 셋팅해 준다.
-		if(checkMember > 0) {
-			mdto.setCheckMemberYn("Y");
-		}else {
+		//회원 이메일이 존재하지 않는 경우
+		if(StringUtils.isNullOrEmpty(userEmail)) {
 			mdto.setCheckMemberYn("N");
+		}else {
+			int checkMember = memberMapper.selectMemberCnt(mdto);
+			//회원인 경우 멤버여부를 Y로 셋팅해 준다.
+			if(checkMember > 0) {
+				mdto.setCheckMemberYn("Y");
+			}else {
+				mdto.setCheckMemberYn("N");
+			}
 		}
+		
 		
 		return responseUtil.successResponse(mdto, HttpStatus.OK);
 	}
