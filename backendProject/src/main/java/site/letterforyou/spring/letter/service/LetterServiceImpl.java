@@ -69,7 +69,7 @@ public class LetterServiceImpl implements LetterService {
 		String url = "";
 		
 		
-		log.info( "result: "+result.toString());
+		log.info( "result확인 : "+result.toString());
 		//result.setLetterReceiveId("user1");
 		//result.setLetterSendId("user1"); //이후에 확인 후 제거1
 		//result.setLetterTitle("title");
@@ -78,12 +78,10 @@ public class LetterServiceImpl implements LetterService {
 		// result.setLetterReceiveYn("2");
 		// result.setLetterColorNo(Long.parseLong("1"));
 		// result.setUserAlias("test");
-		log.info("수신이메일 : "+ result.getLetterReceiveId());
-		if(result.getLetterReceiveId() != null) {
+		if(result.getLetterReceiveId() != null && !result.getLetterReceiveId().trim().isEmpty()) {
 			MemberDTO mdto = new MemberDTO();
 			mdto.setUserEmail(result.getLetterReceiveId());
 			MemberDTO resultMdto  = memberMapper.selectMemberInfo(mdto);
-			log.info("수신아이디 : "+ resultMdto.getUserId());
 			result.setLetterReceiveId(String.valueOf(resultMdto.getUserId()));
 		}
 		
@@ -95,7 +93,6 @@ public class LetterServiceImpl implements LetterService {
 		// 이후에 호스팅 주소로 변경
 		try {
 			encryptNo = commonService.encryptReceive(letterNo);
-			log.info("letterNo: " + letterNo);
 		} catch (Exception e) {
 			log.info("암호화 중 오류 발생" + e.getMessage());
 		}
