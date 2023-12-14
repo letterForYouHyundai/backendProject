@@ -269,7 +269,7 @@ public class LetterServiceImpl implements LetterService {
 			} catch (Exception e) {
 				throw new DefaultException("암호화 중 오류 발생");
 			}
-			letterDTO.setReceiverNickname(l.getReceiverNickname());
+			letterDTO.setReceiverNickname(l.getUserAlias());
 			letterDTO.setColorPalette(letterMapper.getLetterColor(l.getLetterColorNo()));
 			letterDTO.setLetterReceiveYn(l.getLetterReceiveYn());
 			letterList.add(letterDTO);

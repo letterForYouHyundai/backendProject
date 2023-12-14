@@ -52,7 +52,7 @@ SELECT
 FROM 
     tbl_letter l
 INNER JOIN 
-   tbl_user u ON l.letter_receive_id = u.user_id
+   tbl_user u ON l.letter_send_id = u.user_id
 WHERE 
     l.letter_receive_id = #{userId} 
 ORDER BY 
@@ -68,7 +68,8 @@ SELECT
     l.letter_no AS letterNo, 
     l.letter_receive_yn AS letterReceiveYn, 
     l.letter_color_no AS letterColorNo,
-    u.user_nickname AS receiverNickname
+    u.user_nickname AS receiverNickname,
+    l.user_alias as userAlias
 FROM 
     tbl_letter l
 LEFT JOIN 
