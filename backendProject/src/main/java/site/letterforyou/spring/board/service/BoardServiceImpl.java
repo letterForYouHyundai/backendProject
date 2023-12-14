@@ -186,7 +186,7 @@ public class BoardServiceImpl implements BoardService {
 			log.info(multiPartFiles.size() + "");
 
 			boardVo.setBoardThumbNail(
-					"https://letter4u-bucket.s3.ap-northeast-2.amazonaws.com/thumb/thumb_default.png");
+					"https://letter4u-bucket.s3.ap-northeast-2.amazonaws.com/test/no_image.jpg");
 		}
 
 		boardMapper.addBoard(boardVo);
