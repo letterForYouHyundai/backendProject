@@ -140,6 +140,7 @@ public class BoardServiceImpl implements BoardService {
 			commentDTO.setUserNickname(c.getUserNickname());
 			commentDTO.setCommentDate(timeService.parseLocalDateTimeForBoardDetail(c.getRegistDate()));
 			commentDTO.setCommentContent(c.getCommentContent());
+			commentDTO.setUseYn(c.getUseYn());
 			commentDTO.setUserImage(c.getUserImage());
 			if (c.getUserNickname().equals(ownerNick)) {
 				commentDTO.setIsWriter("Y");
