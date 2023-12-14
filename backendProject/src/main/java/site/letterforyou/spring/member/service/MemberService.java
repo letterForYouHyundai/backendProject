@@ -6,7 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.letter.domain.LetterDTO;
-import site.letterforyou.spring.letter.dto.LetterGetListResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterGetReceiveListResponseDTO;
 import site.letterforyou.spring.member.domain.MemberDTO;
 
 public interface MemberService {

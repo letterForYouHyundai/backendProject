@@ -11,9 +11,9 @@
         </if>
         LETTER_SEND_ID, LETTER_TITLE, LETTER_CONTENT, LETTER_COLOR_NO, USER_ALIAS
     ) VALUES (
-        <if test="letterReceiveId != null and !letterReceiveId.equals('')">
-            #{letterReceiveId,jdbcType=STRING}, <!-- Modify this line -->
-        </if>
+        <if test="letterReceiveId != null and letterReceiveId.trim().length() > 0">
+    		#{letterReceiveId,jdbcType=VARCHAR},
+		</if>
         #{letterSendId}, #{letterTitle}, #{letterContent}, #{letterColorNo}, #{userAlias}
     )
 </insert>
@@ -44,19 +44,43 @@
 		LETTER_NO = #{letterNo}
  </update>
 <select id="getReceivedLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
-select letter_no as letterNo, letter_receive_yn as letterReceiveYn , letter_color_no as letterColorNo
-from tbl_letter
-where letter_receive_id = #{userId} 
-order by regist_dt desc
-offset #{offset} rows fetch next #{size} rows only
+SELECT 
+    l.letter_no AS letterNo, 
+    l.letter_receive_yn AS letterReceiveYn, 
+    l.letter_color_no AS letterColorNo,
+    u.user_nickname AS senderNickname
+FROM 
+    tbl_letter l
+JOIN 
+    tbl_user u ON l.letter_send_id = u.user_id
+WHERE 
+    l.letter_receive_id = #{userId} 
+ORDER BY 
+    l.regist_dt DESC
+OFFSET 
+    #{offset} ROWS 
+FETCH NEXT 
+    #{size} ROWS ONLY
 </select>
 
 <select id="getSendLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
-select letter_no as letterNo , letter_receive_yn as letterReceiveYn , letter_color_no as letterColorNo
-from tbl_letter
-where letter_send_id = #{userId} 
-order by regist_dt desc
-offset #{offset} rows fetch next #{size} rows only
+SELECT 
+    l.letter_no AS letterNo, 
+    l.letter_receive_yn AS letterReceiveYn, 
+    l.letter_color_no AS letterColorNo,
+    u.user_nickname AS receiverNickname
+FROM 
+    tbl_letter l
+JOIN 
+    tbl_user u ON l.letter_receive_id = u.user_id
+WHERE 
+    l.letter_send_id = #{userId} 
+ORDER BY 
+    l.regist_dt DESC
+OFFSET 
+    #{offset} ROWS 
+FETCH NEXT 
+    #{size} ROWS ONLY
 </select>
 <select id ="getLetterColor" resultType="site.letterforyou.spring.letter.dto.LetterColorDTO">
 select color_name as colorName,
@@ -94,12 +118,15 @@ where letter_color_no = #{letterColorNo}
         l.letter_content as letterContent,
         l.letter_color_no as letterColorNo,
         l.letter_receive_yn as letterReceiveYn,
-        sender.user_nickname as senderNickname,    
+        sender.user_nickname as senderNickname,  
+        receiver.user_nickname as receiverNickname,  
         l.regist_dt as registDate
     FROM 
         tbl_letter l
     LEFT JOIN 
         tbl_user sender ON l.letter_send_id = sender.user_id  
+    LEFT JOIN 
+        tbl_user receiver ON l.letter_receive_id = receiver.user_id  
     WHERE 
         l.letter_no = #{letterNo}
 </select>

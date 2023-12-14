@@ -24,16 +24,21 @@ import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.common.service.CommonService;
 import site.letterforyou.spring.common.util.ResponseUtil;
 import site.letterforyou.spring.common.util.TimeService;
+import site.letterforyou.spring.exception.service.DecryptionFailedException;
 import site.letterforyou.spring.exception.service.DefaultException;
 import site.letterforyou.spring.exception.service.EntityNullException;
 import site.letterforyou.spring.letter.domain.LetterDTO;
 import site.letterforyou.spring.letter.domain.LetterVO;
 import site.letterforyou.spring.letter.dto.LetterDeleteLetterResponseDTO;
 import site.letterforyou.spring.letter.dto.LetterGetLetterResponseDTO;
-import site.letterforyou.spring.letter.dto.LetterGetListResponseDTO;
-import site.letterforyou.spring.letter.dto.LetterNumDTO;
+import site.letterforyou.spring.letter.dto.LetterGetReceiveListResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterGetSendListResponseDTO;
+import site.letterforyou.spring.letter.dto.LetterReceiveDTO;
+import site.letterforyou.spring.letter.dto.LetterSendDTO;
 import site.letterforyou.spring.letter.dto.Letterdtos;
 import site.letterforyou.spring.letter.mapper.LetterMapper;
+import site.letterforyou.spring.member.domain.MemberDTO;
+import site.letterforyou.spring.member.mapper.MemberMapper;
 
 @Service
 @Log4j
@@ -54,6 +59,9 @@ public class LetterServiceImpl implements LetterService {
 	@Value("${letter4u.url}")
 	private String contextUrl;
 	
+	@Autowired
+	private MemberMapper memberMapper;
+	
 	
 	@Override
 	public ResponseSuccessDTO<LetterDTO> insertLetter(LetterDTO result) {
@@ -61,7 +69,7 @@ public class LetterServiceImpl implements LetterService {
 		String url = "";
 		
 		
-		log.info( "result: "+result.toString());
+		log.info( "result확인 : "+result.toString());
 		//result.setLetterReceiveId("user1");
 		//result.setLetterSendId("user1"); //이후에 확인 후 제거1
 		//result.setLetterTitle("title");
@@ -70,6 +78,13 @@ public class LetterServiceImpl implements LetterService {
 		// result.setLetterReceiveYn("2");
 		// result.setLetterColorNo(Long.parseLong("1"));
 		// result.setUserAlias("test");
+		if(result.getLetterReceiveId() != null && !result.getLetterReceiveId().trim().isEmpty()) {
+			MemberDTO mdto = new MemberDTO();
+			mdto.setUserEmail(result.getLetterReceiveId());
+			MemberDTO resultMdto  = memberMapper.selectMemberInfo(mdto);
+			result.setLetterReceiveId(String.valueOf(resultMdto.getUserId()));
+		}
+		
 		letterMapper.insertLetter(result);
 
 		String letterNo = letterMapper.selectLastInsertKey(result);
@@ -77,13 +92,12 @@ public class LetterServiceImpl implements LetterService {
 		log.info(result.toString());
 		// 이후에 호스팅 주소로 변경
 		try {
-			encryptNo = commonService.encrypt(letterNo);
-			log.info("letterNo: " + letterNo);
+			encryptNo = commonService.encryptReceive(letterNo);
 		} catch (Exception e) {
 			log.info("암호화 중 오류 발생" + e.getMessage());
 		}
 		// String URL ="http://localhost:8080/api/letter/receive/"+encryptNo;
-		String URL = contextUrl+"/api/letter/receive/" + encryptNo;
+		String URL = contextUrl+"/letter/receive/" + encryptNo;
 
 		// 운영 환경 세팅
 		// String URL ="https://letter4u.site/letter/receive/"+letterNo;
@@ -158,8 +172,8 @@ public class LetterServiceImpl implements LetterService {
 	}
 
 	@Override
-	public ResponseSuccessDTO<LetterGetListResponseDTO> getLetterReceiveList(Long page, String userId) {
-		LetterGetListResponseDTO result = new LetterGetListResponseDTO();
+	public ResponseSuccessDTO<LetterGetReceiveListResponseDTO> getLetterReceiveList(Long page, String userId) {
+		LetterGetReceiveListResponseDTO result = new LetterGetReceiveListResponseDTO();
 		PageVO pageVo = new PageVO(page, 10L, 10L);
 		Long offset = pageVo.getOffset();
 		Long size = pageVo.getRecordSize();
@@ -169,17 +183,18 @@ public class LetterServiceImpl implements LetterService {
 			
 			log.info(l);
 		}
-		List<LetterNumDTO> letterList = new ArrayList<>();
+		List<LetterReceiveDTO> letterList = new ArrayList<>();
 		for (LetterVO l : letterVoList) {
-			LetterNumDTO letterDTO = new LetterNumDTO();
+			LetterReceiveDTO letterDTO = new LetterReceiveDTO();
 			
 			try {
-				letterDTO.setLetterNo(commonService.encrypt(l.getLetterNo() + ""));
+				letterDTO.setLetterNo(commonService.encryptReceive(l.getLetterNo() + ""));
 			} catch (Exception e) {
 				throw new DefaultException("암호화 중 오류 발생");
 			}
 			letterDTO.setColorPalette(letterMapper.getLetterColor(l.getLetterColorNo()));
 			letterDTO.setLetterReceiveYn(l.getLetterReceiveYn());
+			letterDTO.setSenderNickname(l.getSenderNickname());
 			letterList.add(letterDTO);
 		}
 
@@ -188,7 +203,7 @@ public class LetterServiceImpl implements LetterService {
 
 		result.setLetterList(letterList);
 		result.setPagination(pagination);
-		ResponseSuccessDTO<LetterGetListResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
+		ResponseSuccessDTO<LetterGetReceiveListResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
 
 		return res;
 	}
@@ -197,9 +212,9 @@ public class LetterServiceImpl implements LetterService {
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getReceivedLetter(String letterNo) {
 		Long no;
 		try {
-			no = commonService.decrypt(letterNo);
+			no = commonService.decryptReceive(letterNo);
 		} catch (Exception e) {
-			throw new DefaultException(e.getMessage());
+			throw new DecryptionFailedException("접근할 수 없는 페이지 입니다.");
 		}
 		LetterVO letterVo = letterMapper.getReceivedLetter(no);
 		if (letterVo == null) {
@@ -211,7 +226,7 @@ public class LetterServiceImpl implements LetterService {
 		LetterGetLetterResponseDTO result = new LetterGetLetterResponseDTO();
 		Letterdtos letterDTO = new Letterdtos();
 		try {
-			letterDTO.setLetterNo(commonService.encrypt(letterVo.getLetterNo() + ""));
+			letterDTO.setLetterNo(commonService.encryptReceive(letterVo.getLetterNo() + ""));
 		} catch (Exception e) {
 			throw new DefaultException("암호화 중 오류 발생");
 		}
@@ -232,7 +247,7 @@ public class LetterServiceImpl implements LetterService {
 	public ResponseSuccessDTO<LetterDeleteLetterResponseDTO> deleteReceivedLetter(String letterNo) {
 		Long no;
 		try {
-			no = commonService.decrypt(letterNo);
+			no = commonService.decryptReceive(letterNo);
 		} catch (Exception e) {
 			throw new DefaultException(e.getMessage());
 		}
@@ -244,22 +259,23 @@ public class LetterServiceImpl implements LetterService {
 	}
 
 	@Override
-	public ResponseSuccessDTO<LetterGetListResponseDTO> getLetterSendList(Long page, String userId) {
-		LetterGetListResponseDTO result = new LetterGetListResponseDTO();
+	public ResponseSuccessDTO<LetterGetSendListResponseDTO> getLetterSendList(Long page, String userId) {
+		LetterGetSendListResponseDTO result = new LetterGetSendListResponseDTO();
 		PageVO pageVo = new PageVO(page, 10L, 10L);
 		Long offset = pageVo.getOffset();
 		Long size = pageVo.getRecordSize();
 		log.info(page + " " + userId + " " + offset + " " + size);
 		List<LetterVO> letterVoList = letterMapper.getSendLetters(userId, offset, size);
 
-		List<LetterNumDTO> letterList = new ArrayList<>();
+		List<LetterSendDTO> letterList = new ArrayList<>();
 		for (LetterVO l : letterVoList) {
-			LetterNumDTO letterDTO = new LetterNumDTO();
+			LetterSendDTO letterDTO = new LetterSendDTO();
 			try {
-				letterDTO.setLetterNo(commonService.encrypt(l.getLetterNo() + ""));
+				letterDTO.setLetterNo(commonService.encryptSend(l.getLetterNo() + ""));
 			} catch (Exception e) {
 				throw new DefaultException("암호화 중 오류 발생");
 			}
+			letterDTO.setReceiverNickname(l.getReceiverNickname());
 			letterDTO.setColorPalette(letterMapper.getLetterColor(l.getLetterColorNo()));
 			letterDTO.setLetterReceiveYn(l.getLetterReceiveYn());
 			letterList.add(letterDTO);
@@ -270,7 +286,7 @@ public class LetterServiceImpl implements LetterService {
 		
 		result.setLetterList(letterList);
 		result.setPagination(pagination);
-		ResponseSuccessDTO<LetterGetListResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
+		ResponseSuccessDTO<LetterGetSendListResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
 
 		return res;
 	}
@@ -279,19 +295,20 @@ public class LetterServiceImpl implements LetterService {
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getSendLetter(String letterNo) {
 		Long no;
 		try {
-			no = commonService.decrypt(letterNo);
+			no = commonService.decryptSend(letterNo);
 		} catch (Exception e) {
-			throw new DefaultException(e.getMessage());
+			throw new DecryptionFailedException("접근할 수 없는 페이지 입니다.");
 		}
 		LetterVO letterVo = letterMapper.getSendLetter(no);
-
+		
+		
 		if (letterVo == null) {
 			throw new EntityNullException("받은 편지가 존재하지 않습니다.");
 		}
 		LetterGetLetterResponseDTO result = new LetterGetLetterResponseDTO();
 		Letterdtos letterDTO = new Letterdtos();
 		try {
-			letterDTO.setLetterNo(commonService.encrypt(letterVo.getLetterNo() + ""));
+			letterDTO.setLetterNo(commonService.encryptSend(letterVo.getLetterNo() + ""));
 		} catch (Exception e) {
 			throw new DefaultException("암호화 중 오류 발생");
 		}
@@ -301,6 +318,7 @@ public class LetterServiceImpl implements LetterService {
 		letterDTO.setReceiverNickname(letterVo.getReceiverNickname());
 		letterDTO.setSenderNickname(letterVo.getSenderNickname());
 		letterDTO.setRegistDate(timeService.parseLocalDateTimeForLetter(letterVo.getRegistDate()));
+		letterDTO.setLetterReceiveYn(letterVo.getLetterReceiveYn());
 		result.setLetterDTO(letterDTO);
 		ResponseSuccessDTO<LetterGetLetterResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
 
@@ -311,7 +329,7 @@ public class LetterServiceImpl implements LetterService {
 	public ResponseSuccessDTO<LetterDeleteLetterResponseDTO> deleteSendLetter(String letterNo) {
 		Long no;
 		try {
-			no = commonService.decrypt(letterNo);
+			no = commonService.decryptSend(letterNo);
 		} catch (Exception e) {
 			throw new DefaultException(e.getMessage());
 		}

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import site.letterforyou.spring.common.dto.ResponseErrorDTO;
 import site.letterforyou.spring.common.util.ResponseUtil;
 import site.letterforyou.spring.exception.service.BadVariableRequestException;
+import site.letterforyou.spring.exception.service.DecryptionFailedException;
 import site.letterforyou.spring.exception.service.EntityNullException;
 import site.letterforyou.spring.exception.service.NotAuthorizedUserException;
 
@@ -57,6 +58,12 @@ public class ServiceExceptionResolver {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(value = NotAuthorizedUserException.class)
 	public ResponseErrorDTO<?> handle(NotAuthorizedUserException e, HttpServletRequest request) {
+		return responseUtil.buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), request.getRequestURI());
+	}
+	
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(value = DecryptionFailedException.class)
+	public ResponseErrorDTO<?> handle(DecryptionFailedException e, HttpServletRequest request) {
 		return responseUtil.buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), request.getRequestURI());
 	}
 	

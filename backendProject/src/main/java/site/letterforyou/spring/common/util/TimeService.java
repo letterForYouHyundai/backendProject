@@ -1,17 +1,15 @@
 package site.letterforyou.spring.common.util;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class TimeService {
 
-    public String parseTime(LocalDateTime localDateTime) {
+    public String parseLocalDateTimeForBoardDetail(LocalDateTime localDateTime) {
     	
     	LocalDateTime now = LocalDateTime.now();
     	
@@ -20,7 +18,7 @@ public class TimeService {
     		
     		long hours = duration.toHours();
     		long minutes = duration.minusHours(hours).toMinutes();
-//    		return String.format("%02d:%02d", hours,minutes);
+
     		
     		if(hours>=1) {
     		return hours +"시간전";
@@ -28,17 +26,26 @@ public class TimeService {
     		else return minutes+"분전";
     	}
     	else {
-    		long daysdiff = ChronoUnit.DAYS.between(localDateTime.toLocalDate(), LocalDate.now());
-    		return  daysdiff + "일전";
+
+    		return parseLocalDateTime(localDateTime);
     	}
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//        return localDateTime.format(formatter);
+
     }
     
     
     public String parseLocalDateTime(LocalDateTime localDateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return localDateTime.format(formatter);
+    }
+    public String parseLocalDateTimeForBoardList(LocalDateTime localDatetime) {
+    	LocalDateTime now = LocalDateTime.now();
+    	if(localDatetime.toLocalDate().isEqual(now.toLocalDate())) {
+    		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    		return localDatetime.format(formatter);
+    		
+    		
+    	}
+    	return parseLocalDateTime(localDatetime); 
     }
     
     public String parseLocalDateTimeForLetter(LocalDateTime localDateTime) {

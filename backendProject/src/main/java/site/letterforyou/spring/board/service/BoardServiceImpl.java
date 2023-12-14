@@ -88,7 +88,7 @@ public class BoardServiceImpl implements BoardService {
 			boardDTO.setCommentCount(b.getCommentCount());
 			boardDTO.setImage(b.getBoardThumbNail());
 			boardDTO.setUserNickname(b.getUserNickname());
-			boardDTO.setRegistDate(timeService.parseLocalDateTime(b.getRegistDate()));
+			boardDTO.setRegistDate(timeService.parseLocalDateTimeForBoardList(b.getRegistDate()));
 			boardDTO.setLikeCount(b.getLikeCount());
 
 			boardList.add(boardDTO);
@@ -105,10 +105,7 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public ResponseSuccessDTO<BoardGetResponseDTO> getBoard(Long boardNo, String userId) {
-		// 조회수 검증 추가
 		
-		
-		//
  		BoardGetResponseDTO responseDTO = new BoardGetResponseDTO();
 		
 		BoardVO boardVo = boardMapper.getBoard(boardNo);
@@ -119,6 +116,12 @@ public class BoardServiceImpl implements BoardService {
 		if(!boardVo.getUserId().equals(userId)) { // 글쓴이가 아니라면 조회수 증가 
 			boardMapper.updateBoardLike(boardNo);
 		}
+		BoardVO bv = boardMapper.getBoardLike(boardNo, userId);
+		String userLiked = "Y";
+		if(bv==null) {
+			userLiked="N";
+		}
+		
 		List<CommentVO> commentVoList = commentMapper.getCommentList(boardNo);
 		
 		List<AttachVO> attachVoList = boardMapper.getAttachByBoardNo(boardNo);
@@ -130,7 +133,7 @@ public class BoardServiceImpl implements BoardService {
 			CommentGetResponseDTO commentDTO = new CommentGetResponseDTO();
 			commentDTO.setCommentId(c.getCommentId());
 			commentDTO.setUserNickname(c.getUserNickname());
-			commentDTO.setCommentDate(timeService.parseTime(c.getRegistDate()));
+			commentDTO.setCommentDate(timeService.parseLocalDateTimeForBoardDetail(c.getRegistDate()));
 			commentDTO.setCommentContent(c.getCommentContent());
 			commentDTO.setUserImage(c.getUserImage());
 			commentList.add(commentDTO);
@@ -142,10 +145,11 @@ public class BoardServiceImpl implements BoardService {
 		
 		responseDTO.setBoardTitle(boardVo.getBoardTitle());
 		responseDTO.setBoardContent(boardVo.getBoardContent());
-		responseDTO.setBoardDate(timeService.parseTime(boardVo.getRegistDate()));
+		responseDTO.setBoardDate(timeService.parseLocalDateTimeForBoardDetail(boardVo.getRegistDate()));
 		responseDTO.setBoardLike(boardVo.getLikeCount());
 		responseDTO.setUserNickname(boardVo.getUserNickname());
 		responseDTO.setUserImage(boardVo.getUserImage());
+		responseDTO.setLikeYn(userLiked);
 		responseDTO.setCommentList(commentList);
 		responseDTO.setAttachList(attachList);
 		
@@ -160,7 +164,6 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles, BoardPostRequestDTO boardDTO,String userId) throws IOException {
 		// Thumbnail은 처음 이미지 따서 board에 저장
-//		
 		BoardVO boardVo = new BoardVO();
 		boardVo.setBoardContent(boardDTO.getBoardContent());
 		boardVo.setBoardTitle(boardDTO.getBoardTitle());
