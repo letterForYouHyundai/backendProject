@@ -72,7 +72,10 @@ public class LetterServiceImpl implements LetterService {
 		log.info( "result확인 : "+result.toString());
 	
 		//체크박스 여부가 Y이고, 회원 이메일이 존재하는 경우
-		if("Y".equals(result.getCheckYn())&& result.getLetterReceiveId() != null && !result.getLetterReceiveId().trim().isEmpty()) {
+		if("Y".equals(result.getCheckYn())&& result.getLetterReceiveId() != null 
+				&& !result.getLetterReceiveId().isEmpty()
+				&& !("".equals(result.getLetterReceiveId()))
+				) {
 			MemberDTO mdto = new MemberDTO();
 			mdto.setUserEmail(result.getLetterReceiveId());
 			MemberDTO resultMdto  = memberMapper.selectMemberInfo(mdto);
