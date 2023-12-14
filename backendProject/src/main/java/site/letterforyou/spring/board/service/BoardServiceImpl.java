@@ -88,7 +88,7 @@ public class BoardServiceImpl implements BoardService {
 			boardDTO.setCommentCount(b.getCommentCount());
 			boardDTO.setImage(b.getBoardThumbNail());
 			boardDTO.setUserNickname(b.getUserNickname());
-			boardDTO.setRegistDate(timeService.parseTime(b.getRegistDate()));
+			boardDTO.setRegistDate(timeService.parseLocalDateTimeForBoardList(b.getRegistDate()));
 			boardDTO.setLikeCount(b.getLikeCount());
 
 			boardList.add(boardDTO);
@@ -127,7 +127,7 @@ public class BoardServiceImpl implements BoardService {
 			CommentGetResponseDTO commentDTO = new CommentGetResponseDTO();
 			commentDTO.setCommentId(c.getCommentId());
 			commentDTO.setUserNickname(c.getUserNickname());
-			commentDTO.setCommentDate(timeService.parseTime(c.getRegistDate()));
+			commentDTO.setCommentDate(timeService.parseLocalDateTimeForBoardDetail(c.getRegistDate()));
 			commentDTO.setCommentContent(c.getCommentContent());
 			commentDTO.setUserImage(c.getUserImage());
 			commentList.add(commentDTO);
@@ -139,7 +139,7 @@ public class BoardServiceImpl implements BoardService {
 		
 		responseDTO.setBoardTitle(boardVo.getBoardTitle());
 		responseDTO.setBoardContent(boardVo.getBoardContent());
-		responseDTO.setBoardDate(timeService.parseTime(boardVo.getRegistDate()));
+		responseDTO.setBoardDate(timeService.parseLocalDateTimeForBoardDetail(boardVo.getRegistDate()));
 		responseDTO.setBoardLike(boardVo.getLikeCount());
 		responseDTO.setUserNickname(boardVo.getUserNickname());
 		responseDTO.setUserImage(boardVo.getUserImage());

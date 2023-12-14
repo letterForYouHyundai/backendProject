@@ -82,7 +82,7 @@ public class BoardController {
 		log.info(": /board/" + boardNo);
 		
 		String userId = sessionUtil.validSession(session);
-		
+	
 		return ResponseEntity.ok(boardService.getBoard(boardNo,userId));
 
 	}
