@@ -37,6 +37,8 @@ import site.letterforyou.spring.letter.dto.LetterReceiveDTO;
 import site.letterforyou.spring.letter.dto.LetterSendDTO;
 import site.letterforyou.spring.letter.dto.Letterdtos;
 import site.letterforyou.spring.letter.mapper.LetterMapper;
+import site.letterforyou.spring.member.domain.MemberDTO;
+import site.letterforyou.spring.member.mapper.MemberMapper;
 
 @Service
 @Log4j
@@ -57,6 +59,9 @@ public class LetterServiceImpl implements LetterService {
 	@Value("${letter4u.url}")
 	private String contextUrl;
 	
+	@Autowired
+	private MemberMapper memberMapper;
+	
 	
 	@Override
 	public ResponseSuccessDTO<LetterDTO> insertLetter(LetterDTO result) {
@@ -73,6 +78,15 @@ public class LetterServiceImpl implements LetterService {
 		// result.setLetterReceiveYn("2");
 		// result.setLetterColorNo(Long.parseLong("1"));
 		// result.setUserAlias("test");
+		log.info("수신이메일 : "+ result.getLetterReceiveId());
+		if(result.getLetterReceiveId() != null) {
+			MemberDTO mdto = new MemberDTO();
+			mdto.setUserEmail(result.getLetterReceiveId());
+			MemberDTO resultMdto  = memberMapper.selectMemberInfo(mdto);
+			log.info("수신아이디 : "+ resultMdto.getUserId());
+			result.setLetterReceiveId(String.valueOf(resultMdto.getUserId()));
+		}
+		
 		letterMapper.insertLetter(result);
 
 		String letterNo = letterMapper.selectLastInsertKey(result);
