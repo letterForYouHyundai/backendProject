@@ -42,6 +42,7 @@ import site.letterforyou.spring.member.domain.MemberDTO;
 
 @Service
 @Slf4j
+@Transactional
 public class BoardServiceImpl implements BoardService {
 
 	@Autowired
@@ -167,7 +168,6 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	@Transactional
 	public ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles,
 			BoardPostRequestDTO boardDTO, String userId) throws IOException {
 		// Thumbnail은 처음 이미지 따서 board에 저장
@@ -212,7 +212,6 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	@Transactional
 	public ResponseSuccessDTO<BoardModifyResponseDTO> modifyBoard(Long boardNo, BoardModifyRequestDTO boardDTO,
 			String userId) {
 		BoardVO boardVo = new BoardVO();
@@ -227,7 +226,6 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	@Transactional
 	public ResponseSuccessDTO<BoardDeleteResponseDTO> deleteBoard(Long boardNo) {
 		boardMapper.deleteBoard(boardNo);
 		commentMapper.deleteCommentByBoardNo(boardNo);
@@ -238,7 +236,6 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	@Transactional
 	public ResponseSuccessDTO<CommentPostResponseDTO> postComment(CommentPostRequestDTO commentDTO, String userId) {
 
 		CommentVO commentVo = new CommentVO();
@@ -254,7 +251,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	@Transactional
+	
 	public ResponseSuccessDTO<CommentModifyResponseDTO> modifyComment(Long commentId,
 			CommentModifyRequestDTO commentDTO) {
 
@@ -268,7 +265,6 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	@Transactional
 	public ResponseSuccessDTO<CommentDeleteResponseDTO> deleteComment(Long commentNo) {
 		Long commentId = commentNo;
 		commentMapper.deleteCommentByCommentId(commentId);
@@ -278,7 +274,6 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	@Transactional
 	public ResponseSuccessDTO<BoardLikeUpdateResponseDTO> updateBoardLike(Long boardNo, String userId) {
 
 		if (boardMapper.getBoard(boardNo) == null) {
