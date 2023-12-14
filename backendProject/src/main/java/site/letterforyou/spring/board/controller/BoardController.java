@@ -41,6 +41,7 @@ import site.letterforyou.spring.common.dto.PageRequestDTO;
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
 import site.letterforyou.spring.common.util.PageUtil;
 import site.letterforyou.spring.common.util.SessionUtil;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/board/*")
@@ -78,7 +79,7 @@ public class BoardController {
 
 	@ApiOperation(value = "자유게시판 - 게시글 상세보기", notes = " 자유게시판 게시글 하나를 상세보기합니다. ")
 	@GetMapping("/{boardNo}")
-	public ResponseEntity<ResponseSuccessDTO<BoardGetResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo, HttpSession session) {
+	public ResponseEntity<ResponseSuccessDTO<BoardGetResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo, @ApiIgnore HttpSession session) {
 		log.info(": /board/" + boardNo);
 		
 		String userId = sessionUtil.validSession(session);
@@ -87,15 +88,15 @@ public class BoardController {
 
 	}
 
-	@ApiOperation(value = "자유게시판 - 게시글 등록", notes = " 게시글을 등록합니다. ", produces = "multipart/form-data")
+	@ApiOperation(value = "자유게시판 - 게시글 등록", notes = " 게시글을 등록합니다. ", consumes = "multipart/form-data" , produces = "multipart/form-data")
 	@PostMapping(value = "/register", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseSuccessDTO<BoardPostResponseDTO>> addBoard(
 			@RequestPart(value = "multipartFiles", required = false) List<MultipartFile> multipartFiles,
-			@RequestPart BoardPostRequestDTO boardDTO, HttpSession session) throws IOException {
+			@RequestPart BoardPostRequestDTO boardDTO, @ApiIgnore HttpSession session) throws IOException {
 		
 		String userId = sessionUtil.validSession(session);
-
+		
 		log.info(": /board/regist");
 
 		return ResponseEntity.ok(boardService.addBoard(multipartFiles, boardDTO, userId));
@@ -104,7 +105,7 @@ public class BoardController {
 	@ApiOperation(value = "자유게시판 - 게시물 변경", notes = " 게시글을 수정합니다. ")
 	@PostMapping(value = "/{boardNo}")
 	public ResponseEntity<ResponseSuccessDTO<BoardModifyResponseDTO>> modifyBoard(@PathVariable("boardNo") Long boardNo,
-			@RequestPart BoardModifyRequestDTO boardDTO,HttpSession session) {
+			@RequestPart BoardModifyRequestDTO boardDTO,@ApiIgnore HttpSession session) {
 		String userId = sessionUtil.validSession(session);
 		return ResponseEntity.ok(boardService.modifyBoard(boardNo, boardDTO, userId));
 	}
@@ -119,7 +120,7 @@ public class BoardController {
 	@ApiOperation(value = "자유게시판 - 댓글 등록", notes = " 댓글을 등록합니다. ")
 	@PostMapping(value = "/comment")
 	public ResponseEntity<ResponseSuccessDTO<CommentPostResponseDTO>> postComment(
-			@RequestBody CommentPostRequestDTO commentDTO, HttpSession session) {
+			@RequestBody CommentPostRequestDTO commentDTO, @ApiIgnore HttpSession session) {
 		String userId = sessionUtil.validSession(session);
 		return ResponseEntity.ok(boardService.postComment(commentDTO, userId));
 	}
@@ -141,7 +142,7 @@ public class BoardController {
 	@ApiOperation(value = "자유게시판 - 게시글 추천/비추천", notes = " 게시글을 추천 혹은 비추천합니다. ")
 	@PostMapping(value = "/likes/{boardNo}")
 	public ResponseEntity<ResponseSuccessDTO<BoardLikeUpdateResponseDTO>> updateBoardLike(
-			@PathVariable("boardNo") Long boardNo, HttpSession session) {
+			@PathVariable("boardNo") Long boardNo, @ApiIgnore HttpSession session) {
 
 		String userId = sessionUtil.validSession(session);
 		return ResponseEntity.ok(boardService.updateBoardLike(boardNo, userId));
