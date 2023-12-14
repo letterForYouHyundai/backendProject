@@ -59,4 +59,9 @@ public class LetterDTO {
 	   유저 별칭
 	   */
 	  private String userAlias;
+	  
+	  /**
+	   체크박스 체크여부
+	  */
+	  private String checkYn;
 }
