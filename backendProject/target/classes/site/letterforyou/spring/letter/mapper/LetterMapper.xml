@@ -54,7 +54,7 @@ FROM
 JOIN 
     tbl_user u ON l.letter_send_id = u.user_id
 WHERE 
-    l.letter_receive_id = #{userId} 
+    (l.letter_receive_id = #{userId} OR l.letter_receive_id IS NULL)
 ORDER BY 
     l.regist_dt DESC
 OFFSET 
@@ -74,7 +74,7 @@ FROM
 JOIN 
     tbl_user u ON l.letter_receive_id = u.user_id
 WHERE 
-    l.letter_send_id = #{userId} 
+    (l.letter_send_id = #{userId} OR l.letter_send_id IS NULL)
 ORDER BY 
     l.regist_dt DESC
 OFFSET 
@@ -99,7 +99,8 @@ where letter_color_no = #{letterColorNo}
         l.letter_color_no as letterColorNo,
         l.letter_receive_yn as letterReceiveYn,
         sender.user_nickname as senderNickname,  
-        receiver.user_nickname as receiverNickname,  
+        receiver.user_nickname as receiverNickname,
+        l.user_alias as userAlias,
         l.regist_dt as registDate
     FROM 
         tbl_letter l
@@ -119,7 +120,8 @@ where letter_color_no = #{letterColorNo}
         l.letter_color_no as letterColorNo,
         l.letter_receive_yn as letterReceiveYn,
         sender.user_nickname as senderNickname,  
-        receiver.user_nickname as receiverNickname,  
+        receiver.user_nickname as receiverNickname,
+        l.user_alias as userAlias,  
         l.regist_dt as registDate
     FROM 
         tbl_letter l

@@ -119,6 +119,7 @@ public class LetterController {
 	public ResponseEntity<ResponseSuccessDTO<LetterGetLetterResponseDTO>> getSendLetter(
 			@PathVariable(value = "letterNo") String letterNo, @ApiIgnore HttpSession session) {
 		String userId = sessionUtil.validSession(session);
+		
 
 		return ResponseEntity.ok(letterService.getSendLetter(letterNo));
 	}

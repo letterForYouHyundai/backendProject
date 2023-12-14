@@ -30,4 +30,6 @@ public class LetterVO {
 	private LocalDateTime registDate;
 	
 	private String letterReceiveYn;
+	
+	private String userAlias;
 }

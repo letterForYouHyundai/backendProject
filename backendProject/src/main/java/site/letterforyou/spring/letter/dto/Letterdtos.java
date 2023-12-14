@@ -31,5 +31,7 @@ public class Letterdtos {
 	
 	private String LetterReceiveYn;
 	
+	private String userAlias;
+	
 	
 }
