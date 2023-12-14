@@ -1,10 +1,8 @@
 package site.letterforyou.spring.common.util;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 import org.springframework.stereotype.Service;
 
@@ -28,8 +26,9 @@ public class TimeService {
     		else return minutes+"분전";
     	}
     	else {
-    		long daysdiff = ChronoUnit.DAYS.between(localDateTime.toLocalDate(), LocalDate.now());
-    		return  daysdiff + "일전";
+//    		long daysdiff = ChronoUnit.DAYS.between(localDateTime.toLocalDate(), LocalDate.now());
+//    		return  daysdiff + "일전";
+    		return parseLocalDateTime(localDateTime);
     	}
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 //        return localDateTime.format(formatter);
@@ -37,7 +36,7 @@ public class TimeService {
     
     
     public String parseLocalDateTime(LocalDateTime localDateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return localDateTime.format(formatter);
     }
     

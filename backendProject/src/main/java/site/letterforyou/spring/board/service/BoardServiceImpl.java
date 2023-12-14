@@ -88,7 +88,7 @@ public class BoardServiceImpl implements BoardService {
 			boardDTO.setCommentCount(b.getCommentCount());
 			boardDTO.setImage(b.getBoardThumbNail());
 			boardDTO.setUserNickname(b.getUserNickname());
-			boardDTO.setRegistDate(timeService.parseLocalDateTime(b.getRegistDate()));
+			boardDTO.setRegistDate(timeService.parseTime(b.getRegistDate()));
 			boardDTO.setLikeCount(b.getLikeCount());
 
 			boardList.add(boardDTO);
