@@ -51,10 +51,10 @@ SELECT
     u.user_nickname AS senderNickname
 FROM 
     tbl_letter l
-JOIN 
-    tbl_user u ON l.letter_send_id = u.user_id
+INNER JOIN 
+   tbl_user u ON l.letter_receive_id = u.user_id
 WHERE 
-    (l.letter_receive_id = #{userId} OR l.letter_receive_id IS NULL)
+    l.letter_receive_id = #{userId} 
 ORDER BY 
     l.regist_dt DESC
 OFFSET 
@@ -71,8 +71,8 @@ SELECT
     u.user_nickname AS receiverNickname
 FROM 
     tbl_letter l
-JOIN 
-    tbl_user u ON l.letter_receive_id = u.user_id
+LEFT JOIN 
+    tbl_user u ON l.letter_send_id = u.user_id
 WHERE 
     (l.letter_send_id = #{userId} OR l.letter_send_id IS NULL)
 ORDER BY 
