@@ -1,5 +1,11 @@
 package site.letterforyou.spring.common.service;
 
+import javax.servlet.http.HttpSession;
+
+import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
+import site.letterforyou.spring.letter.domain.LetterDTO;
+import site.letterforyou.spring.member.domain.MemberDTO;
+
 public interface CommonService {
 	
 	 /**
@@ -19,5 +25,7 @@ public interface CommonService {
 	  /**
 	  Send key를 복호화 한다.
 	 */
-	  public  Long decryptSend(String encryptedText)  throws Exception ;	 
+	  public  Long decryptSend(String encryptedText)  throws Exception ;
+	  
+	  public ResponseSuccessDTO<MemberDTO>  insertLetter(HttpSession session);	 
 }
