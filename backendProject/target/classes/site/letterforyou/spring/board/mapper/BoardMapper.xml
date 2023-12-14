@@ -14,25 +14,21 @@
         b.regist_dt as registDate,
         b.board_view as boardView,
         b.board_thumbnail as boardThumbNail,
-        COUNT(c.COMMENT_ID) as commentCount,
-        COUNT(bl.BOARD_LIKE_NO) as likeCount
+       COALESCE(c.commentCount, 0) AS commentCount,
+    COALESCE(bl.likeCount, 0) AS likeCount
     FROM 
-        (SELECT 
-            board_no,
-            user_id,
-            board_title,
-            regist_dt,
-            board_view,
-            board_thumbnail
-        FROM tbl_board) b
-    LEFT JOIN 
-        tbl_user u ON b.user_id = u.user_id 
-    LEFT JOIN 
-        TBL_COMMENT c ON b.BOARD_NO = c.BOARD_NO
-    LEFT JOIN 
-        TBL_BOARD_LIKE bl ON b.BOARD_NO = bl.BOARD_NO AND bl.LIKE_YN = 'Y'
-    GROUP BY 
-        b.board_no, b.user_id, u.user_nickname, b.board_title, b.regist_dt, b.board_view, b.board_thumbnail <!-- Added u.user_nickname in GROUP BY -->
+    tbl_board b
+LEFT JOIN 
+    tbl_user u ON b.user_id = u.user_id
+LEFT JOIN 
+    (SELECT BOARD_NO, COUNT(COMMENT_ID) AS commentCount
+     FROM TBL_COMMENT
+     GROUP BY BOARD_NO) c ON b.BOARD_NO = c.BOARD_NO
+LEFT JOIN 
+    (SELECT BOARD_NO, COUNT(BOARD_LIKE_NO) AS likeCount
+     FROM TBL_BOARD_LIKE
+     WHERE LIKE_YN = 'Y'
+     GROUP BY BOARD_NO) bl ON b.BOARD_NO = bl.BOARD_NO
     <choose>
         <when test="sortBy == 'comments'">
             ORDER BY commentCount ${inOrder} , registDate DESC
