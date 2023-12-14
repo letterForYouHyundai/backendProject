@@ -75,7 +75,6 @@ public class LetterController {
 		Long p = page == null ? defaultPage : page;
 
 		String userId = sessionUtil.validSession(session);
-		
 
 		log.info(": /letter/receive/list" + p);
 
@@ -87,7 +86,7 @@ public class LetterController {
 	@GetMapping("/receive/{letterNo}")
 	public ResponseEntity<ResponseSuccessDTO<LetterGetLetterResponseDTO>> getReceivedLetter(
 			@PathVariable(value = "letterNo") String letterNo) {
-		
+
 		return ResponseEntity.ok(letterService.getReceivedLetter(letterNo));
 	}
 
@@ -109,7 +108,7 @@ public class LetterController {
 
 		log.info(": /letter/send/list" + p);
 		String userId = sessionUtil.validSession(session);
-		
+	
 		return ResponseEntity.ok(letterService.getLetterSendList(p, userId));
 
 	}
@@ -119,7 +118,6 @@ public class LetterController {
 	public ResponseEntity<ResponseSuccessDTO<LetterGetLetterResponseDTO>> getSendLetter(
 			@PathVariable(value = "letterNo") String letterNo, @ApiIgnore HttpSession session) {
 		String userId = sessionUtil.validSession(session);
-		
 
 		return ResponseEntity.ok(letterService.getSendLetter(letterNo));
 	}
