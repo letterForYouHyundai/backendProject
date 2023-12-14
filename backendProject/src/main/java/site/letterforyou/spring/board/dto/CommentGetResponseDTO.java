@@ -21,5 +21,7 @@ public class CommentGetResponseDTO {
 	
 	private String commentDate;
 	
+	private String isWriter;
+	
 	
 }

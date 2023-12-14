@@ -75,7 +75,7 @@ public class LetterController {
 		Long p = page == null ? defaultPage : page;
 
 		String userId = sessionUtil.validSession(session);
-		//String userId = "2";
+		
 
 		log.info(": /letter/receive/list" + p);
 
@@ -119,6 +119,7 @@ public class LetterController {
 	public ResponseEntity<ResponseSuccessDTO<LetterGetLetterResponseDTO>> getSendLetter(
 			@PathVariable(value = "letterNo") String letterNo, @ApiIgnore HttpSession session) {
 		String userId = sessionUtil.validSession(session);
+		
 
 		return ResponseEntity.ok(letterService.getSendLetter(letterNo));
 	}
