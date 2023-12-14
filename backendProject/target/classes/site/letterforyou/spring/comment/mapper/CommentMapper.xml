@@ -8,7 +8,7 @@
 		resultType="_long">
 		select count(*) as commentCount
 		from tbl_comment
-		where board_no = #{boardNo}
+		where board_no = #{boardNo} and use_yn = 'Y';
 	</select>
 
 	
