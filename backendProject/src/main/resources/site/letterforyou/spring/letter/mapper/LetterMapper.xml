@@ -11,9 +11,9 @@
         </if>
         LETTER_SEND_ID, LETTER_TITLE, LETTER_CONTENT, LETTER_COLOR_NO, USER_ALIAS
     ) VALUES (
-        <if test="letterReceiveId != null and !letterReceiveId.equals('')">
-            #{letterReceiveId,jdbcType=STRING}, <!-- Modify this line -->
-        </if>
+        <if test="letterReceiveId != null and letterReceiveId.trim().length() > 0">
+    		#{letterReceiveId,jdbcType=VARCHAR},
+		</if>
         #{letterSendId}, #{letterTitle}, #{letterContent}, #{letterColorNo}, #{userAlias}
     )
 </insert>

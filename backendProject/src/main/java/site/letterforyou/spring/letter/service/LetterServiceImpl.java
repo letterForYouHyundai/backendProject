@@ -37,6 +37,8 @@ import site.letterforyou.spring.letter.dto.LetterReceiveDTO;
 import site.letterforyou.spring.letter.dto.LetterSendDTO;
 import site.letterforyou.spring.letter.dto.Letterdtos;
 import site.letterforyou.spring.letter.mapper.LetterMapper;
+import site.letterforyou.spring.member.domain.MemberDTO;
+import site.letterforyou.spring.member.mapper.MemberMapper;
 
 @Service
 @Log4j
@@ -57,6 +59,9 @@ public class LetterServiceImpl implements LetterService {
 	@Value("${letter4u.url}")
 	private String contextUrl;
 	
+	@Autowired
+	private MemberMapper memberMapper;
+	
 	
 	@Override
 	public ResponseSuccessDTO<LetterDTO> insertLetter(LetterDTO result) {
@@ -64,7 +69,7 @@ public class LetterServiceImpl implements LetterService {
 		String url = "";
 		
 		
-		log.info( "result: "+result.toString());
+		log.info( "result확인 : "+result.toString());
 		//result.setLetterReceiveId("user1");
 		//result.setLetterSendId("user1"); //이후에 확인 후 제거1
 		//result.setLetterTitle("title");
@@ -73,6 +78,13 @@ public class LetterServiceImpl implements LetterService {
 		// result.setLetterReceiveYn("2");
 		// result.setLetterColorNo(Long.parseLong("1"));
 		// result.setUserAlias("test");
+		if(result.getLetterReceiveId() != null && !result.getLetterReceiveId().trim().isEmpty()) {
+			MemberDTO mdto = new MemberDTO();
+			mdto.setUserEmail(result.getLetterReceiveId());
+			MemberDTO resultMdto  = memberMapper.selectMemberInfo(mdto);
+			result.setLetterReceiveId(String.valueOf(resultMdto.getUserId()));
+		}
+		
 		letterMapper.insertLetter(result);
 
 		String letterNo = letterMapper.selectLastInsertKey(result);
@@ -81,7 +93,6 @@ public class LetterServiceImpl implements LetterService {
 		// 이후에 호스팅 주소로 변경
 		try {
 			encryptNo = commonService.encryptReceive(letterNo);
-			log.info("letterNo: " + letterNo);
 		} catch (Exception e) {
 			log.info("암호화 중 오류 발생" + e.getMessage());
 		}
