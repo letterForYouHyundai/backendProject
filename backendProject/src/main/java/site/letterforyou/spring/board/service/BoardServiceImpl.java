@@ -116,7 +116,7 @@ public class BoardServiceImpl implements BoardService {
 			throw new EntityNullException("게시물이 존재하지 않습니다.");
 		}
 		if (!boardVo.getUserId().equals(userId)) { // 글쓴이가 아니라면 조회수 증가
-			boardMapper.updateBoardLike(boardNo);
+			boardMapper.updateBoardView(boardNo);
 		}
 		BoardVO bv = boardMapper.getBoardLike(boardNo, userId);
 
@@ -276,7 +276,7 @@ public class BoardServiceImpl implements BoardService {
 		if (boardMapper.getBoard(boardNo) == null) {
 			throw new EntityNullException("게시물이 존재하지 않습니다.");
 		}
-		boardMapper.modifyBoardLike(boardNo, userId);
+		boardMapper.updateBoardLike(boardNo, userId);
 
 		BoardLikeUpdateResponseDTO result = new BoardLikeUpdateResponseDTO();
 		BoardUpdateDTO boardDTO = new BoardUpdateDTO();

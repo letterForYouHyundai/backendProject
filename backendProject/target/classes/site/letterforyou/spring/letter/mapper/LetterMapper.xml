@@ -43,124 +43,126 @@
  	WHERE 
 		LETTER_NO = #{letterNo}
  </update>
-<select id="getReceivedLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
-SELECT 
-    l.letter_no AS letterNo, 
-    l.letter_receive_yn AS letterReceiveYn, 
-    l.letter_color_no AS letterColorNo,
-    u.user_nickname AS senderNickname
-FROM 
-    tbl_letter l
-INNER JOIN 
-   tbl_user u ON l.letter_send_id = u.user_id
-WHERE 
-    l.letter_receive_id = #{userId} 
-ORDER BY 
-    l.regist_dt DESC
-OFFSET 
-    #{offset} ROWS 
-FETCH NEXT 
-    #{size} ROWS ONLY
-</select>
+   <select id="getReceivedLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
+        select 
+            l.letter_no as letterNo, 
+            l.letter_receive_yn as letterReceiveYn, 
+            l.letter_color_no as letterColorNo,
+            u.user_nickname as senderNickname
+        from 
+            tbl_letter l
+        inner join 
+            tbl_user u on l.letter_send_id = u.user_id
+        where 
+            l.letter_receive_id = #{userId} 
+        order by 
+            l.regist_dt desc
+        offset 
+            #{offset} rows 
+        fetch next 
+            #{size} rows only
+    </select>
 
-<select id="getSendLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
-SELECT 
-    l.letter_no AS letterNo, 
-    l.letter_receive_yn AS letterReceiveYn, 
-    l.letter_color_no AS letterColorNo,
-    u.user_nickname AS receiverNickname,
-    l.user_alias as userAlias
-FROM 
-    tbl_letter l
-LEFT JOIN 
-    tbl_user u ON l.letter_send_id = u.user_id
-WHERE 
-    (l.letter_send_id = #{userId} OR l.letter_send_id IS NULL)
-ORDER BY 
-    l.regist_dt DESC
-OFFSET 
-    #{offset} ROWS 
-FETCH NEXT 
-    #{size} ROWS ONLY
-</select>
-<select id ="getLetterColor" resultType="site.letterforyou.spring.letter.dto.LetterColorDTO">
-select color_name as colorName,
-color_hex as colorHex,
-color_rgb as colorRgb,
-color_text as colorText
-from tbl_color
-where letter_color_no = #{letterColorNo}
-</select>
+    <select id="getSendLetters" resultType="site.letterforyou.spring.letter.domain.LetterVO">
+        select 
+            l.letter_no as letterNo, 
+            l.letter_receive_yn as letterReceiveYn, 
+            l.letter_color_no as letterColorNo,
+            u.user_nickname as receiverNickname,
+            l.user_alias as userAlias
+        from 
+            tbl_letter l
+        left join 
+            tbl_user u on l.letter_send_id = u.user_id
+        where 
+            (l.letter_send_id = #{userId} or l.letter_send_id is null)
+        order by 
+            l.regist_dt desc
+        offset 
+            #{offset} rows 
+        fetch next 
+            #{size} rows only
+    </select>
 
-<select id="getReceivedLetter" resultType="site.letterforyou.spring.letter.domain.LetterVO">
-    SELECT 
-        l.letter_no as letterNo,
-        l.letter_title as letterTitle,
-        l.letter_content as letterContent,
-        l.letter_color_no as letterColorNo,
-        l.letter_receive_yn as letterReceiveYn,
-        sender.user_nickname as senderNickname,  
-        receiver.user_nickname as receiverNickname,
-        l.user_alias as userAlias,
-        l.regist_dt as registDate
-    FROM 
-        tbl_letter l
-    LEFT JOIN 
-        tbl_user sender ON l.letter_send_id = sender.user_id  
-    LEFT JOIN 
-        tbl_user receiver ON l.letter_receive_id = receiver.user_id  
-    WHERE 
-        l.letter_no = #{letterNo}
-</select>
+    <select id ="getLetterColor" resultType="site.letterforyou.spring.letter.dto.LetterColorDTO">
+        select color_name as colorName,
+            color_hex as colorHex,
+            color_rgb as colorRgb,
+            color_text as colorText
+        from tbl_color
+        where letter_color_no = #{letterColorNo}
+    </select>
 
-<select id="getSendLetter" resultType="site.letterforyou.spring.letter.domain.LetterVO">
-    SELECT 
-        l.letter_no as letterNo,
-        l.letter_title as letterTitle,
-        l.letter_content as letterContent,
-        l.letter_color_no as letterColorNo,
-        l.letter_receive_yn as letterReceiveYn,
-        sender.user_nickname as senderNickname,  
-        receiver.user_nickname as receiverNickname,
-        l.user_alias as userAlias,  
-        l.regist_dt as registDate
-    FROM 
-        tbl_letter l
-    LEFT JOIN 
-        tbl_user sender ON l.letter_send_id = sender.user_id  
-    LEFT JOIN 
-        tbl_user receiver ON l.letter_receive_id = receiver.user_id  
-    WHERE 
-        l.letter_no = #{letterNo}
-</select>
+    <select id="getReceivedLetter" resultType="site.letterforyou.spring.letter.domain.LetterVO">
+        select 
+            l.letter_no as letterNo,
+            l.letter_title as letterTitle,
+            l.letter_content as letterContent,
+            l.letter_color_no as letterColorNo,
+            l.letter_receive_yn as letterReceiveYn,
+            sender.user_nickname as senderNickname,  
+            receiver.user_nickname as receiverNickname,
+            l.user_alias as userAlias,
+            l.regist_dt as registDate
+        from 
+            tbl_letter l
+        left join 
+            tbl_user sender on l.letter_send_id = sender.user_id  
+        left join 
+            tbl_user receiver on l.letter_receive_id = receiver.user_id  
+        where 
+            l.letter_no = #{letterNo}
+    </select>
 
-<update id="updateLetterRecieve">
-UPDATE TBL_LETTER
-SET letter_receive_yn = 'Y'
-where letter_no=#{letterNo}
-</update>
+    <select id="getSendLetter" resultType="site.letterforyou.spring.letter.domain.LetterVO">
+        select 
+            l.letter_no as letterNo,
+            l.letter_title as letterTitle,
+            l.letter_content as letterContent,
+            l.letter_color_no as letterColorNo,
+            l.letter_receive_yn as letterReceiveYn,
+            sender.user_nickname as senderNickname,  
+            receiver.user_nickname as receiverNickname,
+            l.user_alias as userAlias,  
+            l.regist_dt as registDate
+        from 
+            tbl_letter l
+        left join 
+            tbl_user sender on l.letter_send_id = sender.user_id  
+        left join 
+            tbl_user receiver on l.letter_receive_id = receiver.user_id  
+        where 
+            l.letter_no = #{letterNo}
+    </select>
 
-<update id="deleteReceivedLetter">
-UPDATE TBL_LETTER
-SET use_yn = 'N'
-where letter_no=#{letterNo}
-</update>
+    <update id="updateLetterRecieve">
+        update tbl_letter
+        set letter_receive_yn = 'Y'
+        where letter_no=#{letterNo}
+    </update>
 
-<update id="deleteSendLetter">
-UPDATE TBL_LETTER
-SET use_yn = 'N'
-where letter_no=#{letterNo}
-</update>
-<select id="getTotalCountReceivedLetterByUserId">
-select count(*)
-from tbl_letter
-where letter_receive_id = #{userId}
-</select>
+    <update id="deleteReceivedLetter">
+        update tbl_letter
+        set use_yn = 'N'
+        where letter_no=#{letterNo}
+    </update>
 
-<select id="getTotalCountSendLetterByUserId">
-select count(*)
-from tbl_letter
-where letter_send_id = #{userId}
-</select>
+    <update id="deleteSendLetter">
+        update tbl_letter
+        set use_yn = 'N'
+        where letter_no=#{letterNo}
+    </update>
+
+    <select id="getTotalCountReceivedLetterByUserId">
+        select count(*)
+        from tbl_letter
+        where letter_receive_id = #{userId}
+    </select>
+
+    <select id="getTotalCountSendLetterByUserId">
+        select count(*)
+        from tbl_letter
+        where letter_send_id = #{userId}
+    </select>
 
 </mapper>

@@ -69,8 +69,6 @@ public class BoardController {
 			@RequestParam(value = "inOrder", required = false) Integer inOrder) {
 
 		PageRequestDTO pageRequestDTO = pageUtil.parsePaginationComponents(page, sortBy, inOrder);
-		log.info(pageRequestDTO.getSortBy() + " " + pageRequestDTO.getInOrder() + " " + pageRequestDTO.getPage());
-		log.info(": /board/list/" + page);
 
 		return ResponseEntity.ok(boardService.getBoardList(pageRequestDTO.getSortBy(), pageRequestDTO.getInOrder(),
 				pageRequestDTO.getPage()));
@@ -80,10 +78,9 @@ public class BoardController {
 	@GetMapping("/{boardNo}")
 	public ResponseEntity<ResponseSuccessDTO<BoardGetResponseDTO>> getBoard(@PathVariable("boardNo") Long boardNo,
 			@ApiIgnore HttpSession session) {
-		log.info(": /board/" + boardNo);
 
 		String userId = sessionUtil.validSession(session);
-		//String userId = "4";
+		
 		return ResponseEntity.ok(boardService.getBoard(boardNo, userId));
 
 	}
@@ -96,8 +93,6 @@ public class BoardController {
 			@RequestPart(value ="boardDTO" ,required = true) BoardPostRequestDTO boardDTO, @ApiIgnore HttpSession session) throws IOException {
 		
 		String userId = sessionUtil.validSession(session);
-
-		log.info(": /board/regist");
 
 		return ResponseEntity.ok(boardService.addBoard(multipartFiles, boardDTO, userId));
 	}

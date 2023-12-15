@@ -2,173 +2,158 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper
-	namespace="site.letterforyou.spring.board.mapper.BoardMapper">
+<mapper namespace="site.letterforyou.spring.board.mapper.BoardMapper">
 
-	<select id="getBoardList" resultType="site.letterforyou.spring.board.domain.BoardVO">
-    SELECT 
-        b.board_no as boardNo,
-        b.user_id as userId,
-        u.user_nickname as userNickname, 
-        b.board_title as boardTitle,
-        b.regist_dt as registDate,
-        b.board_view as boardView,
-        b.board_thumbnail as boardThumbNail,
-       COALESCE(c.commentCount, 0) AS commentCount,
-    COALESCE(bl.likeCount, 0) AS likeCount
-    FROM 
-    tbl_board b
-LEFT JOIN 
-    tbl_user u ON b.user_id = u.user_id
-LEFT JOIN 
-    (SELECT BOARD_NO, COUNT(COMMENT_ID) AS commentCount
-     FROM TBL_COMMENT
-     WHERE USE_YN = 'Y'
-     GROUP BY BOARD_NO) c ON b.BOARD_NO = c.BOARD_NO
-LEFT JOIN 
-    (SELECT BOARD_NO, COUNT(BOARD_LIKE_NO) AS likeCount
-     FROM TBL_BOARD_LIKE
-     WHERE LIKE_YN = 'Y'
-     GROUP BY BOARD_NO) bl ON b.BOARD_NO = bl.BOARD_NO
-    <choose>
-        <when test="sortBy == 'comments'">
-            ORDER BY commentCount ${inOrder} , registDate DESC
-        </when>
-        <when test="sortBy == 'likes'">
-            ORDER BY likeCount ${inOrder} , registDate DESC
-        </when>
-        <when test="sortBy == 'views'">
-        	ORDER BY boardView ${inOrder} , registDate DESC
-        </when>
-        <when test="sortBy == 'dates'">
-        	ORDER BY registDate ${inOrder}
-        </when>
-        <otherwise>
-            ORDER BY b.regist_dt DESC
-        </otherwise>
-    </choose>
-    OFFSET 
-        #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
-</select>
-	
-	
-	<select id="getTotalCountBoard" resultType="int">
-	select count(*) as totalCount
-	from tbl_board
-	where use_yn= 'Y'
-	
-	</select>
-	<select id="getBoard" parameterType="_long" resultType="site.letterforyou.spring.board.domain.BoardVO">
-    SELECT 
-        b.board_no as boardNo,
-        b.user_id as userId,
-        u.user_nickname as userNickname,  
-        u.user_image as userImage,        
-        b.board_title as boardTitle,
-        to_char(b.board_content) as boardContent,
-        b.regist_dt as registDate,
-        b.board_view as boardView,
-        COUNT(bl.BOARD_LIKE_NO) as likeCount  
-    FROM 
-        tbl_board b
-    LEFT JOIN 
-        tbl_board_like bl ON b.board_no = bl.board_no AND bl.LIKE_YN = 'Y' 
-    LEFT JOIN 
-        tbl_user u ON b.user_id = u.user_id  <!-- Joining tbl_user -->
-    WHERE 
-        b.board_no = #{boardNo}
-    GROUP BY 
-        b.board_no, b.user_id, u.user_nickname, u.user_image, b.board_title, to_char(b.board_content), b.regist_dt, b.board_view
-</select>
+    <select id="getBoardList" resultType="site.letterforyou.spring.board.domain.BoardVO">
+        select 
+            b.board_no as boardNo,
+            b.user_id as userId,
+            u.user_nickname as userNickname, 
+            b.board_title as boardTitle,
+            b.regist_dt as registDate,
+            b.board_view as boardView,
+            b.board_thumbnail as boardThumbNail,
+            coalesce(c.commentCount, 0) as commentCount,
+            coalesce(bl.likeCount, 0) as likeCount
+        from 
+            tbl_board b
+        left join 
+            tbl_user u on b.user_id = u.user_id
+        left join 
+            (select board_no, count(comment_id) as commentCount
+             from tbl_comment
+             where use_yn = 'Y'
+             group by board_no) c on b.board_no = c.board_no
+        left join 
+            (select board_no, count(board_like_no) as likeCount
+             from tbl_board_like
+             where like_yn = 'Y'
+             group by board_no) bl on b.board_no = bl.board_no
+        <choose>
+            <when test="sortBy == 'comments'">
+                order by commentCount ${inOrder}, registDate desc
+            </when>
+            <when test="sortBy == 'likes'">
+                order by likeCount ${inOrder}, registDate desc
+            </when>
+            <when test="sortBy == 'views'">
+                order by boardView ${inOrder}, registDate desc
+            </when>
+            <when test="sortBy == 'dates'">
+                order by registDate ${inOrder}
+            </when>
+            <otherwise>
+                order by b.regist_dt desc
+            </otherwise>
+        </choose>
+        offset 
+            #{offset} rows fetch next #{size} rows only
+    </select>
+    
+    <select id="getTotalCountBoard" resultType="int">
+        select count(*) as totalCount
+        from tbl_board
+        where use_yn= 'Y'
+    </select>
 
+    <select id="getBoard" parameterType="_long" resultType="site.letterforyou.spring.board.domain.BoardVO">
+        select 
+            b.board_no as boardNo,
+            b.user_id as userId,
+            u.user_nickname as userNickname,  
+            u.user_image as userImage,        
+            b.board_title as boardTitle,
+            to_char(b.board_content) as boardContent,
+            b.regist_dt as registDate,
+            b.board_view as boardView,
+            count(bl.board_like_no) as likeCount  
+        from 
+            tbl_board b
+        left join 
+            tbl_board_like bl on b.board_no = bl.board_no and bl.like_yn = 'Y' 
+        left join 
+            tbl_user u on b.user_id = u.user_id  
+        where 
+            b.board_no = #{boardNo}
+        group by 
+            b.board_no, b.user_id, u.user_nickname, u.user_image, b.board_title, to_char(b.board_content), b.regist_dt, b.board_view
+    </select>
 
-	
-	 <select id ="getAttachByBoardNo" parameterType="_long" resultType="site.letterforyou.spring.board.domain.AttachVO">
-	 select attach_no as attachNo, 
-	 regist_dt as registDate,
-	 file_path as filePath
-	 from tbl_attach
-	where board_no = #{boardNo}
-	 </select>
-	
-	
-	
-<insert id="addBoard" useGeneratedKeys="true" parameterType="site.letterforyou.spring.board.domain.BoardVO" >
-    INSERT INTO TBL_BOARD (board_no, user_id, board_title, board_content, board_thumbnail) 
-    VALUES (TBL_BOARD_SEQ.NEXTVAL, #{boardVo.userId}, #{boardVo.boardTitle}, #{boardVo.boardContent}, #{boardVo.boardThumbNail})
-</insert>
+    <select id ="getAttachByBoardNo" parameterType="_long" resultType="site.letterforyou.spring.board.domain.AttachVO">
+        select attach_no as attachNo, 
+            regist_dt as registDate,
+            file_path as filePath
+        from tbl_attach
+        where board_no = #{boardNo}
+    </select>
+    
+    <insert id="addBoard" useGeneratedKeys="true" parameterType="site.letterforyou.spring.board.domain.BoardVO" >
+        insert into tbl_board (board_no, user_id, board_title, board_content, board_thumbnail) 
+        values (tbl_board_seq.nextval, #{boardVo.userId}, #{boardVo.boardTitle}, #{boardVo.boardContent}, #{boardVo.boardThumbNail})
+    </insert>
+    
+    <insert id="addAttach">
+        insert into tbl_attach (attach_no, board_no, file_path, original_file_nm, save_file_nm) 
+        values (tbl_attach_seq.nextval, #{boardNo}, #{attachVo.filePath}, #{attachVo.originalFileNm}, #{attachVo.saveFileNm})
+    </insert>
 
-	
-	
-	<insert id="addAttach">
-    INSERT INTO TBL_ATTACH (attach_no, board_no, file_path, original_file_nm, save_file_nm) 
-    VALUES (TBL_ATTACH_SEQ.nextval, #{boardNo}, #{attachVo.filePath}, #{attachVo.originalFileNm}, #{attachVo.saveFileNm})
-</insert>
+    <update id="modifyBoard">
+        update tbl_board 
+        set board_title = #{boardVo.boardTitle},
+            board_content = #{boardVo.boardContent},
+            regist_dt = current_timestamp,
+            change_dt = current_timestamp
+        where board_no = #{boardNo}
+    </update>
 
+    <update id="deleteBoard">
+        update tbl_board
+        set use_yn = 'N'
+        where board_no=#{boardNo}
+    </update>
 
-<update id="modifyBoard">
-    UPDATE TBL_BOARD 
-    SET board_title = #{boardVo.boardTitle},
-        board_content = #{boardVo.boardContent},
-        regist_dt = CURRENT_TIMESTAMP,
-        change_dt = CURRENT_TIMESTAMP
-    WHERE board_no = #{boardNo}
-</update>
+    <insert id="updateBoardLike">
+        merge into tbl_board_like tbl
+        using dual
+        on (tbl.board_no = #{boardNo} and tbl.user_id = #{userId})
+        when matched then
+            update set tbl.like_yn = case tbl.like_yn when 'Y' then 'N' else 'Y' end, 
+                      tbl.change_dt = current_timestamp
+        when not matched then
+            insert (tbl.user_id, tbl.board_no, tbl.like_yn, tbl.regist_dt)
+            values (#{userId}, #{boardNo}, 'Y', current_timestamp)
+    </insert>
 
+    <select id="getBoardLike" resultType="site.letterforyou.spring.board.domain.BoardVO">
+        select board_no as boardNo, like_yn as likeYn
+        from tbl_board_like
+        where board_no = #{boardNo} and user_id = #{userId}
+    </select>
 
-<update id="deleteBoard">
-UPDATE TBL_BOARD
-SET use_yn = 'N'
-where board_no=#{boardNo}
-</update>
+    <update id="updateBoardView">
+        update tbl_board
+        set board_view= board_view+1
+        where board_no = #{boardNo}
+    </update>
 
+    <select id="getLatestBoardNo" resultType="long">
+        select board_no as boardNo
+        from tbl_board
+        order by regist_dt desc
+        fetch first 1 row only
+    </select>
 
-
-<insert id="modifyBoardLike">
-    MERGE INTO tbl_board_like tbl
-    USING dual
-    ON (tbl.board_no = #{boardNo} AND tbl.user_id = #{userId})
-    WHEN MATCHED THEN
-        UPDATE SET tbl.like_yn = CASE tbl.like_yn WHEN 'Y' THEN 'N' ELSE 'Y' END, 
-                  tbl.change_dt = CURRENT_TIMESTAMP
-    WHEN NOT MATCHED THEN
-        INSERT (tbl.user_id, tbl.board_no, tbl.like_yn, tbl.regist_dt)
-        VALUES (#{userId}, #{boardNo}, 'Y', CURRENT_TIMESTAMP)
-</insert>
-
-<select id="getBoardLike" resultType="site.letterforyou.spring.board.domain.BoardVO">
-    SELECT board_no as boardNo , like_yn as likeYn
-    FROM tbl_board_like
-    WHERE board_no = #{boardNo} AND user_id = #{userId}
-</select>
-
-
-<update id="updateBoardLike">
-
-update tbl_board
-set board_view= board_view+1
-where board_no = #{boardNo}
-</update>
-
-<select id="getLatestBoardNo" resultType="long">
-select board_no as boardNo
-from tbl_board
-order by regist_dt desc
-FETCH FIRST 1 ROW ONLY
-
-</select>
-
-<select id="getUser" resultType = "site.letterforyou.spring.member.domain.MemberDTO">
-SELECT
-		    USER_ID AS userId
-		    , USER_NAME  AS userName
-		    , USER_EMAIL  AS userEmail
-		    , USER_NICKNAME AS userNickname
-		    , USER_IMAGE AS userImage
-		    , USER_SIGNUP_DT AS userSignupDt
-		FROM 
-		    TBL_USER
-		    where user_id = #{userId}
-		   </select>
+    <select id="getUser" resultType = "site.letterforyou.spring.member.domain.MemberDTO">
+        select
+            user_id as userId,
+            user_name  as userName,
+            user_email  as userEmail,
+            user_nickname as userNickname,
+            user_image as userImage,
+            user_signup_dt as userSignupDt
+        from 
+            tbl_user
+            where user_id = #{userId}
+    </select>
 	
 </mapper>

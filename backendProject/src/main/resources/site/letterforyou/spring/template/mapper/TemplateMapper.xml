@@ -5,104 +5,98 @@
 <mapper namespace="site.letterforyou.spring.template.mapper.TemplateMapper">
 
 	<select id="getTemplateList" resultType="site.letterforyou.spring.template.domain.TemplateVO">
-		SELECT 
-    t.TEMPLATE_NO as templateNo,
-    t.TEMPLATE_TITLE as templateTitle,
-    to_char(t.TEMPLATE_CONTENT) as templateContent,
-    t.REGIST_DT as registDate,
-    COUNT(tl.TEMPLATE_LIKE_NO) as templateLikes
-FROM 
-    (SELECT 
-        TEMPLATE_NO,
-        TEMPLATE_TITLE,
-        TEMPLATE_CONTENT,
-        REGIST_DT
-    FROM tbl_template) t
+    select 
+        t.template_no as templateNo,
+        t.template_title as templateTitle,
+        to_char(t.template_content) as templateContent,
+        t.regist_dt as registDate,
+        count(tl.template_like_no) as templateLikes
+    from 
+        (select 
+            template_no,
+            template_title,
+            template_content,
+            regist_dt
+        from tbl_template) t
+    left join 
+        tbl_template_like tl on t.template_no = tl.template_no and tl.like_yn = 'Y'
+    group by 
+        t.template_no, t.template_title, to_char(t.template_content), t.regist_dt
+    <choose>
+        <when test="sortBy == 'likes'">
+            order by templateLikes ${inOrder}, registDate desc
+        </when>
+        <when test="sortBy == 'dates'">
+            order by registDate ${inOrder}
+        </when>
+        <otherwise>
+            order by t.regist_dt desc
+        </otherwise>
+    </choose>
+    offset 
+        #{offset} rows fetch next #{size} rows only
+</select>
 
-LEFT JOIN 
-    tbl_template_like tl ON t.TEMPLATE_NO = tl.TEMPLATE_NO AND tl.LIKE_YN = 'Y'
-GROUP BY 
-    t.TEMPLATE_NO, t.TEMPLATE_TITLE, to_char(t.TEMPLATE_CONTENT), t.REGIST_DT
-<choose>
-    <when test="sortBy == 'likes'">
-        ORDER BY templateLikes ${inOrder} , registDate DESC
-    </when>
-    <when test="sortBy == 'dates'">
-        ORDER BY registDate ${inOrder}
-    </when>
-    <otherwise>
-        ORDER BY t.REGIST_DT DESC
-    </otherwise>
-</choose>
-OFFSET 
-    #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+<select id="getTemplateSearchList" resultType="site.letterforyou.spring.template.domain.TemplateVO">
+    select 
+        t.template_no as templateNo,
+        t.template_title as templateTitle,
+        to_char(t.template_content) as templateContent,
+        t.regist_dt as registDate,
+        count(tl.template_like_no) as templateLikes
+    from 
+        (select 
+            template_no,
+            template_title,
+            template_content,
+            regist_dt
+        from tbl_template
+        where template_title like '%' || #{keyword} || '%') t
+    left join 
+        tbl_template_like tl on t.template_no = tl.template_no and tl.like_yn = 'Y'
+    group by 
+        t.template_no, t.template_title, to_char(t.template_content), t.regist_dt
+    <choose>
+        <when test="sortBy == 'likes'">
+            order by templateLikes ${inOrder}, registDate desc
+        </when>
+        <when test="sortBy == 'dates'">
+            order by registDate ${inOrder}
+        </when>
+        <otherwise>
+            order by t.regist_dt desc
+        </otherwise>
+    </choose>
+    offset 
+        #{offset} rows fetch next #{size} rows only
+</select>
 
-	</select>
-	
-	
-	<select id="getTemplateSearchList" resultType="site.letterforyou.spring.template.domain.TemplateVO">
-		SELECT 
-    t.TEMPLATE_NO as templateNo,
-    t.TEMPLATE_TITLE as templateTitle,
-    to_char(t.TEMPLATE_CONTENT) as templateContent,
-    t.REGIST_DT as registDate,
-    COUNT(tl.TEMPLATE_LIKE_NO) as templateLikes
-FROM 
-    (SELECT 
-        TEMPLATE_NO,
-        TEMPLATE_TITLE,
-        TEMPLATE_CONTENT,
-        REGIST_DT
-    FROM tbl_template
-    WHERE TEMPLATE_TITLE LIKE '%' || #{keyword} || '%') t
-    
+<select id="getTotalCountTemplate" resultType="int">
+    select count(*)
+    from tbl_template
+</select>
 
-LEFT JOIN 
-    tbl_template_like tl ON t.TEMPLATE_NO = tl.TEMPLATE_NO AND tl.LIKE_YN = 'Y'
-GROUP BY 
-    t.TEMPLATE_NO, t.TEMPLATE_TITLE, to_char(t.TEMPLATE_CONTENT), t.REGIST_DT
-<choose>
-    <when test="sortBy == 'likes'">
-        ORDER BY templateLikes ${inOrder} , registDate DESC
-    </when>
-    <when test="sortBy == 'dates'">
-        ORDER BY registDate ${inOrder}
-    </when>
-    <otherwise>
-        ORDER BY t.REGIST_DT DESC
-    </otherwise>
-</choose>
-OFFSET 
-    #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+<select id="getTemplate" resultType="site.letterforyou.spring.template.domain.TemplateVO">
+    select like_yn as likeYn
+    from tbl_template_like
+    where template_no = #{templateNo}
+</select>
 
-	</select>
-	
-	<select id="getTotalCountTemplate" resultType="int">
-	select count(*)
-	from tbl_template
-	</select>
-	
-	<select id="getTemplate" resultType="site.letterforyou.spring.template.domain.TemplateVO">
-	select like_yn as likeYn
-	from tbl_template_like
-	where template_no = #{templateNo}
-	</select>
-	
-	<select id="getTotalCountTemplateByKeyword" parameterType="String" resultType="int">
-	select count(*)
-	from tbl_template
-	where template_title LIKE '%' || #{keyword} || '%'
-	</select>
-	
-	<insert id ="modifyTemplateLike">
-	 MERGE INTO tbl_template_like tbl
-    USING dual
-    ON (tbl.template_no = #{templateNo} AND tbl.user_id = #{userId})
-    WHEN MATCHED THEN
-        UPDATE SET tbl.like_yn = CASE tbl.like_yn WHEN 'Y' THEN 'N' ELSE 'Y' END, 
-                  tbl.change_dt = CURRENT_TIMESTAMP
-    WHEN NOT MATCHED THEN
-        INSERT (tbl.user_id, tbl.template_no, tbl.like_yn, tbl.regist_dt)
-        VALUES (#{userId}, #{templateNo}, 'Y', CURRENT_TIMESTAMP)
-	</insert>
+<select id="getTotalCountTemplateByKeyword" parameterType="String" resultType="int">
+    select count(*)
+    from tbl_template
+    where template_title like '%' || #{keyword} || '%'
+</select>
+
+<insert id="updateTemplateLike">
+    merge into tbl_template_like tbl
+    using dual
+    on (tbl.template_no = #{templateNo} and tbl.user_id = #{userId})
+    when matched then
+        update set tbl.like_yn = case tbl.like_yn when 'Y' then 'N' else 'Y' end, 
+                  tbl.change_dt = current_timestamp
+    when not matched then
+        insert (tbl.user_id, tbl.template_no, tbl.like_yn, tbl.regist_dt)
+        values (#{userId}, #{templateNo}, 'Y', current_timestamp)
+</insert>
 </mapper>
