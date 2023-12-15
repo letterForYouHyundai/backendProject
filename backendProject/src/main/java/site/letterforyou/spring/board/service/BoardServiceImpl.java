@@ -77,8 +77,7 @@ public class BoardServiceImpl implements BoardService {
 
 		Long offset = pageVo.getOffset();
 		Long size = pageVo.getRecordSize();
-		log.info(pageVo.getSortBy() + " " + pageVo.getOrderBy() + " " + pageVo.getOffset() + " "
-				+ pageVo.getRecordSize());
+
 		List<BoardVO> boardVoList = boardMapper.getBoardList(pageVo.getSortBy(), pageVo.getOrderBy(), offset, size);
 
 		BoardGetListResponseDTO result = new BoardGetListResponseDTO();
@@ -98,7 +97,7 @@ public class BoardServiceImpl implements BoardService {
 		}
 		result.setBoardList(boardList);
 		int count = boardMapper.getTotalCountBoard();
-		// log.info(" "+count);
+
 		Pagination pagination = new Pagination(count, pageVo);
 		result.setPagination(pagination);
 		ResponseSuccessDTO<BoardGetListResponseDTO> res = responseUtil.successResponse(result, HttpStatus.OK);
@@ -120,6 +119,8 @@ public class BoardServiceImpl implements BoardService {
 			boardMapper.updateBoardLike(boardNo);
 		}
 		BoardVO bv = boardMapper.getBoardLike(boardNo, userId);
+
+		// 해당 유저의 좋아요 판별
 		String userLiked = "Y";
 		if (bv == null) {
 			userLiked = "N";
@@ -142,10 +143,7 @@ public class BoardServiceImpl implements BoardService {
 			commentDTO.setCommentContent(c.getCommentContent());
 			commentDTO.setUseYn(c.getUseYn());
 			commentDTO.setUserImage(c.getUserImage());
-			if (c.getUserNickname().equals(ownerNick)) {
-				commentDTO.setIsWriter("Y");
-			} else
-				commentDTO.setIsWriter("N");
+			commentDTO.setIsWriter(c.getUserNickname().equals(ownerNick) ? "Y" : "N");
 			commentList.add(commentDTO);
 		}
 
@@ -171,6 +169,7 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public ResponseSuccessDTO<BoardPostResponseDTO> addBoard(List<MultipartFile> multiPartFiles,
 			BoardPostRequestDTO boardDTO, String userId) throws IOException {
+
 		// Thumbnail은 처음 이미지 따서 board에 저장
 		BoardVO boardVo = new BoardVO();
 		boardVo.setBoardContent(boardDTO.getBoardContent());
@@ -182,18 +181,15 @@ public class BoardServiceImpl implements BoardService {
 			thumbFiles.add(thumbnailFile);
 			List<String> thumbUrlList = s3Service.uploadFile("thumb", thumbFiles);
 			boardVo.setBoardThumbNail(thumbUrlList.get(0));
-		} else if (multiPartFiles == null || multiPartFiles.size() <= 0) {
-			log.info(multiPartFiles.size() + "");
-
-			boardVo.setBoardThumbNail(
-					"https://letter4u-bucket.s3.ap-northeast-2.amazonaws.com/test/no_image.jpg");
+		} else if (multiPartFiles.size() <= 0) {
+			boardVo.setBoardThumbNail("https://letter4u-bucket.s3.ap-northeast-2.amazonaws.com/test/no_image.jpg");
 		}
 
 		boardMapper.addBoard(boardVo);
 
 		Long returnBoardNo = boardMapper.getLatestBoardNo();
-		log.info(returnBoardNo + "");
-
+		
+		// 첨부파일 추가
 		if (multiPartFiles != null) {
 			List<String> urlList = s3Service.uploadFile(returnBoardNo + "", multiPartFiles);
 			for (int s = 0; s < urlList.size(); s++) {
@@ -252,7 +248,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	
+
 	public ResponseSuccessDTO<CommentModifyResponseDTO> modifyComment(Long commentId,
 			CommentModifyRequestDTO commentDTO) {
 

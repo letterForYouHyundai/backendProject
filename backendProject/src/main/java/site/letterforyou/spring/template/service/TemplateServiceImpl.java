@@ -44,14 +44,11 @@ public class TemplateServiceImpl implements TemplateService{
 	    }
 		pageVo.setSortBy(sortBy);
 		
-		if(inOrder==0)
-			pageVo.setOrderBy("ASC");
-		else if(inOrder==1)
-			pageVo.setOrderBy("DESC");
+		pageVo.setOrderBy(inOrder == 0 ? "ASC" : "DESC");
+
 		
 		Long offset = pageVo.getOffset();
 		Long size = pageVo.getRecordSize();
-		log.info(pageVo.getSortBy()+" "+ pageVo.getOrderBy()+" "+ pageVo.getOffset() +" "+pageVo.getRecordSize());
 		List<TemplateVO> templateVoList = templateMapper.getTemplateList(pageVo.getSortBy(), pageVo.getOrderBy(), offset,size);
 		
 		
@@ -92,14 +89,10 @@ public class TemplateServiceImpl implements TemplateService{
 	    }
 		pageVo.setSortBy(sortBy);
 		
-		if(inOrder==0)
-			pageVo.setOrderBy("ASC");
-		else if(inOrder==1)
-			pageVo.setOrderBy("DESC");
+		pageVo.setOrderBy(inOrder == 0 ? "ASC" : "DESC");
 		
 		Long offset = pageVo.getOffset();
 		Long size = pageVo.getRecordSize();
-		log.info(keyword +" "+pageVo.getSortBy()+" "+ pageVo.getOrderBy()+" "+ pageVo.getOffset() +" "+pageVo.getRecordSize());
 		List<TemplateVO> templateVoList = templateMapper.getTemplateSearchList(keyword, pageVo.getSortBy(), pageVo.getOrderBy(), offset,size);
 		
 		TemplateGetListResponseDTO result = new TemplateGetListResponseDTO();
@@ -132,7 +125,7 @@ public class TemplateServiceImpl implements TemplateService{
 		}
 		TemplatePostLikeResponseDTO result = new  TemplatePostLikeResponseDTO();
 		templateMapper.modifyTemplateLike(templateNo, userId);
-		// templateMapper.get
+		
 		TemplateVO templateVo = templateMapper.getTemplate(templateNo);
 		result.setLikeYn(templateVo.getLikeYn());
 		result.setMessage(userId+" 아이디의 "+templateNo+" 번 Template like가 post 되었습니다");

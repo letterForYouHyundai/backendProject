@@ -76,8 +76,6 @@ public class LetterController {
 
 		String userId = sessionUtil.validSession(session);
 
-		log.info(": /letter/receive/list" + p);
-
 		return ResponseEntity.ok(letterService.getLetterReceiveList(p, userId));
 
 	}
@@ -106,7 +104,6 @@ public class LetterController {
 
 		Long p = page == null ? defaultPage : page;
 
-		log.info(": /letter/send/list" + p);
 		String userId = sessionUtil.validSession(session);
 	
 		return ResponseEntity.ok(letterService.getLetterSendList(p, userId));

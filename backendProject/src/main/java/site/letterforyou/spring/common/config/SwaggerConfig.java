@@ -21,19 +21,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration // 스프링 실행시 설정파일
 @EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {
-
-//	 @Bean
-//	    public Docket api(){
-//	        return new Docket(DocumentationType.SWAGGER_2)
-//	                .select()
-//					// 자기 프로젝트에 맞게 설정!
-//	                .apis(RequestHandlerSelectors.basePackage("site.letterforyou.spring"))
-//	                .paths(PathSelectors.any())
-//	                .build()
-//	                .pathMapping("/")
-//	                .useDefaultResponseMessages(false)
-//	                .apiInfo(apiInfo());
-//	    }
 	
 	  public Docket getDocket(String groupName, Predicate<String> predicate) {
 			return new Docket(DocumentationType.SWAGGER_2)

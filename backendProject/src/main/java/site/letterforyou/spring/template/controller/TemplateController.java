@@ -45,13 +45,11 @@ public class TemplateController {
 
 		PageRequestDTO pageDTO = pageUtil.parsePaginationComponents(page, sortBy, inOrder);
 
-		log.info(": /template/list/" + page);
-
 		return ResponseEntity
 				.ok(templateService.getTemplateList(pageDTO.getSortBy(), pageDTO.getInOrder(), pageDTO.getPage()));
 	}
 
-	// 제목 으로 검색
+	
 	@ApiOperation(value = " 편지 템플릿 - 편지 템플릿 검색 리스트 ", notes = " 편지 템플릿을 키워드로 검색한 결과를 리턴합니다. ")
 	@GetMapping("/search")
 	public ResponseEntity<ResponseSuccessDTO<TemplateGetListResponseDTO>> getTemplateSearch(
@@ -63,7 +61,6 @@ public class TemplateController {
 		PageRequestDTO pageDTO = pageUtil.parsePaginationComponents(page, sortBy, inOrder);
 		String defaultKeyword = "empty";
 		String k = keyword == null ? defaultKeyword : keyword;
-		log.info(": /template/list/" + pageDTO.getPage());
 
 		return ResponseEntity
 				.ok(templateService.getTemplateSearch(k, pageDTO.getSortBy(), pageDTO.getInOrder(), pageDTO.getPage()));

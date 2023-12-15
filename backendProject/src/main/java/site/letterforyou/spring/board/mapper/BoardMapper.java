@@ -17,6 +17,7 @@ public interface BoardMapper {
             @Param("size") Long size);
 	
 	public int getTotalCountBoard();
+	
 	public BoardVO getBoard(Long boardNo);
 	
 	public Long addBoard(@Param("boardVo")BoardVO boardVo);

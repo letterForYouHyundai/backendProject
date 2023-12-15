@@ -78,9 +78,4 @@ public class ServiceExceptionResolver {
     }
 
 
-//	@ResponseStatus(HttpStatus.BAD_REQUEST)
-//	@ExceptionHandler(value=EntityNullException.class)
-//	public ResponseErrorDTO<?> handle(EntityNullException e, HttpServletRequest request){
-//		return responseUtil.buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), request.getRequestURI());
-//	}
 }

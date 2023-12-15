@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import site.letterforyou.spring.common.dto.ResponseSuccessDTO;
-import site.letterforyou.spring.common.util.ResponseUtil;
 import site.letterforyou.spring.common.util.TimeService;
 import site.letterforyou.spring.member.domain.MemberDTO;
 
@@ -24,7 +23,7 @@ public class CommonServiceImpl implements CommonService {
     @Value("${encrypt.receive.algorithm}")
     private String RECEIVE_ALGORITHM;
     @Value("${encrypt.receive.secret}")
-    private String RECEIVE_SECRET_KEY; // Must be 16, 24, or 32 bytes
+    private String RECEIVE_SECRET_KEY; 
     
     @Value("${encrypt.send.algorithm}")
     private String SEND_ALGORITHM;

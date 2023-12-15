@@ -170,12 +170,8 @@ public class LetterServiceImpl implements LetterService {
 		PageVO pageVo = new PageVO(page, 10L, 10L);
 		Long offset = pageVo.getOffset();
 		Long size = pageVo.getRecordSize();
-		log.info(page + " " + userId + " " + offset + " " + size);
 		List<LetterVO> letterVoList = letterMapper.getReceivedLetters(userId, offset, size);
-		for (LetterVO l : letterVoList) {
-
-			log.info(l);
-		}
+		
 		List<LetterReceiveDTO> letterList = new ArrayList<>();
 		for (LetterVO l : letterVoList) {
 			LetterReceiveDTO letterDTO = new LetterReceiveDTO();
@@ -203,18 +199,18 @@ public class LetterServiceImpl implements LetterService {
 
 	@Override
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getReceivedLetter(String letterNo) {
-		Long no;
+		Long decryptNo;
 		try {
-			no = commonService.decryptReceive(letterNo);
+			decryptNo = commonService.decryptReceive(letterNo);
 		} catch (Exception e) {
 			throw new DecryptionFailedException("접근할 수 없는 페이지 입니다.");
 		}
-		LetterVO letterVo = letterMapper.getReceivedLetter(no);
+		LetterVO letterVo = letterMapper.getReceivedLetter(decryptNo);
 		if (letterVo == null) {
 
 			throw new EntityNullException("받은 편지가 존재하지 않습니다.");
 		}
-		letterMapper.updateLetterRecieve(no);
+		letterMapper.updateLetterRecieve(decryptNo);
 
 		LetterGetLetterResponseDTO result = new LetterGetLetterResponseDTO();
 		Letterdtos letterDTO = new Letterdtos();
@@ -239,13 +235,13 @@ public class LetterServiceImpl implements LetterService {
 
 	@Override
 	public ResponseSuccessDTO<LetterDeleteLetterResponseDTO> deleteReceivedLetter(String letterNo) {
-		Long no;
+		Long decryptNo;
 		try {
-			no = commonService.decryptReceive(letterNo);
+			decryptNo = commonService.decryptReceive(letterNo);
 		} catch (Exception e) {
 			throw new DefaultException(e.getMessage());
 		}
-		letterMapper.deleteReceivedLetter(no);
+		letterMapper.deleteReceivedLetter(decryptNo);
 		ResponseSuccessDTO<LetterDeleteLetterResponseDTO> res = responseUtil
 				.successResponse("받은 편지" + letterNo + " 번이 삭제되었습니다.", HttpStatus.OK);
 
@@ -258,7 +254,6 @@ public class LetterServiceImpl implements LetterService {
 		PageVO pageVo = new PageVO(page, 10L, 10L);
 		Long offset = pageVo.getOffset();
 		Long size = pageVo.getRecordSize();
-		log.info(page + " " + userId + " " + offset + " " + size);
 		List<LetterVO> letterVoList = letterMapper.getSendLetters(userId, offset, size);
 
 		List<LetterSendDTO> letterList = new ArrayList<>();
@@ -287,13 +282,13 @@ public class LetterServiceImpl implements LetterService {
 
 	@Override
 	public ResponseSuccessDTO<LetterGetLetterResponseDTO> getSendLetter(String letterNo) {
-		Long no;
+		Long decryptNo;
 		try {
-			no = commonService.decryptSend(letterNo);
+			decryptNo = commonService.decryptSend(letterNo);
 		} catch (Exception e) {
 			throw new DecryptionFailedException("접근할 수 없는 페이지 입니다.");
 		}
-		LetterVO letterVo = letterMapper.getSendLetter(no);
+		LetterVO letterVo = letterMapper.getSendLetter(decryptNo);
 
 		if (letterVo == null) {
 			throw new EntityNullException("받은 편지가 존재하지 않습니다.");
@@ -321,13 +316,13 @@ public class LetterServiceImpl implements LetterService {
 
 	@Override
 	public ResponseSuccessDTO<LetterDeleteLetterResponseDTO> deleteSendLetter(String letterNo) {
-		Long no;
+		Long decryptNo;
 		try {
-			no = commonService.decryptSend(letterNo);
+			decryptNo = commonService.decryptSend(letterNo);
 		} catch (Exception e) {
 			throw new DefaultException(e.getMessage());
 		}
-		letterMapper.deleteSendLetter(no);
+		letterMapper.deleteSendLetter(decryptNo);
 		ResponseSuccessDTO<LetterDeleteLetterResponseDTO> res = responseUtil
 				.successResponse("보낸 편지" + letterNo + " 번이 삭제되었습니다.", HttpStatus.OK);
 
