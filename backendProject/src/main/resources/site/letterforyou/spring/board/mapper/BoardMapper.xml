@@ -29,6 +29,7 @@
              from tbl_board_like
              where like_yn = 'Y'
              group by board_no) bl on b.board_no = bl.board_no
+        where use_yn = 'Y'
         <choose>
             <when test="sortBy == 'comments'">
                 order by commentCount ${inOrder}, registDate desc

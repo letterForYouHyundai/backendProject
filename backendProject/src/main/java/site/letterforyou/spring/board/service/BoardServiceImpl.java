@@ -160,6 +160,7 @@ public class BoardServiceImpl implements BoardService {
 		responseDTO.setLikeYn(userLiked);
 		responseDTO.setCommentList(commentList);
 		responseDTO.setAttachList(attachList);
+		responseDTO.setIsWriter(boardVo.getUserId().equals(userId) ? "Y" : "N");
 
 		ResponseSuccessDTO<BoardGetResponseDTO> res = responseUtil.successResponse(responseDTO, HttpStatus.OK);
 

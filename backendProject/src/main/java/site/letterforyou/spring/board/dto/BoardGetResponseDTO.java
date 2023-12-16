@@ -31,5 +31,6 @@ public class BoardGetResponseDTO {
 	
 	private List<CommentGetResponseDTO> commentList;
 	
-	
+	private String isWriter;
+
 }
