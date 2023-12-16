@@ -76,6 +76,7 @@
             tbl_user u on b.user_id = u.user_id  
         where 
             b.board_no = #{boardNo}
+            and use_yn = 'y'
         group by 
             b.board_no, b.user_id, u.user_nickname, u.user_image, b.board_title, to_char(b.board_content), b.regist_dt, b.board_view
     </select>
