@@ -75,10 +75,8 @@ public class MemberServiceImpl implements MemberService{
 	        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
-            sb.append("&client_id="+client_id); //REST_API_KEY 
-            
-            //이후에 프론트 localhost:3000과 라우팅 주소로 변경
-            sb.append("&redirect_uri="+redirect_uri); //인가코드 받은 redirect_uri 입력
+            sb.append("&client_id="+client_id); 
+            sb.append("&redirect_uri="+redirect_uri); 
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
@@ -92,8 +90,6 @@ public class MemberServiceImpl implements MemberService{
             while ((line = bufferedReader.readLine()) != null) {
             	apiResult.append(line);
             }
-            
-           log.info("result 응답코드 : "+ responseCode);
            
            /**result에서 access_token과 refresh_token가져오기*/
            ObjectMapper mapper = new ObjectMapper();
@@ -105,7 +101,6 @@ public class MemberServiceImpl implements MemberService{
             log.info("oauth 응답코드 : "+ responseCode);
             MemberDTO paramDto = getKaKaoUserInfo(access_token);
             
-            
             //refresh 토큰 value를 insert
             result.setUserId(paramDto.getUserId());
             result.setUserEmail(paramDto.getUserEmail());
@@ -113,7 +108,6 @@ public class MemberServiceImpl implements MemberService{
             result.setUserNickname(paramDto.getUserNickname());
             result.setAccessToken(access_token);
             result.setRefreshToken(refresh_token);
-            
             
             memberMapper. insertRefreshToken(result);
             
@@ -154,7 +148,6 @@ public class MemberServiceImpl implements MemberService{
             while ((line = bufferedReader.readLine()) != null) {
                result.append(line);
             }
-           
            
             /**result에서 사용자 정보 가져오기*/
             ObjectMapper mapper = new ObjectMapper();

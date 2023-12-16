@@ -82,19 +82,14 @@ public class LetterServiceImpl implements LetterService {
 
 		String letterNo = letterMapper.selectLastInsertKey(result);
 		String encryptNo = "";
-		log.info(result.toString());
-		// 이후에 호스팅 주소로 변경
+	
 		try {
 			encryptNo = commonService.encryptReceive(letterNo);
 		} catch (Exception e) {
 			log.info("암호화 중 오류 발생" + e.getMessage());
 		}
-		// String URL ="http://localhost:8080/api/letter/receive/"+encryptNo;
 		String URL = contextUrl + "/letter/receive/" + encryptNo;
-
-		// 운영 환경 세팅
-		// String URL ="https://letter4u.site/letter/receive/"+letterNo;
-		log.info(result.toString());
+		
 		result.setLetterUrl(URL);
 		result.setLetterNo(letterNo);
 		letterMapper.updateURL(result);

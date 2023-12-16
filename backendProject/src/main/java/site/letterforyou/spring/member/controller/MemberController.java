@@ -49,8 +49,7 @@ public class MemberController {
     public ResponseEntity<ResponseSuccessDTO<MemberDTO>> getKaKaoAccessToken(@RequestParam("code") String code, HttpSession session, HttpServletResponse response) {
      
     	 ResponseSuccessDTO<MemberDTO>  result = memberService.getKaKaoAccessAndRefreshToken(code,session);
- 
-    	//if(result.getStatus().equals(200))  //return ResponseEntity.ok(result);
+
     	 return ResponseEntity.ok(result);
     }
     
@@ -70,7 +69,7 @@ public class MemberController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> kakaoRegister() {
         Map<String, Object> map = new HashMap<>();
-        // Do something if needed
+        
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
    
